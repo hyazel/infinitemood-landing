@@ -35,13 +35,35 @@
         Une application d'exploration musicale, pensée comme une ville sonore imaginaire.<br>
         Elle permet d'écouter des œuvres évolutives, infinies, composées par des artistes.
       </p>
-      <a href="https://forms.gle/your-google-form-link" target="_blank"
-         class="bg-gray-200 hover:bg-gray-300 text-black font-bold py-2 px-8 rounded mb-8 transition">
-        Waiting list
-      </a>
+      <div class="flex flex-col md:flex-row items-center gap-4 mb-8">
+        <a href="https://forms.gle/your-google-form-link" target="_blank"
+           class="bg-gray-200 hover:bg-gray-300 text-black font-bold py-2 px-8 rounded transition">
+          Waiting list
+        </a>
+        <button type="button" id="playEvent0" onclick="togglePlayEvent()">
+          Play
+        </button>
+      </div>
       <div class="w-full max-w-4xl h-64 md:h-96 bg-gray-200 flex items-center justify-center text-black font-bold text-lg mb-12">
         Key Visual And Demo
       </div>
     </main>
+    <!-- FMOD WebAssembly API -->
+    <script src="fmod/fmodstudio.js"></script>
+    <script src="simple_event.js"></script>
+    <script>
+      let isPlaying = false;
+      function togglePlayEvent() {
+        if (!isPlaying) {
+          playEvent(1); // Play
+          document.getElementById('playEvent0').textContent = 'Stop';
+          isPlaying = true;
+        } else {
+          playEvent(2); // Stop
+          document.getElementById('playEvent0').textContent = 'Play';
+          isPlaying = false;
+        }
+      }
+    </script>
   </body>
 </html> 
