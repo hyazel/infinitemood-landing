@@ -65,7 +65,7 @@
       }
     </style>
   </head>
-  <body class="bg-gradient-to-br from-[#131314] to-[#1a1c22] min-h-screen flex flex-col">
+  <body class="min-h-screen flex flex-col" style="background: linear-gradient(135deg, #131314 0%, #1a1c22 100%);">
     <!-- Header -->
     <header class="flex items-center justify-between px-6 py-6 w-full max-w-7xl mx-auto">
       <a href="index.html" class="font-bold text-lg">Logo</a>
@@ -92,19 +92,24 @@
             
             <!-- Icône Soleil -->
             <div class="absolute top-1/2 left-12 transform -translate-y-1/2 w-10 md:w-16 h-10 md:h-16 flex items-center justify-center cursor-pointer" id="sun-icon">
-              <span class="sf-pro text-2xl md:text-4xl leading-[1.193] text-center transition-all duration-300 ease-in-out" style="color: #FED554; text-shadow: 0px 4px 4px rgba(0,0,0,0.25);">☀</span>
+              <svg class="w-6 h-6 md:w-8 md:h-8 transition-all duration-300 ease-in-out" style="color: #FED554; filter: drop-shadow(0px 4px 4px rgba(0,0,0,0.25));" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="5" fill="currentColor"/>
+                <path d="M12 1V3M12 21V23M4.22 4.22L5.64 5.64M18.36 18.36L19.78 19.78M1 12H3M21 12H23M4.22 19.78L5.64 18.36M18.36 5.64L19.78 4.22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
             </div>
             
             <!-- Icône Lune -->
             <div class="absolute top-1/2 right-12 transform -translate-y-1/2 w-10 md:w-16 h-10 md:h-16 flex items-center justify-center cursor-pointer" id="moon-icon">
-              <span class="sf-pro text-2xl md:text-4xl leading-[1.193] text-center transition-all duration-300 ease-in-out" style="color: #C3C2D3; text-shadow: 0px 4px 4px rgba(0,0,0,0.25);">🌙</span>
+              <svg class="w-6 h-6 md:w-8 md:h-8 transition-all duration-300 ease-in-out" style="color: #C3C2D3; filter: drop-shadow(0px 4px 4px rgba(0,0,0,0.25));" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z" fill="currentColor"/>
+              </svg>
             </div>
           </div>
         </div>
 
       <!-- Contrôleur Audio Principal -->
       <div class="w-full max-w-sm md:max-w-md">
-        <div class="relative w-full h-64 md:h-80 bg-gradient-to-br from-[#DF4F1E] via-[#542443] to-[#542443] rounded-[32px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
+        <div class="relative w-full h-64 md:h-80 rounded-[32px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]" style="background: linear-gradient(135deg, #DF4F1E 0%, #542443 50%, #542443 100%);">
           
           <!-- Sélecteur d'ambiance -->
           <div class="absolute top-4 left-4 w-16 md:w-20 h-8 md:h-10">
@@ -126,12 +131,14 @@
             <div class="absolute top-2 md:top-3 left-2 md:left-3 w-[calc(100%-16px)] md:w-[calc(100%-24px)] h-[calc(100%-16px)] md:h-[calc(100%-24px)] bg-[#7C1C1A] rounded-full shadow-[inset_0px_4px_4px_0px_rgba(0,0,0,0.25)]"></div>
             <!-- Icône play/pause -->
             <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 md:w-16 h-12 md:h-16 flex items-center justify-center cursor-pointer" id="play-button">
-              <span class="sf-pro text-xl md:text-4xl leading-[1.193] text-center transition-all duration-300" style="color: #F89B58; text-shadow: 0px 4px 4px rgba(0,0,0,0.25);" id="play-pause-icon">▶</span>
+              <svg class="w-6 h-6 md:w-8 md:h-8 transition-all duration-300" style="color: #F89B58; filter: drop-shadow(0px 4px 4px rgba(0,0,0,0.25));" id="play-pause-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 5V19L19 12L8 5Z" fill="currentColor"/>
+              </svg>
             </div>
             
             <!-- Bouton Auto global (en bas à droite) -->
             <div class="absolute bottom-2 right-2 w-6 h-6 md:w-8 md:h-8 bg-[#383030] rounded-full shadow-[inset_0px_2px_2px_0px_rgba(0,0,0,0.25)] flex items-center justify-center cursor-pointer transition-all duration-300 hover:bg-[#4a4040]" id="auto-button">
-              <span class="sf-pro text-xs md:text-sm leading-[1.193] text-center transition-all duration-300" style="color: #CB7889;" id="auto-icon">A</span>
+              <span class="sf-pro text-xs md:text-sm font-bold leading-[1.193] text-center transition-all duration-300" style="color: #CB7889;" id="auto-icon">A</span>
             </div>
             
           </div>
@@ -157,7 +164,7 @@
       <!-- Section Nature et Pluie -->
       <div class="flex flex-col md:flex-row items-center gap-4 md:gap-4 w-full max-w-sm md:max-w-md">
         <!-- Carte Nature (gauche) -->
-        <div class="relative w-full md:flex-1 h-[283px] bg-gradient-to-br from-[#10443C] to-[#07342F] rounded-[32px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
+        <div class="relative w-full md:flex-1 h-[283px] rounded-[32px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]" style="background: linear-gradient(135deg, #10443C 0%, #07342F 100%);">
           <!-- Icône feuille -->
           <div class="absolute top-6 left-1/2 transform -translate-x-1/2 w-[60px] h-[55px] flex items-center justify-center">
             <span class="sf-pro text-5xl leading-[1.193] text-center" style="color: #1E8669; text-shadow: 0px 4px 4px rgba(0,0,0,0.25);">􀥳</span>
@@ -177,7 +184,7 @@
         </div>
 
         <!-- Carte Pluie (droite) -->
-        <div class="relative w-full md:flex-1 h-[283px] bg-gradient-to-br from-[#25487F] to-[#132D53] rounded-[32px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
+        <div class="relative w-full md:flex-1 h-[283px] rounded-[32px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]" style="background: linear-gradient(135deg, #25487F 0%, #132D53 100%);">
           <!-- Icône nuage -->
           <div class="absolute top-6 left-1/2 transform -translate-x-1/2 w-[60px] h-[55px] flex items-center justify-center">
             <span class="sf-pro text-5xl leading-[1.193] text-center" style="color: #64A3D7; text-shadow: 0px 4px 4px rgba(0,0,0,0.25);">􀇉</span>
@@ -198,7 +205,7 @@
       </div>
 
       <!-- Section Volume (dernière section) -->
-      <div class="relative w-full max-w-sm md:max-w-md h-[109px] bg-gradient-to-br from-[#714187] to-[#3C276D] rounded-[32px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
+      <div class="relative w-full max-w-sm md:max-w-md h-[109px] rounded-[32px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]" style="background: linear-gradient(135deg, #714187 0%, #3C276D 100%);">
         <!-- Bouton Auto Clarity (en haut à droite) -->
         <div class="absolute top-2 right-2 w-5 h-5 md:w-6 md:h-6 bg-[#383030] rounded-full shadow-[inset_0px_2px_2px_0px_rgba(0,0,0,0.25)] flex items-center justify-center cursor-pointer transition-all duration-300 hover:bg-[#4a4040]" id="auto-clarity-button">
           <span class="sf-pro text-xs leading-[1.193] text-center transition-all duration-300" style="color: #CB7889;" id="auto-clarity-icon">C</span>
@@ -207,7 +214,7 @@
         <!-- Frame contenant les rectangles et le slider -->
         <div class="absolute top-[44px] left-1/2 transform -translate-x-1/2 flex items-center gap-2">
           <!-- Rectangle gauche (flou) -->
-          <div class="w-[22px] h-[22px] bg-gradient-to-br from-[#9479AF] to-[#D27C89] rounded-[4px] blur-[4px]"></div>
+          <div class="w-[22px] h-[22px] rounded-[4px] blur-[4px]" style="background: linear-gradient(135deg, #9479AF 0%, #D27C89 100%);"></div>
           
           <!-- Slider horizontal Volume -->
           <div class="w-[235px] h-[18px]">
@@ -222,7 +229,7 @@
           </div>
           
           <!-- Rectangle droite (opaque) -->
-          <div class="w-[22px] h-[22px] bg-gradient-to-br from-[#9479AF] to-[#D27C89] rounded-[4px]"></div>
+          <div class="w-[22px] h-[22px] rounded-[4px]" style="background: linear-gradient(135deg, #9479AF 0%, #D27C89 100%);"></div>
         </div>
       </div>
     </main>
@@ -474,9 +481,11 @@
       function updatePlayPauseIcon() {
         const icon = document.getElementById('play-pause-icon');
         if (isPlaying) {
-          icon.textContent = '⏸';
+          // Icône pause
+          icon.innerHTML = '<rect x="6" y="4" width="4" height="16" fill="currentColor"/><rect x="14" y="4" width="4" height="16" fill="currentColor"/>';
         } else {
-          icon.textContent = '▶';
+          // Icône play
+          icon.innerHTML = '<path d="M8 5V19L19 12L8 5Z" fill="currentColor"/>';
         }
       }
       
