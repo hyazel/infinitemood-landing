@@ -91,13 +91,13 @@
             <div class="absolute w-12 md:w-16 h-12 md:h-16 bg-[#383030] rounded-full shadow-[inset_0px_4px_4px_0px_rgba(0,0,0,0.25)] transition-all duration-300 ease-in-out" id="toggle-bg"></div>
             
             <!-- Icône Soleil -->
-            <div class="absolute top-1/2 left-12 transform -translate-y-1/2 w-12 md:w-16 h-12 md:h-16 flex items-center justify-center cursor-pointer" id="sun-icon">
-              <span class="sf-pro text-3xl md:text-4xl leading-[1.193] text-center transition-all duration-300 ease-in-out" style="color: #FED554; text-shadow: 0px 4px 4px rgba(0,0,0,0.25);">􀆮</span>
+            <div class="absolute top-1/2 left-12 transform -translate-y-1/2 w-10 md:w-16 h-10 md:h-16 flex items-center justify-center cursor-pointer" id="sun-icon">
+              <span class="sf-pro text-2xl md:text-4xl leading-[1.193] text-center transition-all duration-300 ease-in-out" style="color: #FED554; text-shadow: 0px 4px 4px rgba(0,0,0,0.25);">☀</span>
             </div>
             
             <!-- Icône Lune -->
-            <div class="absolute top-1/2 right-12 transform -translate-y-1/2 w-14 md:w-16 h-14 md:h-16 flex items-center justify-center cursor-pointer" id="moon-icon">
-              <span class="sf-pro text-3xl md:text-4xl leading-[1.193] text-center transition-all duration-300 ease-in-out" style="color: #C3C2D3; text-shadow: 0px 4px 4px rgba(0,0,0,0.25);">􀆺</span>
+            <div class="absolute top-1/2 right-12 transform -translate-y-1/2 w-10 md:w-16 h-10 md:h-16 flex items-center justify-center cursor-pointer" id="moon-icon">
+              <span class="sf-pro text-2xl md:text-4xl leading-[1.193] text-center transition-all duration-300 ease-in-out" style="color: #C3C2D3; text-shadow: 0px 4px 4px rgba(0,0,0,0.25);">🌙</span>
             </div>
           </div>
         </div>
@@ -126,12 +126,12 @@
             <div class="absolute top-2 md:top-3 left-2 md:left-3 w-[calc(100%-16px)] md:w-[calc(100%-24px)] h-[calc(100%-16px)] md:h-[calc(100%-24px)] bg-[#7C1C1A] rounded-full shadow-[inset_0px_4px_4px_0px_rgba(0,0,0,0.25)]"></div>
             <!-- Icône play/pause -->
             <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 md:w-16 h-12 md:h-16 flex items-center justify-center cursor-pointer" id="play-button">
-              <span class="sf-pro text-2xl md:text-4xl leading-[1.193] text-center transition-all duration-300" style="color: #F89B58; text-shadow: 0px 4px 4px rgba(0,0,0,0.25);" id="play-pause-icon">▶</span>
+              <span class="sf-pro text-xl md:text-4xl leading-[1.193] text-center transition-all duration-300" style="color: #F89B58; text-shadow: 0px 4px 4px rgba(0,0,0,0.25);" id="play-pause-icon">▶</span>
             </div>
             
             <!-- Bouton Auto global (en bas à droite) -->
-            <div class="absolute bottom-2 right-2 w-8 h-8 bg-[#383030] rounded-full shadow-[inset_0px_2px_2px_0px_rgba(0,0,0,0.25)] flex items-center justify-center cursor-pointer transition-all duration-300 hover:bg-[#4a4040]" id="auto-button">
-              <span class="sf-pro text-sm leading-[1.193] text-center transition-all duration-300" style="color: #CB7889;" id="auto-icon">A</span>
+            <div class="absolute bottom-2 right-2 w-6 h-6 md:w-8 md:h-8 bg-[#383030] rounded-full shadow-[inset_0px_2px_2px_0px_rgba(0,0,0,0.25)] flex items-center justify-center cursor-pointer transition-all duration-300 hover:bg-[#4a4040]" id="auto-button">
+              <span class="sf-pro text-xs md:text-sm leading-[1.193] text-center transition-all duration-300" style="color: #CB7889;" id="auto-icon">A</span>
             </div>
             
           </div>
@@ -146,10 +146,10 @@
               </div>
             </div>
             
-            <!-- Bouton Auto Progression Structure (à droite du slider) -->
-            <div class="absolute top-1/2 right-[-30px] transform -translate-y-1/2 w-6 h-6 bg-[#383030] rounded-full shadow-[inset_0px_2px_2px_0px_rgba(0,0,0,0.25)] flex items-center justify-center cursor-pointer transition-all duration-300 hover:bg-[#4a4040]" id="auto-progression-button">
-              <span class="sf-pro text-xs leading-[1.193] text-center transition-all duration-300" style="color: #CB7889;" id="auto-progression-icon">P</span>
-            </div>
+          <!-- Bouton Auto Progression Structure (à droite du slider) -->
+          <div class="absolute top-1/2 right-[-25px] md:right-[-30px] transform -translate-y-1/2 w-5 h-5 md:w-6 md:h-6 bg-[#383030] rounded-full shadow-[inset_0px_2px_2px_0px_rgba(0,0,0,0.25)] flex items-center justify-center cursor-pointer transition-all duration-300 hover:bg-[#4a4040]" id="auto-progression-button">
+            <span class="sf-pro text-xs leading-[1.193] text-center transition-all duration-300" style="color: #CB7889;" id="auto-progression-icon">P</span>
+          </div>
           </div>
         </div>
       </div>
@@ -200,7 +200,7 @@
       <!-- Section Volume (dernière section) -->
       <div class="relative w-full max-w-sm md:max-w-md h-[109px] bg-gradient-to-br from-[#714187] to-[#3C276D] rounded-[32px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
         <!-- Bouton Auto Clarity (en haut à droite) -->
-        <div class="absolute top-2 right-2 w-6 h-6 bg-[#383030] rounded-full shadow-[inset_0px_2px_2px_0px_rgba(0,0,0,0.25)] flex items-center justify-center cursor-pointer transition-all duration-300 hover:bg-[#4a4040]" id="auto-clarity-button">
+        <div class="absolute top-2 right-2 w-5 h-5 md:w-6 md:h-6 bg-[#383030] rounded-full shadow-[inset_0px_2px_2px_0px_rgba(0,0,0,0.25)] flex items-center justify-center cursor-pointer transition-all duration-300 hover:bg-[#4a4040]" id="auto-clarity-button">
           <span class="sf-pro text-xs leading-[1.193] text-center transition-all duration-300" style="color: #CB7889;" id="auto-clarity-icon">C</span>
         </div>
         
@@ -454,9 +454,12 @@
           console.log('Paramètre FMOD mis à jour:', fmodValue);
         }
         
-        // Synchroniser le seed du module auto-progression si il est actif
+        // Désactiver l'auto-progression si l'utilisateur interagit manuellement
         if (autoProgressionStructureInstance && autoProgressionStructureInstance.isActive) {
-          autoProgressionStructureInstance.updateSeed(value);
+          console.log('Interaction manuelle détectée - désactivation de l\'auto-progression');
+          autoProgressionStructureInstance.stop();
+          updateIndividualAutoButton('auto-progression-button', 'auto-progression-icon', 'progression-structure');
+          updateAutoButton(); // Mettre à jour le bouton global aussi
         }
         
         // Mettre à jour seulement les couleurs (plus performant)
@@ -763,9 +766,12 @@
         console.log('Paramètre FMOD progression-clarity mis à jour:', value);
       }
       
-      // Synchroniser le seed du module auto-clarity si il est actif
+      // Désactiver l'auto-clarity si l'utilisateur interagit manuellement
       if (autoClarityInstance && autoClarityInstance.isActive) {
-        autoClarityInstance.updateSeed(value);
+        console.log('Interaction manuelle détectée - désactivation de l\'auto-clarity');
+        autoClarityInstance.stop();
+        updateIndividualAutoButton('auto-clarity-button', 'auto-clarity-icon', 'clarity');
+        updateAutoButton(); // Mettre à jour le bouton global aussi
       }
     });
       
