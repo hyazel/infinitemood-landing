@@ -159,8 +159,12 @@ function setProgressionStructure(value)
     {
         var result = {};
         // Modifier le paramètre même si l'instance ne joue pas encore
-        CHECK_RESULT( loopingAmbienceInstance.val.setParameterByName("parameter:/progression-structure", value, result) );
-        console.log("Paramètre parameter:/progression-structure mis à jour:", value, "(plage 0-100)");
+        try {
+            CHECK_RESULT( loopingAmbienceInstance.val.setParameterByName("parameter:/progression-structure", value, result) );
+            console.log("Paramètre parameter:/progression-structure mis à jour:", value, "(plage 0-100)");
+        } catch (error) {
+            console.error("Erreur lors de la mise à jour du paramètre progression-structure:", error);
+        }
     }
     else
     {

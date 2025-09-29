@@ -57,7 +57,18 @@ class AutoClarity {
         
         // Appliquer l'amplitude adaptative et centrer la valeur sur le seed
         // Permettre de parcourir tout le range 0-1 avec des variations plus douces
-        const scaledValue = this.seedValue + (noiseValue * adaptiveAmplitude);
+        // Si on est proche des bords, on force la variation vers le centre
+        let scaledValue;
+        if (this.seedValue >= 0.8) {
+            // Si proche du maximum, on force la variation vers le bas
+            scaledValue = this.seedValue - (Math.abs(noiseValue) * adaptiveAmplitude);
+        } else if (this.seedValue <= 0.2) {
+            // Si proche du minimum, on force la variation vers le haut
+            scaledValue = this.seedValue + (Math.abs(noiseValue) * adaptiveAmplitude);
+        } else {
+            // Pour les valeurs centrales, on varie dans les deux directions
+            scaledValue = this.seedValue + (noiseValue * adaptiveAmplitude);
+        }
         
         // Clamper entre min et max
         const clampedValue = Math.max(this.minValue, Math.min(this.maxValue, scaledValue));

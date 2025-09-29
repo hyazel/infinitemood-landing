@@ -804,16 +804,25 @@
           console.log('Initialisation de FMOD...');
           main();
           
-          // Attendre que l'initialisation soit terminée
+          // Attendre que l'initialisation soit terminée (plus de temps pour GitHub Pages)
           setTimeout(() => {
-            if (typeof gSystem !== 'undefined') {
+            if (typeof gSystem !== 'undefined' && gSystem) {
               console.log('FMOD initialisé avec succès !');
               // Maintenant on peut setter les paramètres par défaut
               setDefaultParameters();
             } else {
-              console.log('Échec de l\'initialisation FMOD');
+              console.log('Échec de l\'initialisation FMOD, nouvelle tentative...');
+              // Nouvelle tentative après 3 secondes supplémentaires
+              setTimeout(() => {
+                if (typeof gSystem !== 'undefined' && gSystem) {
+                  console.log('FMOD initialisé avec succès (2ème tentative) !');
+                  setDefaultParameters();
+                } else {
+                  console.error('Échec définitif de l\'initialisation FMOD');
+                }
+              }, 3000);
             }
-          }, 2000);
+          }, 5000); // Augmenté de 2s à 5s
         } else if (typeof gSystem !== 'undefined') {
           console.log('FMOD déjà initialisé');
           setDefaultParameters();
@@ -858,14 +867,14 @@
       document.getElementById('play-button').addEventListener('click', function() {
         console.log('Clic sur bouton play/pause');
         
-        // Vérifier que FMOD est initialisé
-        if (typeof gSystem === 'undefined') {
+        // Vérifier que FMOD est complètement initialisé
+        if (typeof gSystem === 'undefined' || !gSystem) {
           console.log('FMOD pas encore initialisé, initialisation...');
           initializeFMOD();
           return;
         }
         
-        // Attendre que FMOD soit initialisé
+        // Vérifier que playEvent est disponible
         if (typeof playEvent === 'function') {
           // Toggle play/pause
           if (isPlaying) {
