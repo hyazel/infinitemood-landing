@@ -134,11 +134,112 @@ function playEvent(soundid)
     
     if (soundid == 1)
     {
-        CHECK_RESULT( loopingAmbienceInstance.val.start() );
+        // Vérifier si l'instance joue déjà
+        var isPlaying = {};
+        CHECK_RESULT( loopingAmbienceInstance.val.getPlaybackState(isPlaying) );
+        
+        if (isPlaying.val !== FMOD.STUDIO_PLAYBACK_PLAYING) {
+            CHECK_RESULT( loopingAmbienceInstance.val.start() );
+            console.log("Démarrage de l'instance FMOD");
+        } else {
+            console.log("L'instance FMOD joue déjà");
+        }
     }
     else if (soundid == 2)
     {
         CHECK_RESULT( loopingAmbienceInstance.val.stop(FMOD.STUDIO_STOP_IMMEDIATE) );
+        console.log("Arrêt de l'instance FMOD");
+    }
+}
+
+// Fonction pour modifier le paramètre progression-structure
+function setProgressionStructure(value)
+{
+    if (typeof loopingAmbienceInstance !== 'undefined' && loopingAmbienceInstance.val)
+    {
+        var result = {};
+        // Modifier le paramètre même si l'instance ne joue pas encore
+        CHECK_RESULT( loopingAmbienceInstance.val.setParameterByName("parameter:/progression-structure", value, result) );
+        console.log("Paramètre parameter:/progression-structure mis à jour:", value, "(plage 0-100)");
+    }
+    else
+    {
+        console.log("Instance FMOD non disponible pour setProgressionStructure");
+    }
+}
+
+// Fonction pour modifier le paramètre rain-intensity
+function setRainIntensity(value)
+{
+    if (typeof loopingAmbienceInstance !== 'undefined' && loopingAmbienceInstance.val)
+    {
+        var result = {};
+        // Modifier le paramètre même si l'instance ne joue pas encore
+        CHECK_RESULT( loopingAmbienceInstance.val.setParameterByName("parameter:/rain-intensity", value, result) );
+        console.log("Paramètre parameter:/rain-intensity mis à jour:", value, "(plage 0-1)");
+    }
+    else
+    {
+        console.log("Instance FMOD non disponible pour setRainIntensity");
+    }
+}
+
+// Fonction pour modifier le paramètre NatureBalance
+function setNatureBalance(value)
+{
+    if (typeof loopingAmbienceInstance !== 'undefined' && loopingAmbienceInstance.val)
+    {
+        var result = {};
+        // Modifier le paramètre même si l'instance ne joue pas encore
+        CHECK_RESULT( loopingAmbienceInstance.val.setParameterByName("parameter:/NatureBalance", value, result) );
+        console.log("Paramètre parameter:/NatureBalance mis à jour:", value, "(plage 0-1)");
+    }
+    else
+    {
+        console.log("Instance FMOD non disponible pour setNatureBalance");
+    }
+}
+
+// Fonction pour modifier le paramètre progression-clarity
+function setProgressionClarity(value)
+{
+    if (typeof loopingAmbienceInstance !== 'undefined' && loopingAmbienceInstance.val)
+    {
+        var result = {};
+        // Modifier le paramètre même si l'instance ne joue pas encore
+        CHECK_RESULT( loopingAmbienceInstance.val.setParameterByName("parameter:/progression-clarity", value, result) );
+        console.log("Paramètre parameter:/progression-clarity mis à jour:", value, "(plage 0-1)");
+    }
+    else
+    {
+        console.log("Instance FMOD non disponible pour setProgressionClarity");
+    }
+}
+
+// Fonction pour modifier le paramètre DayTime (Global)
+function setDayTime(dayTimeValue)
+{
+    if (typeof gSystem !== 'undefined' && gSystem)
+    {
+        // Pour un paramètre Discrete, convertir jour/nuit en valeurs numériques
+        var fmodValue;
+        if (dayTimeValue === "day" || dayTimeValue === 0) {
+            fmodValue = 12; // jour = 12
+        } else if (dayTimeValue === "night" || dayTimeValue === 1) {
+            fmodValue = 20; // nuit = 20
+        } else {
+            console.log("Valeur DayTime invalide:", dayTimeValue);
+            return;
+        }
+        
+        // Pour un paramètre Global, utiliser le système FMOD directement
+        var result = {};
+        CHECK_RESULT( gSystem.setParameterByName("DayTime", fmodValue, false) );
+        console.log("Paramètre Global DayTime mis à jour:", fmodValue, "(jour=12, nuit=20)");
+    }
+    else
+    {
+        console.log("Système FMOD non disponible pour setDayTime");
     }
 }
 
@@ -159,7 +260,7 @@ function initApplication()
 
     // Get the Looping Ambience event
     var loopingAmbienceDescription = {};
-    CHECK_RESULT( gSystem.getEvent("event:/pianoveloue", loopingAmbienceDescription) );
+    CHECK_RESULT( gSystem.getEvent("event:/Chill/Chill-Track1", loopingAmbienceDescription) );
 
     CHECK_RESULT( loopingAmbienceDescription.val.createInstance(loopingAmbienceInstance) );
 

@@ -6,11 +6,66 @@
     <title>Concept - InfiniteMood</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+    <script src="auto_clarity.js"></script>
+    <script src="auto_progression_structure.js"></script>
+    <script src="auto_parameters.js"></script>
     <style>
       body { font-family: 'Oswald', sans-serif; }
+      .sf-pro { font-family: 'SF Pro', -apple-system, BlinkMacSystemFont, sans-serif; }
+      
+      /* Classes pour les points du visualiseur */
+      .point-active {
+        background-color: #FD9F29 !important;
+        transform: scale(1.1) !important;
+      }
+      
+      .point-inactive {
+        background-color: rgba(253,159,41,0.5) !important;
+        transform: scale(1) !important;
+      }
+      
+      /* Animation de clignotement pour les dots du slider */
+      .blinking {
+        animation: blink 1s ease-in-out infinite;
+      }
+      
+      @keyframes blink {
+        0%, 100% { 
+          opacity: 1; 
+          transform: scale(1.1);
+        }
+        50% { 
+          opacity: 0.4; 
+          transform: scale(1.2);
+        }
+      }
+      
+      /* États du bouton Auto global */
+      .auto-inactive {
+        background-color: #383030 !important;
+        color: #CB7889 !important;
+      }
+      
+      .auto-active {
+        background-color: #FD9F29 !important;
+        color: #1a1c22 !important;
+        box-shadow: 0 0 8px rgba(253, 159, 41, 0.5) !important;
+      }
+      
+      /* États des boutons Auto individuels */
+      .auto-individual-inactive {
+        background-color: #383030 !important;
+        color: #CB7889 !important;
+      }
+      
+      .auto-individual-active {
+        background-color: #FD9F29 !important;
+        color: #1a1c22 !important;
+        box-shadow: 0 0 6px rgba(253, 159, 41, 0.4) !important;
+      }
     </style>
   </head>
-  <body class="bg-white text-[#070e2b] min-h-screen flex flex-col">
+  <body class="bg-gradient-to-br from-[#131314] to-[#1a1c22] min-h-screen flex flex-col">
     <!-- Header -->
     <header class="flex items-center justify-between px-6 py-6 w-full max-w-7xl mx-auto">
       <a href="index.html" class="font-bold text-lg">Logo</a>
@@ -26,9 +81,991 @@
       <a href="team.html" class="font-bold hover:underline">Team</a>
       <a href="concept.html" class="font-bold hover:underline">Concept</a>
     </nav>
-    <!-- Main Content (vide) -->
-    <main class="flex-1 flex items-center justify-center">
-      <h1 class="text-3xl font-bold">Page Concept</h1>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col items-center justify-start px-4 py-8 space-y-4">
+        <!-- Toggle Jour/Nuit -->
+        <div class="w-full max-w-sm md:max-w-md">
+          <div class="relative w-full h-32 md:h-40 rounded-[32px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] cursor-pointer" id="daynight-toggle" style="background: linear-gradient(90deg, #E7A52F 0%, #B48334 24%, #806139 45%, #1A1D42 100%);">
+            <!-- Background gris pour la position active -->
+            <div class="absolute w-12 md:w-16 h-12 md:h-16 bg-[#383030] rounded-full shadow-[inset_0px_4px_4px_0px_rgba(0,0,0,0.25)] transition-all duration-300 ease-in-out" id="toggle-bg"></div>
+            
+            <!-- Icône Soleil -->
+            <div class="absolute top-1/2 left-12 transform -translate-y-1/2 w-12 md:w-16 h-12 md:h-16 flex items-center justify-center cursor-pointer" id="sun-icon">
+              <span class="sf-pro text-3xl md:text-4xl leading-[1.193] text-center transition-all duration-300 ease-in-out" style="color: #FED554; text-shadow: 0px 4px 4px rgba(0,0,0,0.25);">􀆮</span>
+            </div>
+            
+            <!-- Icône Lune -->
+            <div class="absolute top-1/2 right-12 transform -translate-y-1/2 w-14 md:w-16 h-14 md:h-16 flex items-center justify-center cursor-pointer" id="moon-icon">
+              <span class="sf-pro text-3xl md:text-4xl leading-[1.193] text-center transition-all duration-300 ease-in-out" style="color: #C3C2D3; text-shadow: 0px 4px 4px rgba(0,0,0,0.25);">􀆺</span>
+            </div>
+          </div>
+        </div>
+
+      <!-- Contrôleur Audio Principal -->
+      <div class="w-full max-w-sm md:max-w-md">
+        <div class="relative w-full h-64 md:h-80 bg-gradient-to-br from-[#DF4F1E] via-[#542443] to-[#542443] rounded-[32px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
+          
+          <!-- Sélecteur d'ambiance -->
+          <div class="absolute top-4 left-4 w-16 md:w-20 h-8 md:h-10">
+            <div class="w-full h-full bg-[#363030] rounded-[12px] shadow-[inset_0px_4px_4px_0px_rgba(0,0,0,0.25)]">
+              <div class="flex items-center justify-between px-2 md:px-3 py-1 md:py-2">
+                <span class="text-white text-xs md:text-sm font-bold leading-[1.086] text-center" style="font-family: 'D-DIN Condensed', sans-serif;">Chill</span>
+                <svg width="12" height="4" viewBox="0 0 15 5.5" fill="none" class="md:w-4 md:h-2">
+                  <path d="M0 0L7.5 5.5L15 0" stroke="white" stroke-width="1"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Bouton Play -->
+          <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 md:w-32 h-24 md:h-32">
+            <!-- Cercle externe -->
+            <div class="absolute top-0 left-0 w-full h-full bg-[#ED6529] rounded-full shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)]"></div>
+            <!-- Cercle interne -->
+            <div class="absolute top-2 md:top-3 left-2 md:left-3 w-[calc(100%-16px)] md:w-[calc(100%-24px)] h-[calc(100%-16px)] md:h-[calc(100%-24px)] bg-[#7C1C1A] rounded-full shadow-[inset_0px_4px_4px_0px_rgba(0,0,0,0.25)]"></div>
+            <!-- Icône play/pause -->
+            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 md:w-16 h-12 md:h-16 flex items-center justify-center cursor-pointer" id="play-button">
+              <span class="sf-pro text-2xl md:text-4xl leading-[1.193] text-center transition-all duration-300" style="color: #F89B58; text-shadow: 0px 4px 4px rgba(0,0,0,0.25);" id="play-pause-icon">▶</span>
+            </div>
+            
+            <!-- Bouton Auto global (en bas à droite) -->
+            <div class="absolute bottom-2 right-2 w-8 h-8 bg-[#383030] rounded-full shadow-[inset_0px_2px_2px_0px_rgba(0,0,0,0.25)] flex items-center justify-center cursor-pointer transition-all duration-300 hover:bg-[#4a4040]" id="auto-button">
+              <span class="sf-pro text-sm leading-[1.193] text-center transition-all duration-300" style="color: #CB7889;" id="auto-icon">A</span>
+            </div>
+            
+          </div>
+
+          <!-- Slider à crans -->
+          <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-[235px] md:w-[235px] h-1" id="slider-container">
+            <!-- Track du slider -->
+            <div class="relative w-full h-full bg-[#363030] rounded-full shadow-[inset_2px_2px_4px_0px_rgba(0,0,0,0.62)]" id="slider-track">
+              <!-- Crans du slider -->
+              <div class="absolute inset-0" id="slider-notches">
+                <!-- Les crans seront générés dynamiquement par JavaScript avec positions exactes -->
+              </div>
+            </div>
+            
+            <!-- Bouton Auto Progression Structure (à droite du slider) -->
+            <div class="absolute top-1/2 right-[-30px] transform -translate-y-1/2 w-6 h-6 bg-[#383030] rounded-full shadow-[inset_0px_2px_2px_0px_rgba(0,0,0,0.25)] flex items-center justify-center cursor-pointer transition-all duration-300 hover:bg-[#4a4040]" id="auto-progression-button">
+              <span class="sf-pro text-xs leading-[1.193] text-center transition-all duration-300" style="color: #CB7889;" id="auto-progression-icon">P</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section Nature et Pluie -->
+      <div class="flex flex-col md:flex-row items-center gap-4 md:gap-4 w-full max-w-sm md:max-w-md">
+        <!-- Carte Nature (gauche) -->
+        <div class="relative w-full md:flex-1 h-[283px] bg-gradient-to-br from-[#10443C] to-[#07342F] rounded-[32px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
+          <!-- Icône feuille -->
+          <div class="absolute top-6 left-1/2 transform -translate-x-1/2 w-[60px] h-[55px] flex items-center justify-center">
+            <span class="sf-pro text-5xl leading-[1.193] text-center" style="color: #1E8669; text-shadow: 0px 4px 4px rgba(0,0,0,0.25);">􀥳</span>
+          </div>
+          
+          <!-- Slider vertical -->
+          <div class="absolute top-[103px] left-1/2 transform -translate-x-1/2 w-4 h-[155px]">
+            <!-- Track du slider -->
+            <div class="relative w-full h-full bg-[#363030] rounded-[24px] shadow-[inset_2px_2px_4px_0px_rgba(0,0,0,0.62)]" id="nature-track">
+              <!-- Thumb du slider -->
+              <div class="absolute w-[11px] h-[17px] bg-[#1E8669] rounded-[18px] shadow-[inset_-2px_0px_1px_0px_rgba(0,0,0,0.25),inset_2px_0px_4px_0px_rgba(255,255,255,0.25)] cursor-pointer transition-all duration-300" 
+                   id="nature-thumb" 
+                   style="left: 3px; bottom: 0px;">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Carte Pluie (droite) -->
+        <div class="relative w-full md:flex-1 h-[283px] bg-gradient-to-br from-[#25487F] to-[#132D53] rounded-[32px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
+          <!-- Icône nuage -->
+          <div class="absolute top-6 left-1/2 transform -translate-x-1/2 w-[60px] h-[55px] flex items-center justify-center">
+            <span class="sf-pro text-5xl leading-[1.193] text-center" style="color: #64A3D7; text-shadow: 0px 4px 4px rgba(0,0,0,0.25);">􀇉</span>
+          </div>
+          
+          <!-- Slider vertical -->
+          <div class="absolute top-[105px] left-1/2 transform -translate-x-1/2 w-4 h-[151px]">
+            <!-- Track du slider -->
+            <div class="relative w-full h-full bg-[#363030] rounded-[24px] shadow-[inset_2px_2px_4px_0px_rgba(0,0,0,0.62)]" id="rain-track">
+              <!-- Thumb du slider -->
+              <div class="absolute w-[11px] h-[17px] bg-[#64A3D7] rounded-[18px] shadow-[inset_-2px_0px_1px_0px_rgba(0,0,0,0.25),inset_2px_0px_4px_0px_rgba(255,255,255,0.25)] cursor-pointer transition-all duration-300" 
+                   id="rain-thumb" 
+                   style="left: 3px; bottom: 0px;">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section Volume (dernière section) -->
+      <div class="relative w-full max-w-sm md:max-w-md h-[109px] bg-gradient-to-br from-[#714187] to-[#3C276D] rounded-[32px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
+        <!-- Bouton Auto Clarity (en haut à droite) -->
+        <div class="absolute top-2 right-2 w-6 h-6 bg-[#383030] rounded-full shadow-[inset_0px_2px_2px_0px_rgba(0,0,0,0.25)] flex items-center justify-center cursor-pointer transition-all duration-300 hover:bg-[#4a4040]" id="auto-clarity-button">
+          <span class="sf-pro text-xs leading-[1.193] text-center transition-all duration-300" style="color: #CB7889;" id="auto-clarity-icon">C</span>
+        </div>
+        
+        <!-- Frame contenant les rectangles et le slider -->
+        <div class="absolute top-[44px] left-1/2 transform -translate-x-1/2 flex items-center gap-2">
+          <!-- Rectangle gauche (flou) -->
+          <div class="w-[22px] h-[22px] bg-gradient-to-br from-[#9479AF] to-[#D27C89] rounded-[4px] blur-[4px]"></div>
+          
+          <!-- Slider horizontal Volume -->
+          <div class="w-[235px] h-[18px]">
+            <!-- Track du slider -->
+            <div class="relative w-full h-full bg-[#363030] rounded-[24px] shadow-[inset_2px_2px_4px_0px_rgba(0,0,0,0.62)]" id="volume-track">
+              <!-- Thumb du slider -->
+              <div class="absolute w-[17px] h-[11px] bg-[#CB7889] rounded-[18px] shadow-[inset_-2px_0px_1px_0px_rgba(0,0,0,0.25),inset_2px_0px_4px_0px_rgba(255,255,255,0.25)] cursor-pointer transition-all duration-300" 
+                   id="volume-thumb" 
+                   style="left: 75.97px; top: 2.94px;">
+              </div>
+            </div>
+          </div>
+          
+          <!-- Rectangle droite (opaque) -->
+          <div class="w-[22px] h-[22px] bg-gradient-to-br from-[#9479AF] to-[#D27C89] rounded-[4px]"></div>
+        </div>
+      </div>
     </main>
+    <!-- FMOD WebAssembly API -->
+    <script src="fmod/fmodstudio.js"></script>
+    <script src="simple_event.js"></script>
+    <script>
+      // Toggle Jour/Nuit
+      let isNightMode = false; // Par défaut, mode jour (sun sélectionné)
+      
+      function updateToggleState() {
+        const toggleBg = document.getElementById('toggle-bg');
+        // console.log('updateToggleState called, isNightMode:', isNightMode); // Log réduit
+        
+        if (toggleBg) {
+          if (isNightMode) {
+            // Mode nuit : background exactement sur la lune (droite)
+            toggleBg.style.left = 'auto';
+            toggleBg.style.right = '3rem'; // Même position que l'icône lune
+            toggleBg.style.top = '50%';
+            toggleBg.style.transform = 'translateY(-50%)';
+            // console.log('Mode nuit: background sur lune'); // Log réduit
+          } else {
+            // Mode jour : background exactement sur le soleil (gauche)
+            toggleBg.style.right = 'auto';
+            toggleBg.style.left = '3rem'; // Même position que l'icône soleil
+            toggleBg.style.top = '50%';
+            toggleBg.style.transform = 'translateY(-50%)';
+            // console.log('Mode jour: background sur soleil'); // Log réduit
+          }
+        }
+      }
+      
+      // Ajuster la position du toggle au redimensionnement
+      // Gérer le redimensionnement avec debounce pour éviter les problèmes de performance
+      // Pas besoin de resize listener pour le toggle jour/nuit
+      
+      // Gestionnaire de clic sur le toggle
+      document.getElementById('daynight-toggle').addEventListener('click', function() {
+        console.log('Toggle clicked, current isNightMode:', isNightMode);
+        isNightMode = !isNightMode;
+        updateToggleState();
+        console.log('Mode:', isNightMode ? 'Nuit' : 'Jour');
+        
+        // Envoyer à FMOD
+        const dayTimeValue = isNightMode ? "night" : "day";
+        if (typeof setDayTime === 'function') {
+          setDayTime(dayTimeValue);
+          console.log('Paramètre FMOD DayTime mis à jour:', dayTimeValue);
+        }
+      });
+      
+      // Gestionnaires de clic sur les icônes individuelles
+      document.getElementById('sun-icon').addEventListener('click', function(e) {
+        e.stopPropagation();
+        console.log('Sun icon clicked');
+        isNightMode = false;
+        updateToggleState();
+        console.log('Mode: Jour');
+        
+        // Envoyer à FMOD
+        if (typeof setDayTime === 'function') {
+          setDayTime("day");
+          console.log('Paramètre FMOD DayTime mis à jour: day');
+        }
+      });
+      
+      document.getElementById('moon-icon').addEventListener('click', function(e) {
+        e.stopPropagation();
+        console.log('Moon icon clicked');
+        isNightMode = true;
+        updateToggleState();
+        console.log('Mode: Nuit');
+        
+        // Envoyer à FMOD
+        if (typeof setDayTime === 'function') {
+          setDayTime("night");
+          console.log('Paramètre FMOD DayTime mis à jour: night');
+        }
+      });
+      
+      // Initialiser l'état
+      updateToggleState();
+      
+      // Slider à crans
+      let currentAmbiance = 'chill';
+      let currentValue = 0;
+      let isPlaying = false;
+      
+      // Configuration des ambiances avec leurs crans et positions
+      class AmbianceConfig {
+        constructor() {
+          this.ambiances = {
+            'chill': {
+              values: [0, 0.15, 0.25, 0.35, 0.45, 0.75, 0.95],
+              positions: [
+                { x: 0, y: -4 },      // Cran 0 (gauche)
+                { x: 26.58, y: -4 },  // Cran 0.1
+                { x: 53.16, y: -4 },  // Cran 0.2
+                { x: 79.74, y: -4 },  // Cran 0.3
+                { x: 106.32, y: -4 }, // Cran 0.4
+                { x: 186.12, y: -4 }, // Cran 0.7
+                { x: 223, y: -4 }     // Cran 0.9 (droite)
+              ]
+            }
+          };
+        }
+        
+        getAmbiance(ambianceName) {
+          return this.ambiances[ambianceName] || this.ambiances['chill'];
+        }
+        
+        getValues(ambianceName) {
+          return this.getAmbiance(ambianceName).values;
+        }
+        
+        getPositions(ambianceName) {
+          return this.getAmbiance(ambianceName).positions;
+        }
+        
+        addAmbiance(name, values, positions) {
+          this.ambiances[name] = { values, positions };
+        }
+      }
+      
+      // Instance globale de la configuration
+      const ambianceConfig = new AmbianceConfig();
+      
+      // Générer les crans une seule fois au chargement
+      function generateSliderNotches() {
+        const notchesContainer = document.getElementById('slider-notches');
+        
+        // Ne régénérer que si les crans n'existent pas encore
+        if (notchesContainer.children.length > 0) {
+          updateSliderNotches();
+          return;
+        }
+        
+        // Récupérer les valeurs et positions depuis la configuration
+        const notches = ambianceConfig.getValues(currentAmbiance);
+        const notchPositions = ambianceConfig.getPositions(currentAmbiance);
+        
+        console.log(`Génération des crans pour l'ambiance: ${currentAmbiance}`);
+        console.log('Valeurs:', notches);
+        console.log('Positions:', notchPositions);
+        
+        notches.forEach((value, index) => {
+          const notch = document.createElement('div');
+          const pos = notchPositions[index];
+          
+          // Style de base pour tous les crans
+          notch.className = 'absolute w-3 h-3 bg-[#292525] rounded-full shadow-[inset_0px_4px_4px_0px_rgba(0,0,0,0.5)] cursor-pointer transition-all duration-300 ease-in-out';
+          notch.setAttribute('data-value', value);
+          notch.setAttribute('data-index', index);
+          
+          // Position exacte selon Figma
+          notch.style.left = pos.x + 'px';
+          notch.style.top = pos.y + 'px';
+          
+          // Animation de hover
+          notch.addEventListener('mouseenter', function() {
+            if (value !== currentValue) {
+              notch.style.transform = 'scale(1.1)';
+              notch.style.opacity = '0.8';
+            }
+          });
+          
+          notch.addEventListener('mouseleave', function() {
+            if (value !== currentValue) {
+              notch.style.transform = 'scale(1)';
+              notch.style.opacity = '1';
+            }
+          });
+          
+          notch.addEventListener('click', function() {
+            setSliderValue(value);
+          });
+          
+          notchesContainer.appendChild(notch);
+        });
+        
+        // Mettre à jour l'état initial
+        updateSliderNotches();
+      }
+      
+      // Mettre à jour seulement les couleurs des crans (plus performant)
+      function updateSliderNotches() {
+        const notches = document.querySelectorAll('#slider-notches > div');
+        
+        notches.forEach(notch => {
+          const value = parseFloat(notch.getAttribute('data-value'));
+          
+          if (value === currentValue) {
+            // Cran actuel : orange avec animation
+            notch.className = 'absolute w-3 h-3 bg-[#FD9F29] rounded-full shadow-[inset_0px_4px_4px_0px_rgba(0,0,0,0.5)] cursor-pointer transition-all duration-300 ease-in-out transform scale-110';
+          } else {
+            // Cran inactif : gris
+            notch.className = 'absolute w-3 h-3 bg-[#292525] rounded-full shadow-[inset_0px_4px_4px_0px_rgba(0,0,0,0.5)] cursor-pointer transition-all duration-300 ease-in-out';
+          }
+        });
+      }
+      
+      // Fonction pour faire clignoter un dot pendant 10 secondes
+      function blinkDot(value, duration = 10000) {
+        const notches = document.querySelectorAll('#slider-notches > div');
+        const targetNotch = Array.from(notches).find(notch => 
+          parseFloat(notch.getAttribute('data-value')) === value
+        );
+        
+        if (!targetNotch) return;
+        
+        // Ajouter la classe de clignotement
+        targetNotch.classList.add('blinking');
+        
+        // Retirer la classe après la durée spécifiée
+        setTimeout(() => {
+          targetNotch.classList.remove('blinking');
+        }, duration);
+      }
+      
+      function setSliderValue(value) {
+        currentValue = value;
+        console.log('Valeur du slider:', value);
+        
+        // Envoyer à FMOD (convertir en 0-100)
+        const fmodValue = value * 100;
+        if (typeof setProgressionStructure === 'function') {
+          setProgressionStructure(fmodValue);
+          console.log('Paramètre FMOD mis à jour:', fmodValue);
+        }
+        
+        // Synchroniser le seed du module auto-progression si il est actif
+        if (autoProgressionStructureInstance && autoProgressionStructureInstance.isActive) {
+          autoProgressionStructureInstance.updateSeed(value);
+        }
+        
+        // Mettre à jour seulement les couleurs (plus performant)
+        updateSliderNotches();
+        
+        // Faire clignoter le dot actif pendant 10 secondes
+        blinkDot(value, 10000);
+      }
+      
+      
+      // Fonction pour mettre à jour l'icône play/pause
+      function updatePlayPauseIcon() {
+        const icon = document.getElementById('play-pause-icon');
+        if (isPlaying) {
+          icon.textContent = '⏸';
+        } else {
+          icon.textContent = '▶';
+        }
+      }
+      
+      // Initialiser le slider
+      generateSliderNotches();
+      updatePlayPauseIcon();
+      
+    // Sliders verticaux Nature et Pluie
+    let natureValue = 0.5; // Valeur initiale (50% - milieu)
+    let rainValue = 0.5;   // Valeur initiale (50% - milieu)
+    
+    // Slider horizontal Volume
+    let volumeValue = 1.0; // Valeur initiale (100% - maximum)
+    
+    // Exposer volumeValue globalement pour l'auto-clarity
+    window.volumeValue = volumeValue;
+      
+      // Fonction pour mettre à jour la position du thumb
+      function updateVerticalSlider(thumbId, value, trackHeight) {
+        const thumb = document.getElementById(thumbId);
+        if (thumb) {
+          // Calculer la position (0 = bas, 1 = haut)
+          const thumbHeight = 17; // hauteur du thumb
+          const maxPosition = trackHeight - thumbHeight;
+          const position = maxPosition * value; // 0 = bas, 1 = haut
+          thumb.style.bottom = position + 'px';
+          console.log(`Mise à jour ${thumbId}: value=${value}, position=${position}px`);
+        }
+      }
+      
+      // Fonction pour gérer le drag des sliders verticaux
+      function setupVerticalSlider(thumbId, trackId, valueVar, updateCallback) {
+        const thumb = document.getElementById(thumbId);
+        const track = document.getElementById(trackId);
+        
+        if (!thumb || !track) return;
+        
+        let isDragging = false;
+        const trackHeight = thumbId === 'nature-thumb' ? 155 : 151;
+        
+        // Fonction pour calculer la valeur à partir de la position
+        function getValueFromPosition(y) {
+          const trackRect = track.getBoundingClientRect();
+          const relativeY = y - trackRect.top;
+          const thumbHeight = 17;
+          const maxPosition = trackHeight - thumbHeight;
+          
+          // Clamper la position
+          const clampedY = Math.max(0, Math.min(maxPosition, relativeY));
+          
+          // Convertir en valeur (0-1), 0 = bas, 1 = haut
+          const value = maxPosition > 0 ? 1 - (clampedY / maxPosition) : 0;
+          // Log réduit pour performance
+          // console.log(`${thumbId}: y=${y}, relativeY=${relativeY}, maxPosition=${maxPosition}, clampedY=${clampedY}, value=${value}`);
+          return value;
+        }
+        
+        // Fonction pour mettre à jour la position
+        function updatePosition(value) {
+          const thumbHeight = 17;
+          const maxPosition = trackHeight - thumbHeight;
+          const position = maxPosition * value; // 0 = bas, 1 = haut
+          thumb.style.bottom = position + 'px';
+          console.log(`${thumbId}: value=${value}, position=${position}px`);
+        }
+        
+        // Mouse events
+        thumb.addEventListener('mousedown', function(e) {
+          isDragging = true;
+          e.preventDefault();
+          // Enlever la transition pendant le drag pour éliminer le lag
+          thumb.style.transition = 'none';
+          console.log(`${thumbId}: mousedown`);
+        });
+        
+        document.addEventListener('mousemove', function(e) {
+          if (!isDragging) return;
+          
+          const newValue = getValueFromPosition(e.clientY);
+          
+          // Mettre à jour la position IMMÉDIATEMENT (sans logs pour performance)
+          const thumbHeight = 17;
+          const maxPosition = trackHeight - thumbHeight;
+          const position = maxPosition * newValue; // 0 = bas, 1 = haut
+          thumb.style.bottom = position + 'px';
+          
+          // Mettre à jour la valeur
+          if (thumbId === 'nature-thumb') {
+            natureValue = newValue;
+          } else if (thumbId === 'rain-thumb') {
+            rainValue = newValue;
+          }
+          
+          // Callback (optionnel, peut être throttlé)
+          if (updateCallback) {
+            updateCallback(newValue);
+          }
+        });
+        
+        document.addEventListener('mouseup', function() {
+          if (isDragging) {
+            isDragging = false;
+            // Remettre la transition après le drag
+            thumb.style.transition = 'all 0.3s ease-in-out';
+            console.log(`${thumbId}: mouseup`);
+          }
+        });
+        
+        // Touch events pour mobile
+        thumb.addEventListener('touchstart', function(e) {
+          isDragging = true;
+          e.preventDefault();
+          // Enlever la transition pendant le drag pour éliminer le lag
+          thumb.style.transition = 'none';
+          console.log(`${thumbId}: touchstart`);
+        });
+        
+        document.addEventListener('touchmove', function(e) {
+          if (!isDragging) return;
+          
+          const touch = e.touches[0];
+          const newValue = getValueFromPosition(touch.clientY);
+          
+          // Mettre à jour la position IMMÉDIATEMENT (sans logs pour performance)
+          const thumbHeight = 17;
+          const maxPosition = trackHeight - thumbHeight;
+          const position = maxPosition * newValue; // 0 = bas, 1 = haut
+          thumb.style.bottom = position + 'px';
+          
+          // Mettre à jour la valeur
+          if (thumbId === 'nature-thumb') {
+            natureValue = newValue;
+          } else if (thumbId === 'rain-thumb') {
+            rainValue = newValue;
+          }
+          
+          // Callback (optionnel, peut être throttlé)
+          if (updateCallback) {
+            updateCallback(newValue);
+          }
+        });
+        
+        document.addEventListener('touchend', function() {
+          if (isDragging) {
+            isDragging = false;
+            // Remettre la transition après le drag
+            thumb.style.transition = 'all 0.3s ease-in-out';
+            console.log(`${thumbId}: touchend`);
+          }
+        });
+      }
+      
+      // Fonction pour gérer le slider horizontal de volume
+      function setupHorizontalSlider(thumbId, trackId, valueVar, updateCallback) {
+        const thumb = document.getElementById(thumbId);
+        const track = document.getElementById(trackId);
+        
+        if (!thumb || !track) return;
+        
+        let isDragging = false;
+        const trackWidth = 235; // Largeur fixe du track
+        
+        // Fonction pour calculer la valeur à partir de la position
+        function getValueFromPosition(x) {
+          const trackRect = track.getBoundingClientRect();
+          const relativeX = x - trackRect.left;
+          const thumbWidth = 17;
+          const maxPosition = trackWidth - thumbWidth;
+          
+          // Clamper la position
+          const clampedX = Math.max(0, Math.min(maxPosition, relativeX));
+          
+          // Convertir en valeur (0-1)
+          const value = maxPosition > 0 ? clampedX / maxPosition : 0;
+          return value;
+        }
+        
+        // Fonction pour mettre à jour la position
+        function updatePosition(value) {
+          const thumbWidth = 17;
+          const maxPosition = trackWidth - thumbWidth;
+          const position = maxPosition * value;
+          thumb.style.left = position + 'px';
+        }
+        
+        // Mouse events
+        thumb.addEventListener('mousedown', function(e) {
+          isDragging = true;
+          e.preventDefault();
+          // Enlever la transition pendant le drag
+          thumb.style.transition = 'none';
+        });
+        
+        document.addEventListener('mousemove', function(e) {
+          if (!isDragging) return;
+          
+          const newValue = getValueFromPosition(e.clientX);
+          
+          // Mettre à jour la position IMMÉDIATEMENT
+          const thumbWidth = 17;
+          const maxPosition = trackWidth - thumbWidth;
+          const position = maxPosition * newValue;
+          thumb.style.left = position + 'px';
+          
+          // Mettre à jour la valeur
+          volumeValue = newValue;
+          window.volumeValue = newValue; // Synchroniser avec la variable globale
+          
+          // Callback
+          if (updateCallback) {
+            updateCallback(newValue);
+          }
+        });
+        
+        document.addEventListener('mouseup', function() {
+          if (isDragging) {
+            isDragging = false;
+            // Remettre la transition après le drag
+            thumb.style.transition = 'all 0.3s ease-in-out';
+          }
+        });
+        
+        // Touch events pour mobile
+        thumb.addEventListener('touchstart', function(e) {
+          isDragging = true;
+          e.preventDefault();
+          // Enlever la transition pendant le drag
+          thumb.style.transition = 'none';
+        });
+        
+        document.addEventListener('touchmove', function(e) {
+          if (!isDragging) return;
+          
+          const touch = e.touches[0];
+          const newValue = getValueFromPosition(touch.clientX);
+          
+          // Mettre à jour la position IMMÉDIATEMENT
+          const thumbWidth = 17;
+          const maxPosition = trackWidth - thumbWidth;
+          const position = maxPosition * newValue;
+          thumb.style.left = position + 'px';
+          
+          // Mettre à jour la valeur
+          volumeValue = newValue;
+          window.volumeValue = newValue; // Synchroniser avec la variable globale
+          
+          // Callback
+          if (updateCallback) {
+            updateCallback(newValue);
+          }
+        });
+        
+        document.addEventListener('touchend', function() {
+          if (isDragging) {
+            isDragging = false;
+            // Remettre la transition après le drag
+            thumb.style.transition = 'all 0.3s ease-in-out';
+          }
+        });
+      }
+      
+    // Initialiser les sliders verticaux
+    setupVerticalSlider('nature-thumb', 'nature-track', 'natureValue', function(value) {
+      console.log('Nature value:', value);
+      // Envoyer à FMOD (valeur 0-1)
+      if (typeof setNatureBalance === 'function') {
+        setNatureBalance(value);
+        console.log('Paramètre FMOD NatureBalance mis à jour:', value);
+      }
+    });
+    
+    setupVerticalSlider('rain-thumb', 'rain-track', 'rainValue', function(value) {
+      console.log('Rain value:', value);
+      // Envoyer à FMOD (valeur 0-1)
+      if (typeof setRainIntensity === 'function') {
+        setRainIntensity(value);
+        console.log('Paramètre FMOD rain-intensity mis à jour:', value);
+      }
+    });
+    
+    // Initialiser le slider horizontal de volume
+    setupHorizontalSlider('volume-thumb', 'volume-track', 'volumeValue', function(value) {
+      console.log('Volume value:', value);
+      // Envoyer à FMOD (valeur 0-1)
+      if (typeof setProgressionClarity === 'function') {
+        setProgressionClarity(value);
+        console.log('Paramètre FMOD progression-clarity mis à jour:', value);
+      }
+      
+      // Synchroniser le seed du module auto-clarity si il est actif
+      if (autoClarityInstance && autoClarityInstance.isActive) {
+        autoClarityInstance.updateSeed(value);
+      }
+    });
+      
+      // Mettre à jour les positions initiales
+      updateVerticalSlider('nature-thumb', natureValue, 155);
+      updateVerticalSlider('rain-thumb', rainValue, 151);
+      
+      // Mettre à jour la position initiale du slider de volume
+      const volumeThumb = document.getElementById('volume-thumb');
+      if (volumeThumb) {
+        const thumbWidth = 17;
+        const trackWidth = 235;
+        const maxPosition = trackWidth - thumbWidth;
+        const position = maxPosition * volumeValue;
+        volumeThumb.style.left = position + 'px';
+      }
+      
+      console.log('Sliders verticaux initialisés:');
+      console.log('Nature value:', natureValue, 'position:', (155 - 17) * (1 - natureValue));
+      console.log('Rain value:', rainValue, 'position:', (151 - 17) * (1 - rainValue));
+
+      // Fonction pour initialiser FMOD automatiquement
+      function initializeFMOD() {
+        console.log('Initialisation automatique de FMOD...');
+        console.log('typeof FMOD:', typeof FMOD);
+        console.log('typeof main:', typeof main);
+        
+        // Vérifier s'il y a des erreurs de chargement
+        if (typeof FMOD === 'undefined') {
+          console.error('FMOD n\'est pas chargé ! Vérifiez les erreurs de chargement de fichiers.');
+          return;
+        }
+        
+        // Si FMOD est chargé mais pas encore initialisé, l'initialiser
+        if (typeof gSystem === 'undefined' && typeof main === 'function') {
+          console.log('Initialisation de FMOD...');
+          main();
+          
+          // Attendre que l'initialisation soit terminée
+          setTimeout(() => {
+            if (typeof gSystem !== 'undefined') {
+              console.log('FMOD initialisé avec succès !');
+              // Maintenant on peut setter les paramètres par défaut
+              setDefaultParameters();
+            } else {
+              console.log('Échec de l\'initialisation FMOD');
+            }
+          }, 2000);
+        } else if (typeof gSystem !== 'undefined') {
+          console.log('FMOD déjà initialisé');
+          setDefaultParameters();
+        }
+      }
+      
+      // Fonction pour setter les paramètres par défaut
+      function setDefaultParameters() {
+        console.log('Configuration des paramètres par défaut...');
+        
+        // Paramètres par défaut
+        if (typeof setDayTime === 'function') {
+          setDayTime("day"); // Mode jour par défaut
+        }
+        
+        if (typeof setProgressionStructure === 'function') {
+          setProgressionStructure(0); // Valeur initiale du slider
+        }
+        
+        if (typeof setNatureBalance === 'function') {
+          setNatureBalance(0.5); // Nature à 50%
+        }
+        
+        if (typeof setRainIntensity === 'function') {
+          setRainIntensity(0.5); // Pluie à 50%
+        }
+        
+        if (typeof setProgressionClarity === 'function') {
+          setProgressionClarity(1.0); // Clarté à 100%
+        }
+        
+        console.log('Paramètres par défaut configurés');
+      }
+      
+      // Initialiser FMOD au chargement de la page
+      document.addEventListener('DOMContentLoaded', function() {
+        // Attendre un peu que tous les scripts soient chargés
+        setTimeout(initializeFMOD, 1000);
+      });
+      
+      // Bouton play FMOD (maintenant juste pour play/pause)
+      document.getElementById('play-button').addEventListener('click', function() {
+        console.log('Clic sur bouton play/pause');
+        
+        // Vérifier que FMOD est initialisé
+        if (typeof gSystem === 'undefined') {
+          console.log('FMOD pas encore initialisé, initialisation...');
+          initializeFMOD();
+          return;
+        }
+        
+        // Attendre que FMOD soit initialisé
+        if (typeof playEvent === 'function') {
+          // Toggle play/pause
+          if (isPlaying) {
+            playEvent(2); // Stop
+            isPlaying = false;
+            console.log('FMOD arrêté');
+          } else {
+            playEvent(1); // Play
+            isPlaying = true;
+            console.log('FMOD démarré');
+          }
+          updatePlayPauseIcon();
+        } else {
+          console.log('FMOD chargé mais playEvent pas encore disponible, attente...');
+          // Attendre que FMOD se charge
+          const checkFMOD = setInterval(() => {
+            if (typeof playEvent === 'function') {
+              clearInterval(checkFMOD);
+              // Toggle play/pause
+              if (isPlaying) {
+                playEvent(2); // Stop
+                isPlaying = false;
+                console.log('FMOD arrêté après attente');
+              } else {
+                playEvent(1); // Play
+                isPlaying = true;
+                console.log('FMOD démarré après attente');
+              }
+              updatePlayPauseIcon();
+            }
+          }, 100);
+          
+          // Arrêter de vérifier après 10 secondes
+          setTimeout(() => {
+            clearInterval(checkFMOD);
+            console.log('Timeout: playEvent n\'a pas pu être initialisé');
+          }, 10000);
+        }
+      });
+
+      // Auto Parameters global
+      let autoParametersInstance = null;
+      let autoClarityInstance = null;
+      let autoProgressionStructureInstance = null;
+      
+      // Initialiser le système auto global
+      function initAutoSystem() {
+        if (!autoParametersInstance) {
+          autoParametersInstance = getAutoParameters();
+          console.log('AutoParameters initialisé dans concept.html');
+        }
+        
+        if (!autoClarityInstance) {
+          autoClarityInstance = getAutoClarity();
+          // Enregistrer le module clarity dans le système global
+          autoParametersInstance.registerModule('clarity', autoClarityInstance);
+          console.log('AutoClarity enregistré dans AutoParameters');
+        }
+        
+        if (!autoProgressionStructureInstance) {
+          autoProgressionStructureInstance = getAutoProgressionStructure();
+          // Enregistrer le module progression-structure dans le système global
+          autoParametersInstance.registerModule('progression-structure', autoProgressionStructureInstance);
+          console.log('AutoProgressionStructure enregistré dans AutoParameters');
+        }
+        
+        return autoParametersInstance;
+      }
+      
+      // Fonction pour mettre à jour l'état visuel du bouton Auto global
+      function updateAutoButton() {
+        const button = document.getElementById('auto-button');
+        const icon = document.getElementById('auto-icon');
+        
+        if (!autoParametersInstance) {
+          console.log('AutoParameters non initialisé');
+          return;
+        }
+        
+        // Vérifier si TOUS les modules sont actifs
+        const clarityActive = autoParametersInstance.getModuleState('clarity');
+        const progressionActive = autoParametersInstance.getModuleState('progression-structure');
+        const allActive = clarityActive && progressionActive;
+        
+        console.log('État des modules - Clarity:', clarityActive, 'Progression:', progressionActive, 'Tous actifs:', allActive);
+        
+        if (allActive) {
+          // État actif - tous les modules sont actifs
+          button.className = 'absolute bottom-2 right-2 w-8 h-8 rounded-full shadow-[inset_0px_2px_2px_0px_rgba(0,0,0,0.25)] flex items-center justify-center cursor-pointer transition-all duration-300 auto-active';
+          icon.textContent = 'A';
+          console.log('Auto global activé (tous les modules actifs)');
+        } else {
+          // État inactif - au moins un module est inactif
+          button.className = 'absolute bottom-2 right-2 w-8 h-8 rounded-full shadow-[inset_0px_2px_2px_0px_rgba(0,0,0,0.25)] flex items-center justify-center cursor-pointer transition-all duration-300 hover:bg-[#4a4040] auto-inactive';
+          icon.textContent = 'A';
+          console.log('Auto global désactivé (au moins un module inactif)');
+        }
+      }
+      
+      // Bouton Auto global
+      document.getElementById('auto-button').addEventListener('click', function() {
+        console.log('Bouton Auto global cliqué');
+        
+        if (!autoParametersInstance) {
+          console.log('Initialisation du système auto...');
+          autoParametersInstance = initAutoSystem();
+        }
+        
+        // Vérifier l'état actuel de tous les modules
+        const clarityActive = autoParametersInstance.getModuleState('clarity');
+        const progressionActive = autoParametersInstance.getModuleState('progression-structure');
+        const allActive = clarityActive && progressionActive;
+        
+        console.log('État avant - Clarity:', clarityActive, 'Progression:', progressionActive, 'Tous actifs:', allActive);
+        
+        // Si tous sont actifs, les désactiver tous. Sinon, les activer tous.
+        const newState = !allActive;
+        
+        // Activer/désactiver tous les modules individuellement
+        if (newState) {
+          // Activer tous les modules
+          if (!autoClarityInstance) {
+            autoClarityInstance = autoParametersInstance.autoModules.get('clarity');
+          }
+          if (!autoProgressionStructureInstance) {
+            autoProgressionStructureInstance = autoParametersInstance.autoModules.get('progression-structure');
+          }
+          
+          autoClarityInstance.start();
+          autoProgressionStructureInstance.start();
+          console.log('Activation de tous les modules');
+        } else {
+          // Désactiver tous les modules
+          if (autoClarityInstance) {
+            autoClarityInstance.stop();
+          }
+          if (autoProgressionStructureInstance) {
+            autoProgressionStructureInstance.stop();
+          }
+          console.log('Désactivation de tous les modules');
+        }
+        
+        // Mettre à jour tous les boutons
+        updateAutoButton();
+        updateIndividualAutoButton('auto-clarity-button', 'auto-clarity-icon', 'clarity');
+        updateIndividualAutoButton('auto-progression-button', 'auto-progression-icon', 'progression-structure');
+      });
+      
+      // Fonction pour mettre à jour l'état visuel des boutons individuels
+      function updateIndividualAutoButton(buttonId, iconId, moduleName) {
+        const button = document.getElementById(buttonId);
+        const icon = document.getElementById(iconId);
+        
+        if (autoParametersInstance && autoParametersInstance.getModuleState(moduleName)) {
+          // État actif
+          button.className = button.className.replace(/auto-individual-(inactive|active)/, 'auto-individual-active');
+          if (!button.className.includes('auto-individual-active')) {
+            button.className += ' auto-individual-active';
+          }
+        } else {
+          // État inactif
+          button.className = button.className.replace(/auto-individual-(inactive|active)/, 'auto-individual-inactive');
+          if (!button.className.includes('auto-individual-inactive')) {
+            button.className += ' auto-individual-inactive';
+          }
+        }
+      }
+      
+      // Bouton Auto Clarity individuel
+      document.getElementById('auto-clarity-button').addEventListener('click', function() {
+        if (!autoClarityInstance) {
+          autoClarityInstance = initAutoSystem().autoModules.get('clarity');
+        }
+        
+        autoClarityInstance.toggle();
+        updateIndividualAutoButton('auto-clarity-button', 'auto-clarity-icon', 'clarity');
+        updateAutoButton(); // Mettre à jour le bouton global aussi
+      });
+      
+      // Bouton Auto Progression Structure individuel
+      document.getElementById('auto-progression-button').addEventListener('click', function() {
+        if (!autoProgressionStructureInstance) {
+          autoProgressionStructureInstance = initAutoSystem().autoModules.get('progression-structure');
+        }
+        
+        autoProgressionStructureInstance.toggle();
+        updateIndividualAutoButton('auto-progression-button', 'auto-progression-icon', 'progression-structure');
+        updateAutoButton(); // Mettre à jour le bouton global aussi
+      });
+      
+      // Initialiser le système auto au chargement
+      document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(() => {
+          initAutoSystem();
+          updateAutoButton(); // Initialiser l'état visuel global
+          updateIndividualAutoButton('auto-clarity-button', 'auto-clarity-icon', 'clarity');
+          updateIndividualAutoButton('auto-progression-button', 'auto-progression-icon', 'progression-structure');
+        }, 2000); // Attendre que FMOD soit initialisé
+      });
+
+    </script>
   </body>
-</html> 
+</html>
