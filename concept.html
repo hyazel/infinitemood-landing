@@ -140,19 +140,21 @@
           </div>
 
           <!-- Slider à crans -->
-          <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-[235px] md:w-[235px] h-1" id="slider-container">
-            <!-- Track du slider -->
-            <div class="relative w-full h-full bg-[#363030] rounded-full shadow-[inset_2px_2px_4px_0px_rgba(0,0,0,0.62)]" id="slider-track">
-              <!-- Crans du slider -->
-              <div class="absolute inset-0" id="slider-notches">
-                <!-- Les crans seront générés dynamiquement par JavaScript avec positions exactes -->
+          <div class="absolute bottom-4 left-0 right-0 px-4" id="slider-container">
+            <div class="flex items-center justify-center gap-6">
+              <!-- Track du slider -->
+              <div class="relative flex-1 max-w-[235px] h-1 bg-[#363030] rounded-full shadow-[inset_2px_2px_4px_0px_rgba(0,0,0,0.62)]" id="slider-track">
+                <!-- Crans du slider -->
+                <div class="absolute inset-0" id="slider-notches">
+                  <!-- Les crans seront générés dynamiquement par JavaScript avec positions exactes -->
+                </div>
+              </div>
+              
+              <!-- Bouton Auto Progression Structure (à droite du slider) -->
+              <div class="w-5 h-5 md:w-6 md:h-6 bg-[#383030] rounded-full shadow-[inset_0px_2px_2px_0px_rgba(0,0,0,0.25)] flex items-center justify-center cursor-pointer transition-all duration-300 hover:bg-[#4a4040]" id="auto-progression-button">
+                <span class="sf-pro text-xs leading-[1.193] text-center transition-all duration-300" style="color: #CB7889;" id="auto-progression-icon">P</span>
               </div>
             </div>
-            
-          <!-- Bouton Auto Progression Structure (à droite du slider) -->
-          <div class="absolute top-1/2 left-[259px] transform -translate-y-1/2 w-5 h-5 md:w-6 md:h-6 bg-[#383030] rounded-full shadow-[inset_0px_2px_2px_0px_rgba(0,0,0,0.25)] flex items-center justify-center cursor-pointer transition-all duration-300 hover:bg-[#4a4040]" id="auto-progression-button">
-            <span class="sf-pro text-xs leading-[1.193] text-center transition-all duration-300" style="color: #CB7889;" id="auto-progression-icon">P</span>
-          </div>
           </div>
         </div>
       </div>
