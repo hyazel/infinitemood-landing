@@ -965,84 +965,7 @@
         return autoParametersInstance;
       }
       
-      // Fonction pour mettre à jour l'état visuel du bouton Auto global
-      function updateAutoButton() {
-        const button = document.getElementById('auto-button');
-        const icon = document.getElementById('auto-icon');
-        
-        if (!autoParametersInstance) {
-          console.log('AutoParameters non initialisé');
-          return;
-        }
-        
-        // Vérifier si TOUS les modules sont actifs
-        const clarityActive = autoParametersInstance.getModuleState('clarity');
-        const progressionActive = autoParametersInstance.getModuleState('progression-structure');
-        const allActive = clarityActive && progressionActive;
-        
-        console.log('État des modules - Clarity:', clarityActive, 'Progression:', progressionActive, 'Tous actifs:', allActive);
-        
-        if (allActive) {
-          // État actif - tous les modules sont actifs
-          button.className = 'absolute bottom-2 right-2 w-8 h-8 rounded-full shadow-[inset_0px_2px_2px_0px_rgba(0,0,0,0.25)] flex items-center justify-center cursor-pointer transition-all duration-300 auto-active';
-          icon.textContent = 'A';
-          console.log('Auto global activé (tous les modules actifs)');
-        } else {
-          // État inactif - au moins un module est inactif
-          button.className = 'absolute bottom-2 right-2 w-8 h-8 rounded-full shadow-[inset_0px_2px_2px_0px_rgba(0,0,0,0.25)] flex items-center justify-center cursor-pointer transition-all duration-300 hover:bg-[#4a4040] auto-inactive';
-          icon.textContent = 'A';
-          console.log('Auto global désactivé (au moins un module inactif)');
-        }
-      }
       
-      // Bouton Auto global
-      document.getElementById('auto-button').addEventListener('click', function() {
-        console.log('Bouton Auto global cliqué');
-        
-        if (!autoParametersInstance) {
-          console.log('Initialisation du système auto...');
-          autoParametersInstance = initAutoSystem();
-        }
-        
-        // Vérifier l'état actuel de tous les modules
-        const clarityActive = autoParametersInstance.getModuleState('clarity');
-        const progressionActive = autoParametersInstance.getModuleState('progression-structure');
-        const allActive = clarityActive && progressionActive;
-        
-        console.log('État avant - Clarity:', clarityActive, 'Progression:', progressionActive, 'Tous actifs:', allActive);
-        
-        // Si tous sont actifs, les désactiver tous. Sinon, les activer tous.
-        const newState = !allActive;
-        
-        // Activer/désactiver tous les modules individuellement
-        if (newState) {
-          // Activer tous les modules
-          if (!autoClarityInstance) {
-            autoClarityInstance = autoParametersInstance.autoModules.get('clarity');
-          }
-          if (!autoProgressionStructureInstance) {
-            autoProgressionStructureInstance = autoParametersInstance.autoModules.get('progression-structure');
-          }
-          
-          autoClarityInstance.start();
-          autoProgressionStructureInstance.start();
-          console.log('Activation de tous les modules');
-        } else {
-          // Désactiver tous les modules
-          if (autoClarityInstance) {
-            autoClarityInstance.stop();
-          }
-          if (autoProgressionStructureInstance) {
-            autoProgressionStructureInstance.stop();
-          }
-          console.log('Désactivation de tous les modules');
-        }
-        
-        // Mettre à jour tous les boutons
-        updateAutoButton();
-        updateIndividualAutoButton('auto-clarity-button', 'auto-clarity-icon', 'clarity');
-        updateIndividualAutoButton('auto-progression-button', 'auto-progression-icon', 'progression-structure');
-      });
       
       // Fonction pour mettre à jour l'état visuel des boutons individuels
       function updateIndividualAutoButton(buttonId, iconId, moduleName) {
@@ -1072,7 +995,6 @@
         
         autoClarityInstance.toggle();
         updateIndividualAutoButton('auto-clarity-button', 'auto-clarity-icon', 'clarity');
-        updateAutoButton(); // Mettre à jour le bouton global aussi
       });
       
       // Bouton Auto Progression Structure individuel
@@ -1083,14 +1005,12 @@
         
         autoProgressionStructureInstance.toggle();
         updateIndividualAutoButton('auto-progression-button', 'auto-progression-icon', 'progression-structure');
-        updateAutoButton(); // Mettre à jour le bouton global aussi
       });
       
       // Initialiser le système auto au chargement
       document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
           initAutoSystem();
-          updateAutoButton(); // Initialiser l'état visuel global
           updateIndividualAutoButton('auto-clarity-button', 'auto-clarity-icon', 'clarity');
           updateIndividualAutoButton('auto-progression-button', 'auto-progression-icon', 'progression-structure');
         }, 2000); // Attendre que FMOD soit initialisé
