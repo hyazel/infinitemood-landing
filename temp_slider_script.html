@@ -1,0 +1,16 @@
+<script>
+    // --- Step 1: Render Slider Centered (Debug Mode) ---
+    (function () {
+        const template = document.getElementById('parameter-slider-template');
+        if (template) {
+            const clone = template.content.cloneNode(true);
+            const el = clone.querySelector('.parameter-slider');
+            if (el) {
+                // Force centering for "always there" visibility
+                el.classList.add('fixed', 'top-1/2', 'left-1/2', '-translate-x-1/2', '-translate-y-1/2', 'z-50');
+                document.body.appendChild(el);
+                console.log("Slider Background Rendered");
+            }
+        }
+    })();
+</script>

@@ -1,69 +1,129 @@
 <!DOCTYPE html>
 <html lang="fr">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>InfiniteMood Landing</title>
-    <!-- Tailwind CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Oswald Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-      body { font-family: 'Oswald', sans-serif; }
-    </style>
-  </head>
-  <body class="bg-white text-[#070e2b] min-h-screen flex flex-col">
-    <!-- Header -->
-    <header class="flex items-center justify-between px-6 py-6 w-full max-w-7xl mx-auto">
-      <a href="index.html" class="font-bold text-lg">Logo</a>
-      <nav class="hidden md:flex gap-12 mx-auto">
-        <a href="manifesto.html" class="font-bold hover:underline">Manifeste</a>
-        <a href="team.html" class="font-bold hover:underline">Team</a>
-        <a href="concept.html" class="font-bold hover:underline">Concept</a>
-      </nav>
-    </header>
-    <!-- Mobile Nav -->
-    <nav class="flex md:hidden justify-center gap-8 mb-4">
-      <a href="manifesto.html" class="font-bold hover:underline">Manifeste</a>
-      <a href="team.html" class="font-bold hover:underline">Team</a>
-      <a href="concept.html" class="font-bold hover:underline">Concept</a>
-    </nav>
-    <!-- Main Content -->
-    <main class="flex flex-col items-center text-center px-4 flex-1">
-      <h1 class="text-3xl md:text-6xl font-bold mt-8 mb-4">Ecoute de la musique autrement</h1>
-      <p class="text-base md:text-lg text-[#8b92b7] max-w-xl mb-6">
-        Une application d'exploration musicale, pensée comme une ville sonore imaginaire.<br>
-        Elle permet d'écouter des œuvres évolutives, infinies, composées par des artistes.
-      </p>
-      <div class="flex flex-col md:flex-row items-center gap-4 mb-8">
-        <a href="https://forms.gle/your-google-form-link" target="_blank"
-           class="bg-gray-200 hover:bg-gray-300 text-black font-bold py-2 px-8 rounded transition">
-          Waiting list
-        </a>
-        <button type="button" id="playEvent0" onclick="togglePlayEvent()">
-          Play
-        </button>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>InfiniteMood Landing</title>
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Oswald Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Oswald:wght@400;700&display=swap"
+    rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Oswald', sans-serif;
+    }
+  </style>
+</head>
+
+<body class="bg-[#2D2258] text-white min-h-screen flex flex-col overflow-hidden">
+  <!-- Header -->
+  <!-- Header Removed by User Request -->
+  <!-- Mobile Nav Removed -->
+  <!-- Main Content -->
+  <!-- Dynamic Content Container -->
+  <div id="app-container" class="flex-1 w-full"></div>
+
+  <!-- Global Templates -->
+  <!-- 1. Interaction Zone -->
+  <template id="interaction-zone-template">
+    <div class="interaction-zone relative w-full h-full transition-transform duration-300 hover:scale-110">
+      <div class="absolute inset-0 rounded-full border border-white/20 bg-white/5 backdrop-blur-sm animate-pulse-slow">
       </div>
-      <div class="w-full max-w-4xl h-64 md:h-96 bg-gray-200 flex items-center justify-center text-black font-bold text-lg mb-12">
-        Key Visual And Demo
+      <!-- Add inner details that were missing/different in global template -->
+      <div class="absolute inset-[13px] rounded-full bg-white/20 backdrop-blur-md pointer-events-none"></div>
+      <div
+        class="absolute inset-[28px] rounded-full bg-white shadow-[0_0_15px_rgba(255,255,255,0.6)] animate-pulse pointer-events-none">
       </div>
-    </main>
-    <!-- FMOD WebAssembly API -->
-    <script src="fmod/fmodstudio.js"></script>
-    <script src="simple_event.js"></script>
-    <script>
-      let isPlaying = false;
-      function togglePlayEvent() {
-        if (!isPlaying) {
-          playEvent(1); // Play
-          document.getElementById('playEvent0').textContent = 'Stop';
-          isPlaying = true;
-        } else {
-          playEvent(2); // Stop
-          document.getElementById('playEvent0').textContent = 'Play';
-          isPlaying = false;
-        }
+    </div>
+  </template>
+
+  <!-- 2. Parameter Slider (Step 1: Background) -->
+  <template id="parameter-slider-template">
+    <!-- Container: Flex Column, Gap 20px. Width 64px. Height Auto (256 + 20 + 64) -->
+    <div class="parameter-slider relative w-[64px] h-auto flex flex-col gap-[20px] items-center">
+
+      <!-- 1. Slider Track (Top Pill) -->
+      <div class="slider-track relative w-[64px] h-[256px]">
+        <!-- Background: White/10% opacity, Blur MD, Rounded 32px -->
+        <div
+          class="absolute inset-0 bg-white/5 backdrop-blur-md rounded-[32px] border border-white/5 shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] pointer-events-none">
+        </div>
+
+        <!-- Steps (Dots) -->
+        <div
+          class="absolute top-[32px] left-0 right-0 h-[192px] flex flex-col items-center justify-between z-10 pointer-events-none">
+          <div class="w-[8px] h-[8px] rounded-full bg-white/20 backdrop-blur-sm shadow-sm"></div>
+          <div class="w-[8px] h-[8px] rounded-full bg-white/20 backdrop-blur-sm shadow-sm"></div>
+          <div class="w-[8px] h-[8px] rounded-full bg-white/20 backdrop-blur-sm shadow-sm"></div>
+          <div class="w-[8px] h-[8px] rounded-full bg-white/20 backdrop-blur-sm shadow-sm"></div>
+        </div>
+
+        <!-- Thumb (Crystal) -->
+        <!-- Inside slider-track, so top coordinates 0-256 apply here directly -->
+        <div
+          class="slider-thumb absolute left-1/2 -translate-x-1/2 w-[48px] h-[48px] z-30 transition-all duration-500 ease-in-out"
+          style="top: 200px;">
+          <div class="absolute inset-0 bg-white/20 blur-[6px] rounded-full scale-75"></div>
+          <img src="assets/cristal.png" class="relative w-full h-full object-contain">
+        </div>
+      </div>
+
+      <!-- 2. Icon Container (Bottom Circle) -->
+      <div class="slider-icon-container relative w-[64px] h-[64px] flex items-center justify-center">
+        <!-- Background: Circle -->
+        <div
+          class="absolute inset-0 bg-white/10 backdrop-blur-md rounded-full border border-white/5 shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
+        </div>
+        <!-- Icon -->
+        <img src="assets/slider_icon/2d1def04da77d0068f5b2863f66219eae49e819c.png"
+          class="slider-bottom-icon w-[48px] h-[48px] object-contain opacity-80 z-20">
+      </div>
+
+    </div>
+  </template>
+  <script>
+    // Simple router/loader mechanism
+    async function loadPage(page) {
+      try {
+        const response = await fetch(page + '?t=' + Date.now());
+        if (!response.ok) throw new Error('Page not found');
+        const html = await response.text();
+        const container = document.getElementById('app-container');
+        container.innerHTML = html;
+
+        // Re-execute scripts found in the injected HTML
+        const scripts = container.querySelectorAll('script');
+        scripts.forEach(oldScript => {
+          const newScript = document.createElement('script');
+          Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+          newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+          oldScript.parentNode.replaceChild(newScript, oldScript);
+        });
+
+      } catch (error) {
+        console.error('Error loading page:', error);
+        document.getElementById('app-container').innerHTML = '<p class="text-center mt-10">Error loading content.</p>';
       }
-    </script>
-  </body>
-</html> 
+    }
+
+    // Load home.html by default
+    document.addEventListener('DOMContentLoaded', () => {
+      loadPage('home.html');
+    });
+  </script>
+  <!-- FMOD WebAssembly API -->
+  <script src="fmod/fmodstudio.js"></script>
+  <script src="simple_event.js?v=16"></script>
+
+  <!-- Evolution Engine -->
+  <script src="public/js/EvolutionEngine/Strategies/RandomStrategy.js"></script>
+  <script src="public/js/EvolutionEngine/Configuration/LofiConfig.js"></script>
+  <script src="public/js/EvolutionEngine/EvolutionManager.js"></script>
+  <script>
+    // Evolution Manager is now controlled by the Play Button in home.html
+  </script>
+</body>
+
+</html>

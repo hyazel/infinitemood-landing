@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIDI to FMOD - Lecteur MIDI avec contrôle FMOD</title>
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tone.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+    <!-- @tonejs/midi pour la lecture MIDI -->
+    <script src="https://cdn.jsdelivr.net/npm/@tonejs/midi@2.0.28/build/Midi.js"></script>
+    <!-- FMOD Studio -->
+    <script src="fmod/fmodstudio.js"></script>
+    <script src="fmod/fmodstudio.wasm"></script>
+    <script src="fmod/fmodstudioL.js"></script>
+    <script src="fmod/fmodstudioL.wasm"></script>
+    <!-- Oswald Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Oswald', sans-serif; }
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            overflow: hidden;
+        }
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background-color: #3b82f6;
+            transition: width 0.1s ease;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-ready { background-color: #10b981; }
+        .status-loading { background-color: #f59e0b; }
+        .status-error { background-color: #ef4444; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <h1 class="text-4xl font-bold text-center mb-8">MIDI to FMOD - Lecteur MIDI avec contrôle FMOD</h1>
+        
+        <!-- Status Section -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-2xl font-bold mb-4">État du système</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="flex items-center">
+                    <span class="status-indicator status-loading" id="fmodStatus"></span>
+                    <span>FMOD Studio: <span id="fmodStatusText">Chargement...</span></span>
+                </div>
+                <div class="flex items-center">
+                    <span class="status-indicator status-loading" id="audioStatus"></span>
+                    <span>Audio Context: <span id="audioStatusText">Non initialisé</span></span>
+                </div>
+                <div class="flex items-center">
+                    <span class="status-indicator status-loading" id="midiStatus"></span>
+                    <span>Fichier MIDI: <span id="midiStatusText">Aucun chargé</span></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- File Upload Section -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-2xl font-bold mb-4">Charger un fichier MIDI</h2>
+            <div class="file-input-wrapper">
+                <input type="file" id="midiFile" accept=".mid,.midi" class="hidden">
+                <label for="midiFile" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg cursor-pointer transition-colors">
+                    Choisir un fichier MIDI
+                </label>
+            </div>
+            <div id="fileInfo" class="mt-4 hidden">
+                <p class="text-sm text-gray-600">
+                    <span id="fileName"></span> 
+                    (<span id="fileSize"></span>)
+                </p>
+            </div>
+        </div>
+
+        <!-- MIDI Information -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-2xl font-bold mb-4">Informations du fichier MIDI</h2>
+            <div id="midiInfo" class="hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div>
+                        <h3 class="font-bold text-lg mb-2">Métadonnées</h3>
+                        <p><strong>Format:</strong> <span id="midiFormat"></span></p>
+                        <p><strong>Ticks par beat:</strong> <span id="ticksPerBeat"></span></p>
+                        <p><strong>Tempo:</strong> <span id="tempo"></span> BPM</p>
+                        <p><strong>Durée:</strong> <span id="duration"></span></p>
+                        <p><strong>Nombre de pistes:</strong> <span id="trackCount"></span></p>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg mb-2">Statistiques</h3>
+                        <p><strong>Notes totales:</strong> <span id="totalNotes"></span></p>
+                        <p><strong>Vélocité moyenne:</strong> <span id="avgVelocity"></span></p>
+                        <p><strong>Gamme de notes:</strong> <span id="noteRange"></span></p>
+                        <p><strong>Instruments utilisés:</strong> <span id="instruments"></span></p>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg mb-2">Pistes</h3>
+                        <div id="tracksList" class="max-h-32 overflow-y-auto"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Player Controls -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-2xl font-bold mb-4">Contrôles de lecture</h2>
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                <p class="text-blue-800 text-sm">
+                    <strong>💡 Note :</strong> Cliquez d'abord sur "Initialiser Audio" pour activer l'audio et FMOD, puis chargez un fichier MIDI.
+                </p>
+            </div>
+            
+            <!-- BPM Control -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium mb-2">BPM: <span id="bpmValue">120</span></label>
+                <input type="range" id="bpmSlider" min="60" max="200" value="120" class="w-full mb-2">
+                <div class="flex justify-between text-xs text-gray-500">
+                    <span>60 BPM</span>
+                    <span>200 BPM</span>
+                </div>
+            </div>
+
+            <!-- Loop Control -->
+            <div class="mb-6">
+                <div class="flex items-center space-x-2">
+                    <input type="checkbox" id="loopEnabled" class="rounded">
+                    <label for="loopEnabled" class="text-sm font-medium">Lecture en boucle</label>
+                </div>
+            </div>
+
+            <!-- Player Buttons -->
+            <div class="flex items-center justify-center gap-4 mb-4">
+                <button id="initAudioBtn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+                    🔊 Initialiser Audio
+                </button>
+                <button id="testFmodBtn" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-6 rounded-lg transition-colors disabled:bg-gray-400" disabled>
+                    🎹 Test FMOD
+                </button>
+                <button id="playBtn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg transition-colors disabled:bg-gray-400" disabled>
+                    ▶️ Lecture
+                </button>
+                <button id="pauseBtn" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 px-6 rounded-lg transition-colors disabled:bg-gray-400" disabled>
+                    ⏸️ Pause
+                </button>
+                <button id="stopBtn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-lg transition-colors disabled:bg-gray-400" disabled>
+                    ⏹️ Stop
+                </button>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="mb-4">
+                <div class="progress-bar">
+                    <div id="progressFill" class="progress-fill" style="width: 0%"></div>
+                </div>
+                <div class="flex justify-between text-sm text-gray-600 mt-2">
+                    <span id="currentTime">0:00</span>
+                    <span id="totalTime">0:00</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- FMOD Controls -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-2xl font-bold mb-4">Contrôles FMOD</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="font-bold text-lg mb-3">Event Instrument-Piano</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Volume: <span id="volumeValue">0.8</span></label>
+                            <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="0.8" class="w-full">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Note actuelle: <span id="currentNote">-</span></label>
+                            <div class="bg-gray-100 p-2 rounded text-sm">
+                                <p>Le paramètre "Note" sera automatiquement mis à jour selon les notes MIDI (0-127)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg mb-3">Statistiques de lecture</h3>
+                    <div class="space-y-2 text-sm">
+                        <p><strong>Notes jouées:</strong> <span id="notesPlayed">0</span></p>
+                        <p><strong>Event FMOD:</strong> <span id="fmodEventStatus">Non démarré</span></p>
+                        <p><strong>Dernière note:</strong> <span id="lastNote">-</span></p>
+                        <p><strong>Vélocité:</strong> <span id="lastVelocity">-</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Console Log -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-2xl font-bold mb-4">Console de débogage</h2>
+            <div id="console" class="bg-gray-100 p-4 rounded-lg h-32 overflow-y-auto text-sm font-mono">
+                <p class="text-gray-600">Initialisation en cours...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales FMOD
+        var FMOD = {};
+var gSystem;
+var gSystemCore;
+var pianoEventInstance = {};
+var drumsEventInstance = {};
+var isFmodReady = false;
+
+        class MidiToFmodPlayer {
+            constructor() {
+                this.midiData = null;
+                this.isPlaying = false;
+                this.isPaused = false;
+                this.currentTime = 0;
+                this.totalTime = 0;
+                this.progressInterval = null;
+                this.notesPlayed = 0;
+                this.scheduledNotes = [];
+                this.currentBpm = 120;
+                this.originalBpm = 120;
+                this.isFirstNote = true; // Pour démarrer les drums à la première note
+                this.isRestarting = false; // Pour éviter les redémarrages multiples
+                
+                this.initializeElements();
+                this.setupEventListeners();
+                this.initializeFmod();
+            }
+
+            initializeElements() {
+                // File upload
+                this.fileInput = document.getElementById('midiFile');
+                this.fileInfo = document.getElementById('fileInfo');
+                this.fileName = document.getElementById('fileName');
+                this.fileSize = document.getElementById('fileSize');
+                
+                // Status indicators
+                this.fmodStatus = document.getElementById('fmodStatus');
+                this.fmodStatusText = document.getElementById('fmodStatusText');
+                this.audioStatus = document.getElementById('audioStatus');
+                this.audioStatusText = document.getElementById('audioStatusText');
+                this.midiStatus = document.getElementById('midiStatus');
+                this.midiStatusText = document.getElementById('midiStatusText');
+                
+                // Player controls
+                this.initAudioBtn = document.getElementById('initAudioBtn');
+                this.testFmodBtn = document.getElementById('testFmodBtn');
+                this.playBtn = document.getElementById('playBtn');
+                this.pauseBtn = document.getElementById('pauseBtn');
+                this.stopBtn = document.getElementById('stopBtn');
+                this.bpmSlider = document.getElementById('bpmSlider');
+                this.bpmValue = document.getElementById('bpmValue');
+                this.loopEnabled = document.getElementById('loopEnabled');
+                
+                // Progress
+                this.progressFill = document.getElementById('progressFill');
+                this.currentTimeEl = document.getElementById('currentTime');
+                this.totalTimeEl = document.getElementById('totalTime');
+                
+                // MIDI info
+                this.midiInfo = document.getElementById('midiInfo');
+                this.console = document.getElementById('console');
+                
+                // FMOD controls
+                this.volumeSlider = document.getElementById('volumeSlider');
+                this.volumeValue = document.getElementById('volumeValue');
+                this.currentNote = document.getElementById('currentNote');
+                this.notesPlayedEl = document.getElementById('notesPlayed');
+                this.fmodEventStatus = document.getElementById('fmodEventStatus');
+                this.lastNote = document.getElementById('lastNote');
+                this.lastVelocity = document.getElementById('lastVelocity');
+            }
+
+            setupEventListeners() {
+                this.fileInput.addEventListener('change', (e) => this.handleFileSelect(e));
+                this.initAudioBtn.addEventListener('click', () => this.initializeAudio());
+                this.testFmodBtn.addEventListener('click', () => this.testFmodEvent());
+                this.playBtn.addEventListener('click', () => this.play());
+                this.pauseBtn.addEventListener('click', () => this.pause());
+                this.stopBtn.addEventListener('click', () => this.stop());
+                this.bpmSlider.addEventListener('input', (e) => this.updateBpm(e.target.value));
+                this.volumeSlider.addEventListener('input', (e) => this.updateVolume(e.target.value));
+                this.loopEnabled.addEventListener('change', (e) => this.updateLoopMode(e.target.checked));
+            }
+
+            initializeFmod() {
+                this.log("Initialisation de FMOD Studio...");
+                
+                // Configuration FMOD
+                FMOD['preRun'] = this.prerun.bind(this);
+                FMOD['onRuntimeInitialized'] = this.main.bind(this);
+                FMOD['INITIAL_MEMORY'] = 64*1024*1024;
+                
+                // Charger le module FMOD
+                FMODModule(FMOD);
+            }
+
+            prerun() {
+                this.log("Pré-chargement des fichiers FMOD...");
+                var fileUrl = "public/js/";
+                var fileName = ["Master.bank", "Master.strings.bank"];
+                var folderName = "/";
+                var canRead = true;
+                var canWrite = false;
+
+                for (var count = 0; count < fileName.length; count++) {
+                    FMOD.FS_createPreloadedFile(folderName, fileName[count], fileUrl + fileName[count], canRead, canWrite);
+                }
+            }
+
+            main() {
+                this.log("Initialisation du système FMOD...");
+                
+                var outval = {};
+                var result;
+
+                // Créer le système FMOD
+                result = FMOD.Studio_System_Create(outval);
+                this.checkResult(result);
+                gSystem = outval.val;
+
+                result = gSystem.getCoreSystem(outval);
+                this.checkResult(result);
+                gSystemCore = outval.val;
+
+                // Configuration du système
+                result = gSystemCore.setDSPBufferSize(2048, 2);
+                this.checkResult(result);
+
+                result = gSystemCore.getDriverInfo(0, null, null, outval, null, null);
+                this.checkResult(result);
+                result = gSystemCore.setSoftwareFormat(outval.val, FMOD.SPEAKERMODE_DEFAULT, 0);
+                this.checkResult(result);
+
+                // Initialiser FMOD
+                result = gSystem.initialize(1024, FMOD.STUDIO_INIT_NORMAL, FMOD.INIT_NORMAL, null);
+                this.checkResult(result);
+
+                this.initApplication();
+                this.updateFmodStatus(true);
+                
+                // Démarrer la boucle de mise à jour
+                window.setInterval(() => this.updateApplication(), 20);
+            }
+
+            initApplication() {
+                this.log("Chargement des événements FMOD...");
+                
+                this.loadBank("Master.bank");
+                this.loadBank("Master.strings.bank");
+
+                // Créer l'instance de l'événement instrument-piano
+                var pianoEventDescription = {};
+                var result = gSystem.getEvent("event:/instrument-piano", pianoEventDescription);
+                this.checkResult(result);
+
+                result = pianoEventDescription.val.createInstance(pianoEventInstance);
+                this.checkResult(result);
+
+                this.log("Event 'instrument-piano' créé avec succès");
+
+                // Créer l'instance de l'événement drums
+                var drumsEventDescription = {};
+                result = gSystem.getEvent("event:/drums", drumsEventDescription);
+                this.checkResult(result);
+
+                result = drumsEventDescription.val.createInstance(drumsEventInstance);
+                this.checkResult(result);
+
+                this.log("Event 'drums' créé avec succès");
+            }
+
+            loadBank(name) {
+                var bankhandle = {};
+                var result = gSystem.loadBankFile("/" + name, FMOD.STUDIO_LOAD_BANK_NORMAL, bankhandle);
+                this.checkResult(result);
+            }
+
+            updateApplication() {
+                if (gSystem) {
+                    var result = gSystem.update();
+                    this.checkResult(result);
+                }
+            }
+
+            checkResult(result) {
+                if (result != FMOD.OK) {
+                    var msg = "Erreur FMOD: " + FMOD.ErrorString(result);
+                    this.log(msg);
+                    throw msg;
+                }
+            }
+
+            updateFmodStatus(ready) {
+                isFmodReady = ready;
+                if (ready) {
+                    this.fmodStatus.className = "status-indicator status-ready";
+                    this.fmodStatusText.textContent = "Prêt";
+                    // Activer le bouton de test FMOD si l'audio est aussi prêt
+                    if (this.initAudioBtn.disabled) {
+                        this.testFmodBtn.disabled = false;
+                    }
+                } else {
+                    this.fmodStatus.className = "status-indicator status-error";
+                    this.fmodStatusText.textContent = "Erreur";
+                }
+            }
+
+            testFmodEvent() {
+                if (!isFmodReady || !pianoEventInstance.val) {
+                    this.log("FMOD ou l'événement piano n'est pas disponible");
+                    return;
+                }
+
+                try {
+                    this.log("Test de l'événement FMOD 'instrument-piano'...");
+                    
+                    // Définir une note de test (Do central = 60)
+                    var testNote = 60;
+                    var fmodResult = gSystem.setParameterByName("Note", testNote, false);
+                    this.checkResult(fmodResult);
+                    this.log(`Paramètre Note défini à: ${testNote} (${this.midiToNoteName(testNote)})`);
+                    
+                    // Démarrer l'événement
+                    var result = pianoEventInstance.val.start();
+                    this.checkResult(result);
+                    this.fmodEventStatus.textContent = "Test en cours";
+                    this.log("Event FMOD 'instrument-piano' démarré pour le test");
+                    
+                    // Arrêter l'événement après 2 secondes
+                    setTimeout(() => {
+                        if (pianoEventInstance.val) {
+                            var stopResult = pianoEventInstance.val.stop(FMOD.STUDIO_STOP_IMMEDIATE);
+                            this.checkResult(stopResult);
+                            this.fmodEventStatus.textContent = "Test terminé";
+                            this.log("Test FMOD terminé");
+                        }
+                    }, 2000);
+                    
+                } catch (error) {
+                    this.log("Erreur lors du test FMOD: " + error.message);
+                }
+            }
+
+            async initializeAudio() {
+                try {
+                    // Démarrer l'AudioContext de Tone.js
+                    if (Tone.context.state !== 'running') {
+                        await Tone.start();
+                        this.log("AudioContext démarré avec succès");
+                    }
+                    
+                    this.audioStatus.className = "status-indicator status-ready";
+                    this.audioStatusText.textContent = "Prêt";
+                    
+                    // Désactiver le bouton d'initialisation et activer le test FMOD
+                    this.initAudioBtn.disabled = true;
+                    this.initAudioBtn.textContent = "✅ Audio OK";
+                    this.initAudioBtn.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+                    this.initAudioBtn.classList.add('bg-green-500');
+                    
+                    // Activer le bouton de test FMOD si FMOD est prêt
+                    if (isFmodReady) {
+                        this.testFmodBtn.disabled = false;
+                    }
+                    
+                } catch (error) {
+                    this.log("Erreur lors de l'initialisation audio: " + error.message);
+                    this.audioStatus.className = "status-indicator status-error";
+                    this.audioStatusText.textContent = "Erreur";
+                }
+            }
+
+            handleFileSelect(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                this.log(`Fichier sélectionné: ${file.name}`);
+                this.fileName.textContent = file.name;
+                this.fileSize.textContent = this.formatFileSize(file.size);
+                this.fileInfo.classList.remove('hidden');
+
+                const reader = new FileReader();
+                reader.onload = (e) => this.loadMidiFile(e.target.result);
+                reader.readAsArrayBuffer(file);
+            }
+
+            loadMidiFile(arrayBuffer) {
+                try {
+                    this.midiData = new Midi(arrayBuffer);
+                    this.log("Fichier MIDI chargé avec succès");
+                    this.displayMidiInfo();
+                    this.updateMidiStatus(true);
+                    this.enableControls();
+                } catch (error) {
+                    this.log("Erreur lors du chargement du fichier MIDI: " + error.message);
+                    this.updateMidiStatus(false);
+                }
+            }
+
+            displayMidiInfo() {
+                if (!this.midiData) return;
+
+                const header = this.midiData.header;
+                const tracks = this.midiData.tracks;
+
+                // Métadonnées de base
+                document.getElementById('midiFormat').textContent = header.format;
+                document.getElementById('ticksPerBeat').textContent = header.ticksPerBeat;
+                this.originalBpm = Math.round(header.tempos[0]?.bpm || 120);
+                document.getElementById('tempo').textContent = this.originalBpm;
+                document.getElementById('duration').textContent = this.formatTime(this.midiData.duration);
+                document.getElementById('trackCount').textContent = tracks.length;
+
+                // Statistiques
+                let totalNotes = 0;
+                let velocitySum = 0;
+                let minNote = 127;
+                let maxNote = 0;
+                let instruments = new Set();
+
+                tracks.forEach(track => {
+                    totalNotes += track.notes.length;
+                    track.notes.forEach(note => {
+                        velocitySum += note.velocity;
+                        minNote = Math.min(minNote, note.midi);
+                        maxNote = Math.max(maxNote, note.midi);
+                    });
+                    if (track.instrument) {
+                        instruments.add(track.instrument.name);
+                    }
+                });
+
+                document.getElementById('totalNotes').textContent = totalNotes;
+                document.getElementById('avgVelocity').textContent = totalNotes > 0 ? Math.round(velocitySum / totalNotes) : 0;
+                document.getElementById('noteRange').textContent = `${this.midiToNoteName(minNote)} - ${this.midiToNoteName(maxNote)}`;
+                document.getElementById('instruments').textContent = instruments.size > 0 ? Array.from(instruments).join(', ') : 'Non spécifié';
+
+                // Afficher les pistes
+                const tracksList = document.getElementById('tracksList');
+                tracksList.innerHTML = '';
+                tracks.forEach((track, index) => {
+                    const trackDiv = document.createElement('div');
+                    trackDiv.className = 'mb-2 p-2 bg-gray-100 rounded text-xs';
+                    trackDiv.innerHTML = `
+                        <strong>Piste ${index + 1}:</strong> 
+                        ${track.name || 'Sans nom'} 
+                        (${track.notes.length} notes)
+                    `;
+                    tracksList.appendChild(trackDiv);
+                });
+
+                this.midiInfo.classList.remove('hidden');
+            }
+
+            updateMidiStatus(loaded) {
+                if (loaded) {
+                    this.midiStatus.className = "status-indicator status-ready";
+                    this.midiStatusText.textContent = "Chargé";
+                } else {
+                    this.midiStatus.className = "status-indicator status-error";
+                    this.midiStatusText.textContent = "Erreur";
+                }
+            }
+
+            updateBpm(value) {
+                this.currentBpm = parseInt(value);
+                this.bpmValue.textContent = this.currentBpm;
+                
+                // Mettre à jour le tempo de Tone.js
+                if (Tone.Transport) {
+                    Tone.Transport.bpm.value = this.currentBpm;
+                }
+                
+                this.log(`BPM mis à jour: ${this.currentBpm}`);
+            }
+
+            updateVolume(value) {
+                const volume = parseFloat(value);
+                this.volumeValue.textContent = volume;
+                
+                if (isFmodReady && pianoEventInstance.val) {
+                    var result = {};
+                    var fmodResult = pianoEventInstance.val.setVolume(volume);
+                    this.checkResult(fmodResult);
+                    this.log(`Volume FMOD mis à jour: ${volume}`);
+                }
+            }
+
+            updateLoopMode(enabled) {
+                this.log(`Lecture en boucle ${enabled ? 'activée' : 'désactivée'}`);
+            }
+
+            restartLoop() {
+                if (this.isRestarting) {
+                    this.log("Redémarrage déjà en cours, ignoré");
+                    return;
+                }
+                
+                this.isRestarting = true;
+                this.log("🔄 Redémarrage de la boucle...");
+                this.log(`État avant redémarrage: isPlaying=${this.isPlaying}, position=${Tone.Transport.position}`);
+                
+                // Arrêter le transport
+                Tone.Transport.stop();
+                Tone.Transport.cancel();
+                
+                // Réinitialiser la position
+                Tone.Transport.position = 0;
+                this.currentTime = 0;
+                
+                // Réinitialiser le flag de première note
+                this.isFirstNote = true;
+                
+                // Réinitialiser le compteur de notes
+                this.notesPlayed = 0;
+                this.notesPlayedEl.textContent = "0";
+                
+                // Redémarrer la lecture avec un petit délai pour éviter les conflits
+                setTimeout(() => {
+                    this.log("🔄 Démarrage de la nouvelle boucle...");
+                    this.start();
+                    this.isRestarting = false;
+                    this.log("🔄 Boucle redémarrée avec succès");
+                }, 200);
+            }
+
+            async play() {
+                if (!this.midiData) {
+                    this.log("Aucun fichier MIDI chargé");
+                    return;
+                }
+
+                if (!isFmodReady) {
+                    this.log("FMOD n'est pas encore prêt");
+                    return;
+                }
+
+                // Démarrer l'événement FMOD piano
+                if (pianoEventInstance.val) {
+                    var isPlaying = {};
+                    var result = pianoEventInstance.val.getPlaybackState(isPlaying);
+                    this.checkResult(result);
+                    
+                    this.log(`État de l'événement piano: ${isPlaying.val}`);
+                    
+                    if (isPlaying.val !== FMOD.STUDIO_PLAYBACK_PLAYING) {
+                        result = pianoEventInstance.val.start();
+                        this.checkResult(result);
+                        this.fmodEventStatus.textContent = "En cours";
+                        this.log("Event FMOD 'instrument-piano' démarré");
+                        
+                        // Vérifier que l'événement a bien démarré
+                        setTimeout(() => {
+                            var checkPlaying = {};
+                            var checkResult = pianoEventInstance.val.getPlaybackState(checkPlaying);
+                            this.checkResult(checkResult);
+                            this.log(`Vérification piano après démarrage: ${checkPlaying.val}`);
+                        }, 100);
+                    } else {
+                        this.log("Event FMOD 'instrument-piano' était déjà en cours");
+                    }
+                } else {
+                    this.log("Erreur: pianoEventInstance.val n'est pas disponible");
+                }
+
+                // L'événement drums sera démarré au moment de la première note MIDI
+                this.log("Event drums sera démarré au moment de la première note MIDI");
+
+                if (this.isPaused) {
+                    this.resume();
+                } else {
+                    this.start();
+                }
+
+                this.isPlaying = true;
+                this.updateControls();
+                this.startProgressTracking();
+                this.log("Lecture démarrée");
+            }
+
+            start() {
+                // Programmer toutes les notes MIDI
+                this.scheduledNotes = [];
+                const now = Tone.now();
+                
+                this.midiData.tracks.forEach(track => {
+                    track.notes.forEach(note => {
+                        const startTime = now + note.time;
+                        const endTime = startTime + note.duration;
+                        
+                        // Programmer le début de la note
+                        Tone.Transport.schedule((time) => {
+                            this.triggerNote(note.midi, note.velocity);
+                        }, note.time);
+                        
+                        // Programmer la fin de la note (optionnel, pour le relâchement)
+                        Tone.Transport.schedule((time) => {
+                            this.releaseNote(note.midi);
+                        }, note.time + note.duration);
+                        
+                        this.scheduledNotes.push({
+                            midi: note.midi,
+                            velocity: note.velocity,
+                            time: note.time,
+                            duration: note.duration
+                        });
+                    });
+                });
+                
+                // Programmer la fin du fichier pour la boucle
+                if (this.loopEnabled.checked) {
+                    this.log(`🔄 Boucle activée - programmation de la fin à ${this.midiData.duration.toFixed(2)}s`);
+                    Tone.Transport.schedule((time) => {
+                        this.log("🔄 Fin du fichier programmée, redémarrage de la boucle...");
+                        this.restartLoop();
+                    }, this.midiData.duration);
+                } else {
+                    this.log("🔄 Boucle désactivée - pas de redémarrage programmé");
+                }
+                
+                // Démarrer le transport
+                Tone.Transport.start();
+            }
+
+            resume() {
+                Tone.Transport.start();
+                this.isPaused = false;
+            }
+
+            triggerNote(midiNote, velocity) {
+                if (!isFmodReady || !gSystem) return;
+                
+                try {
+                    // Démarrer l'événement drums à la première note
+                    if (this.isFirstNote && drumsEventInstance.val) {
+                        var isPlayingDrums = {};
+                        var resultDrums = drumsEventInstance.val.getPlaybackState(isPlayingDrums);
+                        this.checkResult(resultDrums);
+                        
+                        if (isPlayingDrums.val !== FMOD.STUDIO_PLAYBACK_PLAYING) {
+                            resultDrums = drumsEventInstance.val.start();
+                            this.checkResult(resultDrums);
+                            this.log("🥁 Event FMOD 'drums' démarré avec la première note MIDI");
+                        }
+                        this.isFirstNote = false; // Marquer que ce n'est plus la première note
+                    }
+                    
+                    // Mettre à jour le paramètre global Note (0-127)
+                    var fmodResult = gSystem.setParameterByName("Note", midiNote, false);
+                    this.checkResult(fmodResult);
+                    
+                    // Mettre à jour l'interface
+                    this.currentNote.textContent = `${midiNote} (${this.midiToNoteName(midiNote)})`;
+                    this.lastNote.textContent = `${midiNote} (${this.midiToNoteName(midiNote)})`;
+                    this.lastVelocity.textContent = velocity;
+                    this.notesPlayed++;
+                    this.notesPlayedEl.textContent = this.notesPlayed;
+                    
+                    this.log(`Note jouée: ${midiNote} (${this.midiToNoteName(midiNote)}) - Vélocité: ${velocity}`);
+                    
+                } catch (error) {
+                    this.log("Erreur lors du déclenchement de la note: " + error.message);
+                }
+            }
+
+            releaseNote(midiNote) {
+                // Pour l'instant, on ne fait rien au relâchement
+                // On pourrait ajouter une logique de relâchement si nécessaire
+            }
+
+            pause() {
+                if (!this.midiData || !this.isPlaying) return;
+                
+                Tone.Transport.pause();
+                this.isPaused = true;
+                this.isPlaying = false;
+                this.updateControls();
+                this.stopProgressTracking();
+                this.log("Lecture en pause");
+            }
+
+            stop() {
+                if (!this.midiData) return;
+
+                Tone.Transport.stop();
+                Tone.Transport.cancel();
+                Tone.Transport.position = 0;
+                this.isPlaying = false;
+                this.isPaused = false;
+                this.currentTime = 0;
+                this.notesPlayed = 0;
+                this.notesPlayedEl.textContent = "0";
+                this.currentNote.textContent = "-";
+                this.lastNote.textContent = "-";
+                this.lastVelocity.textContent = "-";
+                this.isFirstNote = true; // Réinitialiser pour la prochaine lecture
+                this.updateControls();
+                this.stopProgressTracking();
+                this.updateProgress();
+                this.log("Lecture arrêtée");
+            }
+
+            startProgressTracking() {
+                this.progressInterval = setInterval(() => {
+                    if (this.isPlaying && this.midiData) {
+                        this.currentTime = Tone.Transport.position;
+                        
+                        // Vérifier si on a atteint la fin (avec une petite marge)
+                        if (this.currentTime >= this.midiData.duration - 0.1 && !this.isRestarting) {
+                            this.log(`Fin du fichier atteinte: ${this.currentTime.toFixed(2)}s / ${this.midiData.duration.toFixed(2)}s`);
+                            
+                            if (this.loopEnabled.checked) {
+                                this.log("Boucle activée, redémarrage...");
+                                this.restartLoop();
+                            } else {
+                                this.log("Boucle désactivée, arrêt...");
+                                this.stop();
+                            }
+                        }
+                        this.updateProgress();
+                    }
+                }, 100);
+            }
+
+            stopProgressTracking() {
+                if (this.progressInterval) {
+                    clearInterval(this.progressInterval);
+                    this.progressInterval = null;
+                }
+            }
+
+            updateProgress() {
+                if (!this.midiData) return;
+
+                this.totalTime = this.midiData.duration;
+                const progress = this.totalTime > 0 ? (this.currentTime / this.totalTime) * 100 : 0;
+                
+                this.progressFill.style.width = `${progress}%`;
+                this.currentTimeEl.textContent = this.formatTime(this.currentTime);
+                this.totalTimeEl.textContent = this.formatTime(this.totalTime);
+            }
+
+            updateControls() {
+                this.playBtn.disabled = this.isPlaying;
+                this.pauseBtn.disabled = !this.isPlaying;
+                this.stopBtn.disabled = !this.midiData;
+            }
+
+            enableControls() {
+                this.playBtn.disabled = false;
+                this.pauseBtn.disabled = true;
+                this.stopBtn.disabled = false;
+            }
+
+            midiToNoteName(midi) {
+                const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+                const octave = Math.floor(midi / 12) - 1;
+                const note = notes[midi % 12];
+                return `${note}${octave}`;
+            }
+
+            formatTime(seconds) {
+                const mins = Math.floor(seconds / 60);
+                const secs = Math.floor(seconds % 60);
+                return `${mins}:${secs.toString().padStart(2, '0')}`;
+            }
+
+            formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+
+            log(message) {
+                const timestamp = new Date().toLocaleTimeString();
+                const logEntry = document.createElement('p');
+                logEntry.textContent = `[${timestamp}] ${message}`;
+                this.console.appendChild(logEntry);
+                this.console.scrollTop = this.console.scrollHeight;
+            }
+        }
+
+        // Initialiser l'application quand la page est chargée
+        document.addEventListener('DOMContentLoaded', () => {
+            // Vérifier que toutes les librairies sont chargées
+            if (typeof Tone === 'undefined') {
+                console.error('Tone.js n\'est pas chargé');
+                return;
+            }
+            if (typeof Midi === 'undefined') {
+                console.error('@tonejs/midi n\'est pas chargé');
+                return;
+            }
+            
+            new MidiToFmodPlayer();
+        });
+    </script>
+</body>
+</html>

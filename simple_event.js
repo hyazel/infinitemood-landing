@@ -1,323 +1,264 @@
 /*==============================================================================
-Simple Event Example
+Infinite Mood - FMOD Integration
+Based on Simple Event Example
 Copyright (c), Firelight Technologies Pty, Ltd 2012-2025.
-
-This example demonstrates the various ways of playing an event.
-
-#### Explosion Event ####
-This event is played as a one-shot and released immediately after it has been
-created.
-
-#### Looping Ambience Event ####
-A single instance is started or stopped based on user input.
-
-#### Cancel Event ####
-This instance is started and if already playing, restarted.
-
-For information on using FMOD example code in your own programs, visit
-https://www.fmod.com/legal
 ==============================================================================*/
 
 //==============================================================================
-// Prerequisite code needed to set up FMOD object.  See documentation.
+// Prerequisite code needed to set up FMOD object.
 //==============================================================================
 
-var FMOD = {};                          // FMOD global object which must be declared to enable 'main' and 'preRun' and then call the constructor function.
-FMOD['preRun'] = prerun;                // Will be called before FMOD runs, but after the Emscripten runtime has initialized
-FMOD['onRuntimeInitialized'] = main;    // Called when the Emscripten runtime has initialized
-FMOD['INITIAL_MEMORY'] = 64*1024*1024;  // FMOD Heap defaults to 16mb which is enough for this demo, but set it differently here for demonstration (64mb)
-FMODModule(FMOD);                       // Calling the constructor function with our object
+var FMOD = {};
+FMOD['preRun'] = prerun;
+FMOD['onRuntimeInitialized'] = main;
+FMOD['INITIAL_MEMORY'] = 64 * 1024 * 1024;
+FMODModule(FMOD);
 
 //==============================================================================
-// Example code
+// Application State
 //==============================================================================
 
-var gSystem;                            // Global 'System' object which has the Studio API functions.
-var gSystemCore;                        // Global 'SystemCore' object which has the Core API functions.
-var explosionDescription = {};          // Global Event Description for the explosion event.  This event is played as a one-shot and released immediately after it has been created.
-var loopingAmbienceInstance = {};       // Global Event Instance for the looping ambience event.  A single instance is started or stopped based on user input.
-var cancelInstance = {};                // Global Event Instance for the cancel event.  This instance is started and if already playing, restarted.
+var gSystem;
+var gSystemCore;
 
-// Simple error checking function for all FMOD return values.
-function CHECK_RESULT(result)
-{
-    if (result != FMOD.OK)
-    {
+// Events
+var lofiEvent = { path: "event:/Lofi/Lofi-track1", instance: {}, description: {} };
+var meteoEvent = { path: "event:/Meteo/Meteo", instance: {}, description: {} };
+
+// Snapshots (Storage)
+var activeSnapshots = {};
+
+// Snapshots (Storage)
+var activeSnapshots = {};
+
+// Helper to check results
+function CHECK_RESULT(result) {
+    if (result != FMOD.OK) {
         var msg = "Error!!! '" + FMOD.ErrorString(result) + "'";
-
-        alert(msg);
-
-        throw msg;
+        console.error(msg);
+        // alert(msg); // Alert disabled for better UX
     }
 }
 
-// Will be called before FMOD runs, but after the Emscripten runtime has initialized
-// Call FMOD file preloading functions here to mount local files.  Otherwise load custom data from memory or use own file system.
-function prerun()
-{
-    var fileUrl = "public/js/";
-    var fileName;
-    var folderName = "/";
-    var canRead = true;
-    var canWrite = false;
-
-    fileName = [
+// Pre-load files
+function prerun() {
+    var fileUrl = "public/js/Desktop/"; // Adjusted path for InfiniteMood
+    var fileName = [
         "Master.bank",
         "Master.strings.bank"
     ];
+    var folderName = "/";
 
-    for (var count = 0; count < fileName.length; count++)
-    {
-        FMOD.FS_createPreloadedFile(folderName, fileName[count], fileUrl + fileName[count], canRead, canWrite);
+    for (var count = 0; count < fileName.length; count++) {
+        FMOD.FS_createPreloadedFile(folderName, fileName[count], fileUrl + fileName[count], true, false);
     }
 }
 
-// Called when the Emscripten runtime has initialized
-function main()
-{
-    // A temporary empty object to hold our system
+// Main Initialization
+function main() {
     var outval = {};
     var result;
 
-    console.log("Creating FMOD System object\n");
-
-    // Create the system and check the result
+    console.log("Creating FMOD System object");
     result = FMOD.Studio_System_Create(outval);
     CHECK_RESULT(result);
 
-    console.log("grabbing system object from temporary and storing it\n");
-
-    // Take out our System object
     gSystem = outval.val;
-
     result = gSystem.getCoreSystem(outval);
     CHECK_RESULT(result);
-
     gSystemCore = outval.val;
 
-    // Optional.  Setting DSP Buffer size can affect latency and stability.
-    // Processing is currently done in the main thread so anything lower than 2048 samples can cause stuttering on some devices.
-    console.log("set DSP Buffer size.\n");
+    // Optional: DSP Buffer
+    console.log("set DSP Buffer size");
     result = gSystemCore.setDSPBufferSize(2048, 2);
     CHECK_RESULT(result);
 
-    // Optional.  Set sample rate of mixer to be the same as the OS output rate.
-    // This can save CPU time and latency by avoiding the automatic insertion of a resampler at the output stage.
-    console.log("Set mixer sample rate");
-    result = gSystemCore.getDriverInfo(0, null, null, outval, null, null);
-    CHECK_RESULT(result);
-    result = gSystemCore.setSoftwareFormat(outval.val, FMOD.SPEAKERMODE_DEFAULT, 0)
-    CHECK_RESULT(result);
-
-    console.log("initialize FMOD\n");
-
-    // 1024 virtual channels
+    // Initialize
+    console.log("initialize FMOD");
     result = gSystem.initialize(1024, FMOD.STUDIO_INIT_NORMAL, FMOD.INIT_NORMAL, null);
     CHECK_RESULT(result);
 
-    // Starting up your typical JavaScript application loop
-    console.log("initialize Application\n");
-
+    // Start App
+    console.log("initialize Application");
     initApplication();
 
-    // Set the framerate to 50 frames per second, or 20ms.
-    console.log("Start game loop\n");
-
+    // Loop
+    console.log("Start game loop");
     window.setInterval(updateApplication, 20);
 
     return FMOD.OK;
 }
 
-// Function called when user presses HTML Play Sound button, with parameter 0, 1 or 2.
-function playEvent(soundid)
-{
-    
-    if (soundid == 1)
+// Load Banks and Events
+function initApplication() {
+    console.log("Loading events");
+
+    // Load Banks
+    var bankhandle = {};
+    CHECK_RESULT(gSystem.loadBankFile("/Master.bank", FMOD.STUDIO_LOAD_BANK_NORMAL, bankhandle));
+    CHECK_RESULT(gSystem.loadBankFile("/Master.strings.bank", FMOD.STUDIO_LOAD_BANK_NORMAL, bankhandle));
+
+    // Load Lofi Event
+    console.log("Loading Lofi: " + lofiEvent.path);
+    var result = gSystem.getEvent(lofiEvent.path, lofiEvent.description);
+    if (result === FMOD.OK) {
+        CHECK_RESULT(lofiEvent.description.val.createInstance(lofiEvent.instance));
+    } else {
+        console.warn("Failed to load Lofi: " + FMOD.ErrorString(result));
+    }
+
+    // Load Meteo Event
+    console.log("Loading Meteo: " + meteoEvent.path);
+    result = gSystem.getEvent(meteoEvent.path, meteoEvent.description);
+    if (result === FMOD.OK) {
+        CHECK_RESULT(meteoEvent.description.val.createInstance(meteoEvent.instance));
+        // Manual Volume Adjustment removed - Controlled by FMOD Mixer
+    } else {
+        console.warn("Failed to load Meteo: " + FMOD.ErrorString(result));
+    }
+}
+
+// Update Loop
+function updateApplication() {
+    var result = gSystem.update();
+    CHECK_RESULT(result);
+}
+
+//==============================================================================
+// Public Interface (called from HTML/UI)
+//==============================================================================
+
+// Play/Stop All Audio
+function playEvent(soundid) {
+    if (soundid == 1) // PLAY
     {
-        // Vérifier si l'instance joue déjà
-        var isPlaying = {};
-        CHECK_RESULT( loopingAmbienceInstance.val.getPlaybackState(isPlaying) );
-        
-        if (isPlaying.val !== FMOD.STUDIO_PLAYBACK_PLAYING) {
-            CHECK_RESULT( loopingAmbienceInstance.val.start() );
-            console.log("Démarrage de l'instance FMOD");
-        } else {
-            console.log("L'instance FMOD joue déjà");
+        console.log("Starting Audio...");
+
+        // Start Lofi
+        if (lofiEvent.instance.val) {
+            var isPlaying = {};
+            lofiEvent.instance.val.getPlaybackState(isPlaying);
+            if (isPlaying.val !== FMOD.STUDIO_PLAYBACK_PLAYING) {
+                CHECK_RESULT(lofiEvent.instance.val.start());
+            }
+        }
+
+        // Start Meteo
+        if (meteoEvent.instance.val) {
+            var isPlaying = {};
+            meteoEvent.instance.val.getPlaybackState(isPlaying);
+            if (isPlaying.val !== FMOD.STUDIO_PLAYBACK_PLAYING) {
+                CHECK_RESULT(meteoEvent.instance.val.start());
+            }
         }
     }
-    else if (soundid == 2)
+    else if (soundid == 2) // STOP
     {
-        CHECK_RESULT( loopingAmbienceInstance.val.stop(FMOD.STUDIO_STOP_IMMEDIATE) );
-        console.log("Arrêt de l'instance FMOD");
+        console.log("Stopping Audio...");
+        if (lofiEvent.instance.val) lofiEvent.instance.val.stop(FMOD.STUDIO_STOP_ALLOWFADEOUT);
+        if (meteoEvent.instance.val) meteoEvent.instance.val.stop(FMOD.STUDIO_STOP_ALLOWFADEOUT);
     }
 }
 
-// Fonction pour modifier le paramètre progression-structure
-function setProgressionStructure(value)
-{
-    if (typeof loopingAmbienceInstance !== 'undefined' && loopingAmbienceInstance.val)
-    {
-        var result = {};
-        // Modifier le paramètre même si l'instance ne joue pas encore
-        try {
-            CHECK_RESULT( loopingAmbienceInstance.val.setParameterByName("parameter:/progression-structure", value, result) );
-            console.log("Paramètre parameter:/progression-structure mis à jour:", value, "(plage 0-100)");
-        } catch (error) {
-            console.error("Erreur lors de la mise à jour du paramètre progression-structure:", error);
-        }
-    }
-    else
-    {
-        console.log("Instance FMOD non disponible pour setProgressionStructure");
+// Set Meteo Level (Global Parameter: meteo_type)
+function setMeteoLevel(level) {
+    // 0: calm, 1: light, 2: rain, 3: storm
+    console.log("Setting Meteo Global Parameter 'meteo_type' to:", level);
+
+    if (gSystem) {
+        // meteo_type is a Global Parameter
+        CHECK_RESULT(gSystem.setParameterByName("meteo_type", level, false));
+    } else {
+        console.warn("FMOD System not ready");
     }
 }
 
-// Fonction pour modifier le paramètre rain-intensity
-function setRainIntensity(value)
-{
-    if (typeof loopingAmbienceInstance !== 'undefined' && loopingAmbienceInstance.val)
-    {
-        var result = {};
-        // Modifier le paramètre même si l'instance ne joue pas encore
-        CHECK_RESULT( loopingAmbienceInstance.val.setParameterByName("parameter:/rain-intensity", value, result) );
-        console.log("Paramètre parameter:/rain-intensity mis à jour:", value, "(plage 0-1)");
-    }
-    else
-    {
-        console.log("Instance FMOD non disponible pour setRainIntensity");
-    }
-}
-
-// Fonction pour modifier le paramètre NatureBalance
-function setNatureBalance(value)
-{
-    if (typeof loopingAmbienceInstance !== 'undefined' && loopingAmbienceInstance.val)
-    {
-        var result = {};
-        // Modifier le paramètre même si l'instance ne joue pas encore
-        CHECK_RESULT( loopingAmbienceInstance.val.setParameterByName("parameter:/NatureBalance", value, result) );
-        console.log("Paramètre parameter:/NatureBalance mis à jour:", value, "(plage 0-1)");
-    }
-    else
-    {
-        console.log("Instance FMOD non disponible pour setNatureBalance");
-    }
-}
-
-// Fonction pour modifier le paramètre progression-clarity
-function setProgressionClarity(value)
-{
-    if (typeof loopingAmbienceInstance !== 'undefined' && loopingAmbienceInstance.val)
-    {
-        var result = {};
-        // Modifier le paramètre même si l'instance ne joue pas encore
-        CHECK_RESULT( loopingAmbienceInstance.val.setParameterByName("parameter:/progression-clarity", value, result) );
-        console.log("Paramètre parameter:/progression-clarity mis à jour:", value, "(plage 0-1)");
-    }
-    else
-    {
-        console.log("Instance FMOD non disponible pour setProgressionClarity");
-    }
-}
-
-// Fonction pour modifier le paramètre DayTime (Global)
-function setDayTime(dayTimeValue)
-{
-    if (typeof gSystem !== 'undefined' && gSystem)
-    {
-        // Pour un paramètre Discrete, convertir jour/nuit en valeurs numériques
+// Set Day/Night (Global Parameter: DayTime)
+function setDayTime(dayTimeValue) {
+    if (gSystem) {
         var fmodValue;
-        if (dayTimeValue === "day" || dayTimeValue === 0) {
-            fmodValue = 12; // jour = 12
-        } else if (dayTimeValue === "night" || dayTimeValue === 1) {
-            fmodValue = 20; // nuit = 20
+        if (dayTimeValue === "day" || dayTimeValue === 0) fmodValue = 12; // day
+        else if (dayTimeValue === "night" || dayTimeValue === 1) fmodValue = 20; // night
+        else return;
+
+        console.log("Setting Global DayTime to:", fmodValue);
+        CHECK_RESULT(gSystem.setParameterByName("DayTime", fmodValue, false));
+    }
+}
+
+// Set Generic Global Parameter (Continuous or Labeled)
+function setGlobalParameter(name, value) {
+    if (gSystem) {
+        console.log("Setting Global Parameter '" + name + "' to:", value);
+        CHECK_RESULT(gSystem.setParameterByName(name, value, false));
+    } else {
+        console.warn("FMOD System not ready for parameter: " + name);
+    }
+}
+
+// --- Generic Snapshot Interface ---
+
+// Activate a Snapshot by name (e.g., "snapshot:/meteo_interaction")
+function activateSnapshot(snapshotName) {
+    if (!gSystem) return;
+
+    console.log("Activating Snapshot:", snapshotName);
+
+    // If not already in our cache, create it
+    if (!activeSnapshots[snapshotName]) {
+        var desc = {};
+        var result = gSystem.getEvent(snapshotName, desc);
+        if (result === FMOD.OK) {
+            var inst = {};
+            desc.val.createInstance(inst);
+            activeSnapshots[snapshotName] = inst.val;
         } else {
-            console.log("Valeur DayTime invalide:", dayTimeValue);
+            console.warn("Snapshot not found:", snapshotName);
             return;
         }
-        
-        // Pour un paramètre Global, utiliser le système FMOD directement
-        var result = {};
-        CHECK_RESULT( gSystem.setParameterByName("DayTime", fmodValue, false) );
-        console.log("Paramètre Global DayTime mis à jour:", fmodValue, "(jour=12, nuit=20)");
     }
-    else
-    {
-        console.log("Système FMOD non disponible pour setDayTime");
+
+    // Start it
+    if (activeSnapshots[snapshotName]) {
+        activeSnapshots[snapshotName].start();
     }
 }
 
-// Helper function to load a bank by name.
-function loadBank(name)
-{
-    var bankhandle = {};
-    CHECK_RESULT( gSystem.loadBankFile("/" + name, FMOD.STUDIO_LOAD_BANK_NORMAL, bankhandle) );
+// Deactivate a Snapshot
+function deactivateSnapshot(snapshotName) {
+    if (activeSnapshots[snapshotName]) {
+        console.log("Deactivating Snapshot:", snapshotName);
+        activeSnapshots[snapshotName].stop(FMOD.STUDIO_STOP_ALLOWFADEOUT);
+    }
 }
 
-// Called from main, does some application setup.  In our case we will load some sounds.
-function initApplication()
-{
-    console.log("Loading events\n");
+// Toggle a Snapshot
+function toggleSnapshot(snapshotName) {
+    if (!gSystem) return;
 
-    loadBank("Master.bank");
-    loadBank("Master.strings.bank");
+    // Ensure it exists first to check state
+    if (!activeSnapshots[snapshotName]) {
+        activateSnapshot(snapshotName);
+        return;
+    }
 
-    // Get the Looping Ambience event
-    var loopingAmbienceDescription = {};
-    CHECK_RESULT( gSystem.getEvent("event:/Chill/Chill-Track1", loopingAmbienceDescription) );
+    var isPlaying = {};
+    activeSnapshots[snapshotName].getPlaybackState(isPlaying);
 
-    CHECK_RESULT( loopingAmbienceDescription.val.createInstance(loopingAmbienceInstance) );
-
-    // Get the 4 Second Surge event
-    var cancelDescription = {};
-    //CHECK_RESULT( gSystem.getEvent("event:/UI/Cancel", cancelDescription) );
-
-    //CHECK_RESULT( cancelDescription.val.createInstance(cancelInstance) );
-
-    // Get the Explosion event
-    //CHECK_RESULT( gSystem.getEvent("event:/Weapons/Explosion", explosionDescription) );
-
-    // Start loading explosion sample data and keep it in memory
-    //CHECK_RESULT( explosionDescription.val.loadSampleData() );
+    if (isPlaying.val === FMOD.STUDIO_PLAYBACK_PLAYING) {
+        deactivateSnapshot(snapshotName);
+    } else {
+        activateSnapshot(snapshotName);
+    }
 }
 
-// Called from main, on an interval that updates at a regular rate (like in a game loop).
-// Prints out information, about the system, and importantly calles System::udpate().
-function updateApplication()
-{
-    var result;
-    var cpu = {};
+/**
+ * Helpers for home.html (Meteo Interaction)
+ */
+function startMeteoSnapshot() {
+    activateSnapshot("snapshot:/meteo_interaction");
+}
 
-    result = gSystemCore.getCPUUsage(cpu);
-    CHECK_RESULT(result);
-
-    var channelsplaying = {};
-    result = gSystemCore.getChannelsPlaying(channelsplaying, null);
-    CHECK_RESULT(result);
-
-    /*document.querySelector("#display_out").value = "Channels Playing = " + channelsplaying.val +
-                                                   " : CPU = dsp " + cpu.dsp.toFixed(2) +
-                                                   "% stream " + cpu.stream.toFixed(2) +
-                                                   "% update " + cpu.update.toFixed(2) +
-                                                   "% total " + (cpu.dsp + cpu.stream + cpu.update).toFixed(2) +
-                                                   "%";*/
-
-    var numbuffers = {};
-    var buffersize = {};
-    result = gSystemCore.getDSPBufferSize(buffersize, numbuffers);
-    CHECK_RESULT(result);
-
-    var rate = {};
-    result = gSystemCore.getSoftwareFormat(rate, null, null);
-    CHECK_RESULT(result);
-
-    var sysrate = {};
-    result = gSystemCore.getDriverInfo(0, null, null, sysrate, null, null);
-    CHECK_RESULT(result);
-
-    var ms = numbuffers.val * buffersize.val * 1000 / rate.val;
-
-    // Update FMOD
-    result = gSystem.update();
-    CHECK_RESULT(result);
+function stopMeteoSnapshot() {
+    deactivateSnapshot("snapshot:/meteo_interaction");
 }

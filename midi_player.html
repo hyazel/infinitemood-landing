@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lecteur MIDI avec Tone.JS</title>
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tone.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+    <!-- Alternative: @tonejs/midi (plus fiable) -->
+    <script src="https://cdn.jsdelivr.net/npm/@tonejs/midi@2.0.28/build/Midi.js"></script>
+    <!-- Oswald Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Oswald', sans-serif; }
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            overflow: hidden;
+        }
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background-color: #3b82f6;
+            transition: width 0.1s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <h1 class="text-4xl font-bold text-center mb-8">Lecteur MIDI avec Tone.JS</h1>
+        
+        <!-- File Upload Section -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-2xl font-bold mb-4">Charger un fichier MIDI</h2>
+            <div class="file-input-wrapper">
+                <input type="file" id="midiFile" accept=".mid,.midi" class="hidden">
+                <label for="midiFile" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg cursor-pointer transition-colors">
+                    Choisir un fichier MIDI
+                </label>
+            </div>
+            <div id="fileInfo" class="mt-4 hidden">
+                <p class="text-sm text-gray-600">
+                    <span id="fileName"></span> 
+                    (<span id="fileSize"></span>)
+                </p>
+            </div>
+        </div>
+
+        <!-- Player Controls -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-2xl font-bold mb-4">Contrôles de lecture</h2>
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                <p class="text-blue-800 text-sm">
+                    <strong>💡 Note :</strong> Cliquez d'abord sur "Test Audio" pour activer l'audio dans votre navigateur, puis chargez un fichier MIDI.
+                </p>
+            </div>
+            <div class="flex items-center justify-center gap-4 mb-4">
+                <button id="testAudioBtn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+                    🔊 Test Audio
+                </button>
+                <button id="playBtn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg transition-colors disabled:bg-gray-400" disabled>
+                    ▶️ Lecture
+                </button>
+                <button id="pauseBtn" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 px-6 rounded-lg transition-colors disabled:bg-gray-400" disabled>
+                    ⏸️ Pause
+                </button>
+                <button id="stopBtn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-lg transition-colors disabled:bg-gray-400" disabled>
+                    ⏹️ Stop
+                </button>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="mb-4">
+                <div class="progress-bar">
+                    <div id="progressFill" class="progress-fill" style="width: 0%"></div>
+                </div>
+                <div class="flex justify-between text-sm text-gray-600 mt-2">
+                    <span id="currentTime">0:00</span>
+                    <span id="totalTime">0:00</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Synth Controls -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-2xl font-bold mb-4">Contrôles du Synthé Moog</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Oscillator -->
+                <div>
+                    <h3 class="font-bold text-lg mb-3">Oscillateur</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Type d'onde</label>
+                            <select id="oscType" class="w-full p-2 border rounded">
+                                <option value="sawtooth">Sawtooth</option>
+                                <option value="square">Square</option>
+                                <option value="triangle">Triangle</option>
+                                <option value="sine">Sine</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Filter -->
+                <div>
+                    <h3 class="font-bold text-lg mb-3">Filtre</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Fréquence: <span id="filterFreqValue">200</span> Hz</label>
+                            <input type="range" id="filterFreq" min="50" max="2000" value="200" class="w-full">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Résonance: <span id="filterQValue">2</span></label>
+                            <input type="range" id="filterQ" min="0.1" max="10" step="0.1" value="2" class="w-full">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Envelope -->
+                <div>
+                    <h3 class="font-bold text-lg mb-3">Enveloppe</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Attack: <span id="attackValue">0.1</span>s</label>
+                            <input type="range" id="attack" min="0.01" max="2" step="0.01" value="0.1" class="w-full">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Release: <span id="releaseValue">1.2</span>s</label>
+                            <input type="range" id="release" min="0.1" max="5" step="0.1" value="1.2" class="w-full">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Reverb Controls -->
+            <div class="mt-6 pt-6 border-t">
+                <h3 class="font-bold text-lg mb-3">Reverb</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Wet: <span id="reverbWetValue">30</span>%</label>
+                        <input type="range" id="reverbWet" min="0" max="100" value="30" class="w-full">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Decay: <span id="reverbDecayValue">2.5</span>s</label>
+                        <input type="range" id="reverbDecay" min="0.1" max="10" step="0.1" value="2.5" class="w-full">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">PreDelay: <span id="reverbPreDelayValue">10</span>ms</label>
+                        <input type="range" id="reverbPreDelay" min="1" max="100" value="10" class="w-full">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MIDI Information -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-2xl font-bold mb-4">Informations du fichier MIDI</h2>
+            <div id="midiInfo" class="hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <h3 class="font-bold text-lg mb-2">Métadonnées</h3>
+                        <p><strong>Format:</strong> <span id="midiFormat"></span></p>
+                        <p><strong>Ticks par beat:</strong> <span id="ticksPerBeat"></span></p>
+                        <p><strong>Tempo:</strong> <span id="tempo"></span> BPM</p>
+                        <p><strong>Durée:</strong> <span id="duration"></span></p>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg mb-2">Pistes</h3>
+                        <div id="tracksList"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Console Log -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-2xl font-bold mb-4">Console de débogage</h2>
+            <div id="console" class="bg-gray-100 p-4 rounded-lg h-32 overflow-y-auto text-sm font-mono">
+                <p class="text-gray-600">En attente d'un fichier MIDI...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class MidiPlayer {
+            constructor() {
+                this.player = null;
+                this.midiData = null;
+                this.isPlaying = false;
+                this.isPaused = false;
+                this.synth = null;
+                this.currentTime = 0;
+                this.totalTime = 0;
+                this.progressInterval = null;
+                
+                this.initializeElements();
+                this.initializeTone();
+                this.setupEventListeners();
+            }
+
+            initializeElements() {
+                this.fileInput = document.getElementById('midiFile');
+                this.fileInfo = document.getElementById('fileInfo');
+                this.fileName = document.getElementById('fileName');
+                this.fileSize = document.getElementById('fileSize');
+                this.testAudioBtn = document.getElementById('testAudioBtn');
+                this.playBtn = document.getElementById('playBtn');
+                this.pauseBtn = document.getElementById('pauseBtn');
+                this.stopBtn = document.getElementById('stopBtn');
+                this.progressFill = document.getElementById('progressFill');
+                this.currentTimeEl = document.getElementById('currentTime');
+                this.totalTimeEl = document.getElementById('totalTime');
+                this.midiInfo = document.getElementById('midiInfo');
+                this.console = document.getElementById('console');
+                
+                // Contrôles du synthé
+                this.oscType = document.getElementById('oscType');
+                this.filterFreq = document.getElementById('filterFreq');
+                this.filterQ = document.getElementById('filterQ');
+                this.attack = document.getElementById('attack');
+                this.release = document.getElementById('release');
+                this.filterFreqValue = document.getElementById('filterFreqValue');
+                this.filterQValue = document.getElementById('filterQValue');
+                this.attackValue = document.getElementById('attackValue');
+                this.releaseValue = document.getElementById('releaseValue');
+                
+                // Contrôles de réverbération
+                this.reverbWet = document.getElementById('reverbWet');
+                this.reverbDecay = document.getElementById('reverbDecay');
+                this.reverbPreDelay = document.getElementById('reverbPreDelay');
+                this.reverbWetValue = document.getElementById('reverbWetValue');
+                this.reverbDecayValue = document.getElementById('reverbDecayValue');
+                this.reverbPreDelayValue = document.getElementById('reverbPreDelayValue');
+            }
+
+            async initializeTone() {
+                try {
+                    // Créer un synthé Moog-style avec MonoSynth
+                    this.synth = new Tone.PolySynth(Tone.MonoSynth, {
+                        oscillator: {
+                            type: "sawtooth"  // Son caractéristique du Moog
+                        },
+                        envelope: {
+                            attack: 0.1,      // Attaque plus douce
+                            decay: 0.2,       // Décroissance
+                            sustain: 0.7,     // Sustain plus long
+                            release: 1.2      // Release plus long pour le legato
+                        },
+                        filter: {
+                            Q: 2,             // Résonance du filtre
+                            type: "lowpass",  // Filtre passe-bas comme le Moog
+                            rolloff: -24      // Pente du filtre
+                        },
+                        filterEnvelope: {
+                            attack: 0.1,
+                            decay: 0.2,
+                            sustain: 0.3,
+                            release: 0.8,
+                            baseFrequency: 200,  // Fréquence de base du filtre
+                            octaves: 3           // Étendue du filtre
+                        }
+                    }).toDestination();
+
+                    // Ajouter un effet de réverbération pour plus de profondeur
+                    this.reverb = new Tone.Reverb({
+                        decay: 2.5,
+                        wet: 0.3,
+                        preDelay: 0.01
+                    }).toDestination();
+
+                    // Connecter le synthé à la réverbération
+                    this.synth.connect(this.reverb);
+
+                    this.log("Synthé Moog-style initialisé avec succès");
+                    this.log("⚠️ Cliquez sur 'Test Audio' pour démarrer l'AudioContext");
+                } catch (error) {
+                    this.log("Erreur lors de l'initialisation de Tone.js: " + error.message);
+                }
+            }
+
+            async startAudioContext() {
+                try {
+                    if (Tone.context.state !== 'running') {
+                        await Tone.start();
+                        this.log("AudioContext démarré avec succès");
+                    }
+                } catch (error) {
+                    this.log("Erreur lors du démarrage de l'AudioContext: " + error.message);
+                }
+            }
+
+            async testAudio() {
+                try {
+                    await this.startAudioContext();
+                    
+                    // Jouer une note de test
+                    this.synth.triggerAttackRelease("C4", "8n");
+                    this.log("✅ Test audio réussi ! L'AudioContext fonctionne.");
+                    
+                    // Désactiver le bouton de test après utilisation
+                    this.testAudioBtn.disabled = true;
+                    this.testAudioBtn.textContent = "✅ Audio OK";
+                    this.testAudioBtn.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+                    this.testAudioBtn.classList.add('bg-green-500');
+                    
+                } catch (error) {
+                    this.log("❌ Erreur lors du test audio: " + error.message);
+                }
+            }
+
+            setupEventListeners() {
+                this.fileInput.addEventListener('change', (e) => this.handleFileSelect(e));
+                this.testAudioBtn.addEventListener('click', () => this.testAudio());
+                this.playBtn.addEventListener('click', () => this.play());
+                this.pauseBtn.addEventListener('click', () => this.pause());
+                this.stopBtn.addEventListener('click', () => this.stop());
+                
+                // Contrôles du synthé
+                this.oscType.addEventListener('change', (e) => this.updateOscillator(e.target.value));
+                this.filterFreq.addEventListener('input', (e) => this.updateFilterFreq(e.target.value));
+                this.filterQ.addEventListener('input', (e) => this.updateFilterQ(e.target.value));
+                this.attack.addEventListener('input', (e) => this.updateAttack(e.target.value));
+                this.release.addEventListener('input', (e) => this.updateRelease(e.target.value));
+                
+                // Contrôles de réverbération
+                this.reverbWet.addEventListener('input', (e) => this.updateReverbWet(e.target.value));
+                this.reverbDecay.addEventListener('input', (e) => this.updateReverbDecay(e.target.value));
+                this.reverbPreDelay.addEventListener('input', (e) => this.updateReverbPreDelay(e.target.value));
+            }
+
+            handleFileSelect(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                this.log(`Fichier sélectionné: ${file.name}`);
+                this.fileName.textContent = file.name;
+                this.fileSize.textContent = this.formatFileSize(file.size);
+                this.fileInfo.classList.remove('hidden');
+
+                const reader = new FileReader();
+                reader.onload = (e) => this.loadMidiFile(e.target.result);
+                reader.readAsArrayBuffer(file);
+            }
+
+            loadMidiFile(arrayBuffer) {
+                try {
+                    // Utiliser uniquement @tonejs/midi (plus fiable)
+                    if (typeof Midi !== 'undefined') {
+                        this.log("Utilisation de @tonejs/midi");
+                        this.loadWithToneMidi(arrayBuffer);
+                    } else {
+                        this.log("Erreur: @tonejs/midi n'est pas chargé");
+                    }
+                    
+                } catch (error) {
+                    this.log("Erreur lors du chargement du fichier MIDI: " + error.message);
+                    console.error("Détails de l'erreur:", error);
+                }
+            }
+
+            loadWithToneMidi(arrayBuffer) {
+                try {
+                    // Utiliser @tonejs/midi
+                    this.midiData = new Midi(arrayBuffer);
+                    this.log("Fichier MIDI chargé avec succès");
+                    this.displayMidiInfoTone();
+                    this.enableControls();
+                } catch (error) {
+                    this.log("Erreur avec @tonejs/midi: " + error.message);
+                    console.error("Détails de l'erreur:", error);
+                }
+            }
+
+
+            displayMidiInfoTone() {
+                if (!this.midiData) return;
+
+                const header = this.midiData.header;
+                const tracks = this.midiData.tracks;
+
+                document.getElementById('midiFormat').textContent = header.format;
+                document.getElementById('ticksPerBeat').textContent = header.ticksPerBeat;
+                document.getElementById('tempo').textContent = Math.round(header.tempos[0]?.bpm || 120);
+                document.getElementById('duration').textContent = this.formatTime(this.midiData.duration);
+
+                // Afficher les pistes
+                const tracksList = document.getElementById('tracksList');
+                tracksList.innerHTML = '';
+                tracks.forEach((track, index) => {
+                    const trackDiv = document.createElement('div');
+                    trackDiv.className = 'mb-2 p-2 bg-gray-100 rounded';
+                    trackDiv.innerHTML = `
+                        <strong>Piste ${index + 1}:</strong> 
+                        ${track.name || 'Sans nom'} 
+                        (${track.notes.length} notes)
+                    `;
+                    tracksList.appendChild(trackDiv);
+                });
+
+                this.midiInfo.classList.remove('hidden');
+            }
+
+
+
+            async play() {
+                // Démarrer l'AudioContext avant de jouer
+                await this.startAudioContext();
+                
+                if (!this.midiData) {
+                    this.log("Aucun fichier MIDI chargé");
+                    return;
+                }
+
+                if (this.isPaused) {
+                    this.resumeToneMidi();
+                } else {
+                    this.startToneMidi();
+                }
+
+                this.isPlaying = true;
+                this.updateControls();
+                this.startProgressTracking();
+                this.log("Lecture démarrée");
+            }
+
+            startToneMidi() {
+                // Utiliser Tone.Transport comme dans les exemples officiels
+                const now = Tone.now();
+                
+                this.midiData.tracks.forEach(track => {
+                    track.notes.forEach(note => {
+                        this.synth.triggerAttackRelease(
+                            note.name,           // Utiliser note.name au lieu de conversion manuelle
+                            note.duration,       // Durée de la note
+                            now + note.time,     // Temps de début
+                            note.velocity        // Vélocité (déjà normalisée)
+                        );
+                    });
+                });
+                
+                // Démarrer le transport
+                Tone.Transport.start();
+            }
+
+            resumeToneMidi() {
+                Tone.Transport.start();
+                this.isPaused = false;
+            }
+
+            pause() {
+                if (!this.midiData || !this.isPlaying) return;
+                
+                // Arrêter toutes les notes en cours
+                this.synth.releaseAll();
+                Tone.Transport.pause();
+                this.isPaused = true;
+                this.isPlaying = false;
+                this.updateControls();
+                this.stopProgressTracking();
+                this.log("Lecture en pause");
+            }
+
+            stop() {
+                if (!this.midiData) return;
+
+                this.synth.releaseAll();
+                Tone.Transport.stop();
+                Tone.Transport.cancel();
+                Tone.Transport.position = 0; // Réinitialiser la position
+                this.isPlaying = false;
+                this.isPaused = false;
+                this.currentTime = 0;
+                this.updateControls();
+                this.stopProgressTracking();
+                this.updateProgress();
+                this.log("Lecture arrêtée");
+            }
+
+            startProgressTracking() {
+                this.progressInterval = setInterval(() => {
+                    if (this.isPlaying && this.midiData) {
+                        // Utiliser la position du transport Tone.js
+                        this.currentTime = Tone.Transport.position;
+                        if (this.currentTime >= this.midiData.duration) {
+                            this.stop();
+                        }
+                        this.updateProgress();
+                    }
+                }, 100);
+            }
+
+            stopProgressTracking() {
+                if (this.progressInterval) {
+                    clearInterval(this.progressInterval);
+                    this.progressInterval = null;
+                }
+            }
+
+            updateProgress() {
+                if (!this.midiData) return;
+
+                this.totalTime = this.midiData.duration;
+                const progress = this.totalTime > 0 ? (this.currentTime / this.totalTime) * 100 : 0;
+                
+                this.progressFill.style.width = `${progress}%`;
+                this.currentTimeEl.textContent = this.formatTime(this.currentTime);
+                this.totalTimeEl.textContent = this.formatTime(this.totalTime);
+            }
+
+            updateControls() {
+                this.playBtn.disabled = this.isPlaying;
+                this.pauseBtn.disabled = !this.isPlaying;
+                this.stopBtn.disabled = !this.midiData;
+            }
+
+            enableControls() {
+                this.playBtn.disabled = false;
+                this.pauseBtn.disabled = true;
+                this.stopBtn.disabled = false;
+            }
+
+            formatTime(seconds) {
+                const mins = Math.floor(seconds / 60);
+                const secs = Math.floor(seconds % 60);
+                return `${mins}:${secs.toString().padStart(2, '0')}`;
+            }
+
+            formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+
+            // Méthodes pour contrôler le synthé en temps réel
+            updateOscillator(type) {
+                if (this.synth) {
+                    this.synth.set({ oscillator: { type: type } });
+                    this.log(`Oscillateur changé: ${type}`);
+                }
+            }
+
+            updateFilterFreq(value) {
+                if (this.synth) {
+                    this.synth.set({ filter: { frequency: parseFloat(value) } });
+                    this.filterFreqValue.textContent = value;
+                }
+            }
+
+            updateFilterQ(value) {
+                if (this.synth) {
+                    this.synth.set({ filter: { Q: parseFloat(value) } });
+                    this.filterQValue.textContent = value;
+                }
+            }
+
+            updateAttack(value) {
+                if (this.synth) {
+                    this.synth.set({ envelope: { attack: parseFloat(value) } });
+                    this.attackValue.textContent = value;
+                }
+            }
+
+            updateRelease(value) {
+                if (this.synth) {
+                    this.synth.set({ envelope: { release: parseFloat(value) } });
+                    this.releaseValue.textContent = value;
+                }
+            }
+
+            // Méthodes pour contrôler la réverbération
+            updateReverbWet(value) {
+                if (this.reverb) {
+                    this.reverb.wet.value = parseFloat(value) / 100; // Convertir en 0-1
+                    this.reverbWetValue.textContent = value;
+                    this.log(`Reverb Wet: ${value}%`);
+                }
+            }
+
+            updateReverbDecay(value) {
+                if (this.reverb) {
+                    this.reverb.decay = parseFloat(value);
+                    this.reverbDecayValue.textContent = value;
+                    this.log(`Reverb Decay: ${value}s`);
+                }
+            }
+
+            updateReverbPreDelay(value) {
+                if (this.reverb) {
+                    this.reverb.preDelay = parseFloat(value) / 1000; // Convertir en secondes
+                    this.reverbPreDelayValue.textContent = value;
+                    this.log(`Reverb PreDelay: ${value}ms`);
+                }
+            }
+
+            log(message) {
+                const timestamp = new Date().toLocaleTimeString();
+                const logEntry = document.createElement('p');
+                logEntry.textContent = `[${timestamp}] ${message}`;
+                this.console.appendChild(logEntry);
+                this.console.scrollTop = this.console.scrollHeight;
+            }
+        }
+
+        // Initialiser l'application quand la page est chargée
+        document.addEventListener('DOMContentLoaded', () => {
+            // Vérifier que toutes les librairies sont chargées
+            if (typeof Tone === 'undefined') {
+                console.error('Tone.js n\'est pas chargé');
+                return;
+            }
+            if (typeof Midi === 'undefined') {
+                console.error('@tonejs/midi n\'est pas chargé');
+                return;
+            }
+            
+            new MidiPlayer();
+        });
+    </script>
+</body>
+</html>
