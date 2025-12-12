@@ -116,6 +116,9 @@ function initApplication() {
     } else {
         console.warn("Failed to load Meteo: " + FMOD.ErrorString(result));
     }
+
+    // Check if we need to start playing immediately (if user clicked play during load)
+    ensurePlaybackState();
 }
 
 // Update Loop
@@ -128,35 +131,48 @@ function updateApplication() {
 // Public Interface (called from HTML/UI)
 //==============================================================================
 
+// Playback State Tracking
+var isPlaybackDesired = false;
+
 // Play/Stop All Audio
 function playEvent(soundid) {
-    if (soundid == 1) // PLAY
-    {
-        console.log("Starting Audio...");
+    if (soundid == 1) { // PLAY
+        console.log("Starting Audio (Request)...");
+        isPlaybackDesired = true;
+    } else if (soundid == 2) { // STOP
+        console.log("Stopping Audio (Request)...");
+        isPlaybackDesired = false;
+    }
 
+    ensurePlaybackState();
+}
+
+// Ensure FMOD matches desired state
+function ensurePlaybackState() {
+    // If events aren't loaded yet, we can't do anything. 
+    // We just wait for initApplication to call this function later.
+    if (!lofiEvent.instance.val || !meteoEvent.instance.val) return;
+
+    if (isPlaybackDesired) {
         // Start Lofi
-        if (lofiEvent.instance.val) {
-            var isPlaying = {};
-            lofiEvent.instance.val.getPlaybackState(isPlaying);
-            if (isPlaying.val !== FMOD.STUDIO_PLAYBACK_PLAYING) {
-                CHECK_RESULT(lofiEvent.instance.val.start());
-            }
+        var isPlaying = {};
+        lofiEvent.instance.val.getPlaybackState(isPlaying);
+        if (isPlaying.val !== FMOD.STUDIO_PLAYBACK_PLAYING) {
+            console.log("Starting Lofi Event...");
+            CHECK_RESULT(lofiEvent.instance.val.start());
         }
 
         // Start Meteo
-        if (meteoEvent.instance.val) {
-            var isPlaying = {};
-            meteoEvent.instance.val.getPlaybackState(isPlaying);
-            if (isPlaying.val !== FMOD.STUDIO_PLAYBACK_PLAYING) {
-                CHECK_RESULT(meteoEvent.instance.val.start());
-            }
+        meteoEvent.instance.val.getPlaybackState(isPlaying);
+        if (isPlaying.val !== FMOD.STUDIO_PLAYBACK_PLAYING) {
+            console.log("Starting Meteo Event...");
+            CHECK_RESULT(meteoEvent.instance.val.start());
         }
-    }
-    else if (soundid == 2) // STOP
-    {
-        console.log("Stopping Audio...");
-        if (lofiEvent.instance.val) lofiEvent.instance.val.stop(FMOD.STUDIO_STOP_ALLOWFADEOUT);
-        if (meteoEvent.instance.val) meteoEvent.instance.val.stop(FMOD.STUDIO_STOP_ALLOWFADEOUT);
+    } else {
+        // Stop All
+        console.log("Stopping Events...");
+        lofiEvent.instance.val.stop(FMOD.STUDIO_STOP_ALLOWFADEOUT);
+        meteoEvent.instance.val.stop(FMOD.STUDIO_STOP_ALLOWFADEOUT);
     }
 }
 
