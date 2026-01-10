@@ -373,14 +373,14 @@
                 this.currentLevel = level;
 
                 // Map Level to Top Pixel Position (Height 256px)
-                // Thumb Height: 48px (Half = 24px)
+                // Thumb Height: 32px (Half = 16px)
                 // Centers: 32, 96, 160, 224 (Match dots)
-                // Top = Center - 24
+                // Top = Center - 16
                 const positions = {
-                    3: '8px',    // 32 - 24
-                    2: '72px',   // 96 - 24
-                    1: '136px',  // 160 - 24
-                    0: '200px'   // 224 - 24
+                    3: '16px',   // 32 - 16
+                    2: '80px',   // 96 - 16
+                    1: '144px',  // 160 - 16
+                    0: '208px'   // 224 - 16
                 };
 
                 const thumb = this.element.querySelector('.slider-thumb');

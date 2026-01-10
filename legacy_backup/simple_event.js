@@ -212,6 +212,27 @@ function setGlobalParameter(name, value) {
     }
 }
 
+// Set Local Event Parameter (Continuous or Labeled)
+// Target specific event instances
+function setEventParameter(trackName, paramName, value) {
+    let targetInstance = null;
+
+    if (trackName === "Lofi-Track1") {
+        targetInstance = lofiEvent.instance.val;
+    }
+    // Add other cases here if needed
+
+    if (targetInstance) {
+        // console.log(`Setting Local Parameter '${paramName}' on '${trackName}' to: ${value}`);
+        var result = targetInstance.setParameterByName(paramName, value, false);
+        if (result !== FMOD.OK) {
+            console.warn(`Failed to set local parameter '${paramName}' on '${trackName}': ${FMOD.ErrorString(result)}`);
+        }
+    } else {
+        console.warn("Event Instance not found for track: " + trackName);
+    }
+}
+
 // --- Generic Snapshot Interface ---
 
 // Activate a Snapshot by name (e.g., "snapshot:/meteo_interaction")
