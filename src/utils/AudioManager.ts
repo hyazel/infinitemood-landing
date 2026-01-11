@@ -149,6 +149,16 @@ class AudioManager {
             window.setMeteoLevel(level);
         }
     }
+    public playMusicMenuSelection() {
+        if (window.activateSnapshot) {
+            window.activateSnapshot("snapshot:/music_menu_selection");
+        }
+    }
+    public stopMusicMenuSelection() {
+        if (window.deactivateSnapshot) {
+            window.deactivateSnapshot("snapshot:/music_menu_selection");
+        }
+    }
 }
 
 export default AudioManager;

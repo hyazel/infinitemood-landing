@@ -70,15 +70,27 @@ const WhatIsIt: React.FC = () => {
     });
 
     // Audio Trigger: 
-    // 1. Stop Hero Music when we arrive here ("Choisis ton Fragmnt")
+    // 1. "Choisis ton Fragmnt" (0.05) -> Play Music Menu Snapshot (Low Pass Filter) - Don't stop music yet.
     useMotionValueEvent(scrollYProgress, "change", (latest) => {
-        if (latest > 0.05 && !hasStoppedHero.current) {
-            AudioManager.getInstance().stopHero();
-            hasStoppedHero.current = true;
+        if (latest > 0.05 && !hasTriggeredMusic.current) {
+            // Note: Re-using hasTriggeredMusic slightly differently or need new ref? 
+            // Let's check refs: hasStoppedHero, hasTriggeredMusic.
+            // We need a ref for the snapshot trigger to avoid spamming.
+        }
+    });
+
+    const hasTriggeredSnapshot = useRef(false);
+
+    useMotionValueEvent(scrollYProgress, "change", (latest) => {
+        // 1. Trigger Snapshot at start
+        if (latest > 0.05 && !hasTriggeredSnapshot.current) {
+            AudioManager.getInstance().playMusicMenuSelection();
+            hasTriggeredSnapshot.current = true;
         }
 
-        // 2. Start Lofi when "La musique se lance" appears (approx 0.55)
+        // 2. Start Lofi AND Stop Hero when "La musique se lance" appears (approx 0.55)
         if (latest > 0.55 && !hasTriggeredMusic.current) {
+            AudioManager.getInstance().stopHero(); // Stop Hero now
             AudioManager.getInstance().playLofi();
             hasTriggeredMusic.current = true;
         }
