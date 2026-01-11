@@ -44,7 +44,7 @@ function CHECK_RESULT(result) {
 
 // Pre-load files
 function prerun() {
-    var fileUrl = "public/js/Desktop/"; // Adjusted path for InfiniteMood
+    var fileUrl = "js/Desktop/"; // Adjusted path for InfiniteMood
     var fileName = [
         "Master.bank",
         "Master.strings.bank",
