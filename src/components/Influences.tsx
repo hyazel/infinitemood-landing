@@ -133,7 +133,7 @@ const Influences: React.FC = () => {
                                 ))}
                                 {" "}
                                 <span className="text-primitive-mint-core inline-block">
-                                    {"scènes imaginaires en 3D.".split(" ").map((word, i, arr) => (
+                                    {"scènes imaginaires en 3D.".split(" ").map((word, i) => (
                                         <InfluenceWordReveal
                                             key={`highlight-${i}`}
                                             word={word}
