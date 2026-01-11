@@ -62,7 +62,6 @@ const SubtitleWordReveal = ({ word, index, totalWords, scrollYProgress }: { word
 const WhatIsIt: React.FC = () => {
     const containerRef = useRef<HTMLDivElement>(null);
     const hasTriggeredMusic = useRef(false);
-    const hasStoppedHero = useRef(false);
 
     const { scrollYProgress } = useScroll({
         target: containerRef,
@@ -81,20 +80,38 @@ const WhatIsIt: React.FC = () => {
 
     const hasTriggeredSnapshot = useRef(false);
 
+    // Audio Trigger Logic
     useMotionValueEvent(scrollYProgress, "change", (latest) => {
-        // 1. Trigger Snapshot at start
-        if (latest > 0.05 && !hasTriggeredSnapshot.current) {
+        // --- SNAPSHOT LOGIC (Zone: 0.05 to 0.3) ---
+        // Active only while "Choisis ton Fragmnt" is visible
+        const inSnapshotZone = latest > 0.05 && latest < 0.3;
+
+        // Enter Zone: Activate
+        if (inSnapshotZone && !hasTriggeredSnapshot.current) {
             AudioManager.getInstance().playMusicMenuSelection();
             hasTriggeredSnapshot.current = true;
         }
+        // Exit Zone: Deactivate (Top or Bottom exit)
+        else if (!inSnapshotZone && hasTriggeredSnapshot.current) {
+            AudioManager.getInstance().stopMusicMenuSelection();
+            hasTriggeredSnapshot.current = false;
+        }
 
-        // 2. Start Lofi AND Stop Hero when "La musique se lance" appears (approx 0.55)
+        // --- TRACK LOGIC ---
+        // Start Lofi AND Stop Hero when "La musique se lance" appears (approx 0.55)
         if (latest > 0.55 && !hasTriggeredMusic.current) {
-            AudioManager.getInstance().stopHero(); // Stop Hero now
+            AudioManager.getInstance().stopHero();
             AudioManager.getInstance().playLofi();
             hasTriggeredMusic.current = true;
         }
     });
+
+    // Cleanup: Ensure snapshot is deactivated if component unmounts
+    useEffect(() => {
+        return () => {
+            AudioManager.getInstance().stopMusicMenuSelection();
+        };
+    }, []);
 
     // --- TIMELINE: LOCKED STATES ---
     // 0.00 - 0.20: State 0 (Grid Arrives & Stabilizes).
