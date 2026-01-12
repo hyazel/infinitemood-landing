@@ -98,7 +98,7 @@ function initApplication() {
 
     // Load Banks
     var bankhandle = {};
-    CHECK_RESULT(gSystem.loadBankFile("/Master.bank", FMOD.STUDIO_LOAD_BANK_NORMAL, bankhandle));
+    //CHECK_RESULT(gSystem.loadBankFile("/Master.bank", FMOD.STUDIO_LOAD_BANK_NORMAL, bankhandle));
     CHECK_RESULT(gSystem.loadBankFile("/Master.strings.bank", FMOD.STUDIO_LOAD_BANK_NORMAL, bankhandle));
     CHECK_RESULT(gSystem.loadBankFile("/Website.bank", FMOD.STUDIO_LOAD_BANK_NORMAL, bankhandle));
 
@@ -141,6 +141,9 @@ function initApplication() {
 
     // Check if we need to start playing immediately (if user clicked play during load)
     ensurePlaybackState();
+
+    // Signal ready
+    window.dispatchEvent(new Event('fmod-ready'));
 }
 
 // Update Loop
