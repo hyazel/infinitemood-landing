@@ -1,50 +1,85 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 
 const Manifesto: React.FC = () => {
-    return (
-        <section
-            id="manifesto"
-            className="w-full min-h-[60vh] flex flex-col items-center justify-center bg-background-primary px-6 py-24 md:py-32"
-        >
-            <motion.div
-                className="max-w-4xl text-center space-y-12"
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: "-20%" }}
-                variants={{
-                    hidden: { opacity: 0, y: 30 },
-                    visible: {
-                        opacity: 1,
-                        y: 0,
-                        transition: {
-                            duration: 1.0,
-                            ease: "easeOut",
-                            staggerChildren: 0.3
-                        }
-                    }
-                }}
-            >
-                <motion.p
-                    className="text-2xl md:text-4xl font-display font-light text-text-primary leading-relaxed"
-                    variants={{
-                        hidden: { opacity: 0, filter: 'blur(10px)' },
-                        visible: { opacity: 1, filter: 'blur(0px)', transition: { duration: 1.2 } }
-                    }}
-                >
-                    Fragmnt est une app de musiques d’ambiances composées par des musiciens.
-                </motion.p>
+    const targetRef = useRef<HTMLDivElement>(null);
+    const { scrollYProgress } = useScroll({
+        target: targetRef,
+        offset: ["start start", "end end"]
+    });
 
-                <motion.p
-                    className="text-2xl md:text-3xl font-display font-medium text-text-secondary tracking-wide"
-                    variants={{
-                        hidden: { opacity: 0, filter: 'blur(10px)' },
-                        visible: { opacity: 1, filter: 'blur(0px)', transition: { duration: 1.2 } }
-                    }}
+    // --- SEQUENCE DEFINITIONS ---
+    // Total Scroll Height: 300vh or 400vh
+    // Segments:
+    // 0.0 - 0.2: Intro ("Fragmnt est...")
+    // 0.25 - 0.4: "Sans playlists."
+    // 0.45 - 0.6: "Sans streaming."
+    // 0.65 - 0.8: "Sans IA."
+    // 0.85 - 1.0: Hold / Fade out for next section
+
+    // Text 1: Intro
+    const text1Opacity = useTransform(scrollYProgress, [0.05, 0.15, 0.2, 0.25], [0, 1, 1, 0]);
+    const text1Y = useTransform(scrollYProgress, [0.05, 0.25], [20, -20]);
+
+    // Text 2: Sans playlists
+    const text2Opacity = useTransform(scrollYProgress, [0.25, 0.35, 0.4, 0.45], [0, 1, 1, 0]);
+    const text2Scale = useTransform(scrollYProgress, [0.25, 0.45], [0.9, 1.1]);
+
+    // Text 3: Sans streaming
+    const text3Opacity = useTransform(scrollYProgress, [0.45, 0.55, 0.6, 0.65], [0, 1, 1, 0]);
+    const text3Scale = useTransform(scrollYProgress, [0.45, 0.65], [0.9, 1.1]);
+
+    // Text 4: Sans IA
+    // Stays visible longer or fades out right before the white section overlaps
+    const text4Opacity = useTransform(scrollYProgress, [0.65, 0.75, 0.9, 0.95], [0, 1, 1, 0]);
+    const text4Scale = useTransform(scrollYProgress, [0.65, 0.95], [0.9, 1.2]);
+    const text4Color = useTransform(scrollYProgress, [0.75, 0.95], ["#F4EFE6", "#E35AB8"]); // Fade to accent?
+
+    return (
+        <section ref={targetRef} className="relative h-[350vh] bg-background-primary z-20">
+            <div className="sticky top-0 h-screen flex items-center justify-center overflow-hidden px-6">
+
+                {/* Text 1 */}
+                <motion.div
+                    style={{ opacity: text1Opacity, y: text1Y }}
+                    className="absolute text-center max-w-4xl"
                 >
-                    Sans playlists. Sans streaming. Sans IA.
-                </motion.p>
-            </motion.div>
+                    <p className="text-3xl md:text-5xl font-display font-light text-text-primary leading-tight">
+                        Fragmnt est une app de musiques d’ambiances composées par des musiciens.
+                    </p>
+                </motion.div>
+
+                {/* Text 2 */}
+                <motion.div
+                    style={{ opacity: text2Opacity, scale: text2Scale }}
+                    className="absolute text-center"
+                >
+                    <p className="text-4xl md:text-7xl font-display font-bold text-text-primary tracking-tight">
+                        Sans playlists.
+                    </p>
+                </motion.div>
+
+                {/* Text 3 */}
+                <motion.div
+                    style={{ opacity: text3Opacity, scale: text3Scale }}
+                    className="absolute text-center"
+                >
+                    <p className="text-4xl md:text-7xl font-display font-bold text-text-primary tracking-tight">
+                        Sans streaming.
+                    </p>
+                </motion.div>
+
+                {/* Text 4 */}
+                <motion.div
+                    style={{ opacity: text4Opacity, scale: text4Scale, color: text4Color }}
+                    className="absolute text-center"
+                >
+                    <p className="text-5xl md:text-9xl font-display font-bold tracking-tighter">
+                        Sans IA.
+                    </p>
+                </motion.div>
+
+            </div>
         </section>
     );
 };

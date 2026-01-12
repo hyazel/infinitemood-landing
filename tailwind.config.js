@@ -56,7 +56,8 @@ export default {
                     primary: "#F4EFE6",   // warm_ivory_50
                     secondary: "#D8D0C6", // warm_ivory_200
                     tertiary: "#B2AA9F",  // warm_ivory_400
-                    disabled: "#7C756D"   // warm_ivory_600
+                    disabled: "#7C756D",   // warm_ivory_600
+                    inverted: "#16131B"
                 },
                 accent: {
                     primary: "#E35AB8",   // orchid.core

@@ -1,9 +1,11 @@
 import Header from '../components/Header';
 import HeroAlternativeA from '../components/HeroAlternativeA';
-import WhatIsIt from '../components/WhatIsIt';
+// import WhatIsIt from '../components/WhatIsIt';
+import WhatIsItB from '../components/WhatIsItB';
 import HowItWorkInteraction from '../components/HowItWorkInteraction';
 import Influences from '../components/Influences';
 import Outro from '../components/Outro';
+import AudioControl from '../components/AudioControl';
 
 import Manifesto from '../components/Manifesto';
 import { useState } from 'react';
@@ -26,9 +28,13 @@ const Home = () => {
                         <Manifesto />
                     </div>
                     <Influences />
-                    <WhatIsIt />
-                    <HowItWorkInteraction />
+                    {/* <WhatIsIt /> */}
+                    <WhatIsItB />
+                    <div id="how-it-works">
+                        <HowItWorkInteraction />
+                    </div>
                     <Outro />
+                    <AudioControl />
                 </>
             )}
         </main>

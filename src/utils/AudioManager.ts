@@ -1,8 +1,9 @@
 // import musicSelect from '../assets/music-select.wav';
 
-// Declare global FMOD functions
+// Declare global FMOD functions and AudioEngine
 declare global {
     interface Window {
+        // Legacy shims
         playDemoNeoclassic: () => void;
         stopDemoNeoclassic: (allowFadeOut?: boolean) => void;
         setDemoNeoclassicVolume: (volume: number) => void;
@@ -14,25 +15,50 @@ declare global {
         playMeteo: () => void;
         stopMeteo: (allowFadeOut?: boolean) => void;
         setMeteoLevel: (level: number) => void;
+        loadMasterBank: () => void;
+
+        // New Robust API
+        AudioEngine: {
+            init: (system: any, core: any) => void;
+            loadBanks: () => void;
+            loadMasterBank: () => void;
+            play: (eventName: string) => void;
+            stop: (eventName: string, allowFadeOut?: boolean) => void;
+            setVolume: (eventName: string, volume: number) => void;
+
+            // Specifics
+            playDemoNeoclassic: () => void;
+            stopDemoNeoclassic: (f?: boolean) => void;
+            setDemoNeoclassicVolume: (v: number) => void;
+            playDemoLofi: () => void;
+            stopDemoLofi: (f?: boolean) => void;
+            setDemoLofiVolume: (v: number) => void;
+            playMeteo: () => void;
+            stopMeteo: (f?: boolean) => void;
+            setMeteoLevel: (level: number) => void;
+            activateSnapshot: (name: string) => void;
+            deactivateSnapshot: (name: string) => void;
+            setMute: (isMuted: boolean) => void;
+        }
     }
 }
 
 class AudioManager {
     private static instance: AudioManager;
-
-    // heroTrack removed in favor of FMOD event
-    // private selectTrack: HTMLAudioElement;
+    private isReady: boolean = false;
+    private readyListeners: (() => void)[] = [];
 
     // Max volume for background music
     private readonly MAX_VOLUME = 0.5;
     private readonly FADE_DURATION = 2000; // ms
 
     private constructor() {
-        // this.selectTrack = new Audio(musicSelect);
-        // this.selectTrack.loop = true;
-
-        // Initial volumes
-        // this.selectTrack.volume = 0;
+        // Listen for FMOD ready event
+        window.addEventListener('fmod-ready', () => {
+            console.log("AudioManager: FMOD Ready signal received.");
+            this.isReady = true;
+            this.notifyReady();
+        });
     }
 
     public static getInstance(): AudioManager {
@@ -42,36 +68,45 @@ class AudioManager {
         return AudioManager.instance;
     }
 
-    public playHero() {
-        // Force reset state to ensure it starts even if previously faded or paused
-        // this.selectTrack.volume = 0;
-        // this.selectTrack.pause();
-        // this.selectTrack.currentTime = 0;
+    private notifyReady() {
+        this.readyListeners.forEach(cb => cb());
+        this.readyListeners = [];
+    }
 
-        // Play FMOD Event
-        if (window.playDemoNeoclassic) {
-            window.setDemoNeoclassicVolume?.(this.MAX_VOLUME); // Ensure volume is up
-            window.playDemoNeoclassic();
+    public waitForReady(): Promise<void> {
+        if (this.isReady) return Promise.resolve();
+        return new Promise((resolve) => {
+            this.readyListeners.push(resolve);
+        });
+    }
+
+    public checkReady(): boolean {
+        return this.isReady;
+    }
+
+    // Load Master Bank manually
+    public loadMasterBank() {
+        if (window.AudioEngine) {
+            window.AudioEngine.loadMasterBank();
         } else {
-            console.warn("window.playDemoNeoclassic not found. Is FMOD initialized?");
+            console.warn("AudioEngine not available");
+        }
+    }
+
+    public playHero() {
+        if (window.AudioEngine) {
+            window.AudioEngine.setDemoNeoclassicVolume(this.MAX_VOLUME);
+            window.AudioEngine.playDemoNeoclassic();
         }
     }
 
     public fadeOutHero() {
-        // FMOD handles fading usually, or we can just stop it with fadeout
-        if (window.stopDemoNeoclassic) {
-            window.stopDemoNeoclassic(true); // true = allowFadeOut
+        if (window.AudioEngine) {
+            window.AudioEngine.stopDemoNeoclassic(true);
         }
     }
 
     public transitionToSelect() {
-        // Prevent re-trigger if already playing select
-        // if (!this.selectTrack.paused && this.selectTrack.volume > 0) return;
-
-        // Start Select (silent)
-        // this.selectTrack.volume = 0;
-        // this.selectTrack.play().catch(e => console.error("Select play failed", e));
-
         const fadeSteps = 50; // number of steps
         const stepTime = this.FADE_DURATION / fadeSteps;
         const volStep = this.MAX_VOLUME / fadeSteps;
@@ -81,82 +116,70 @@ class AudioManager {
         const interval = setInterval(() => {
             currentStep++;
 
-            // Fade OUT Hero (FMOD)
-            // We can lower volume manually if we want a custom crossfade, 
-            // or just rely on stop(allowFadeOut) at the end or start.
-            // Since FMOD events have their own behavior, let's try to mimic the previous logic
-            // by lowering volume if possible, OR just stop it at the end.
-            // But `demo-neoclassic` might be a long track.
-            // Let's use setDemoNeoclassicVolume if available to crossfade.
-
-            if (window.setDemoNeoclassicVolume) {
+            if (window.AudioEngine) {
                 const newHeroVol = Math.max(0, this.MAX_VOLUME - (currentStep * volStep));
-                window.setDemoNeoclassicVolume(newHeroVol);
+                window.AudioEngine.setDemoNeoclassicVolume(newHeroVol);
             }
-
-            // Fade IN Select
-            // const newSelectVol = Math.min(this.MAX_VOLUME, currentStep * volStep);
-            // this.selectTrack.volume = newSelectVol;
 
             if (currentStep >= fadeSteps) {
                 clearInterval(interval);
-                if (window.stopDemoNeoclassic) {
-                    window.stopDemoNeoclassic(true);
+                if (window.AudioEngine) {
+                    window.AudioEngine.stopDemoNeoclassic(true);
                 }
             }
         }, stepTime);
     }
 
     public stopHero() {
-        if (window.stopDemoNeoclassic) {
-            window.stopDemoNeoclassic(true);
+        if (window.AudioEngine) {
+            window.AudioEngine.stopDemoNeoclassic(true);
         }
     }
 
     public playLofi() {
-        if (window.playDemoLofi) {
-            window.setDemoLofiVolume?.(this.MAX_VOLUME);
-            window.playDemoLofi();
+        if (window.AudioEngine) {
+            window.AudioEngine.setDemoLofiVolume(this.MAX_VOLUME);
+            window.AudioEngine.playDemoLofi();
         }
     }
 
     public activateMeteoSnapshot() {
-        if (window.activateSnapshot) {
-            window.activateSnapshot("snapshot:/meteo_interaction");
+        if (window.AudioEngine) {
+            window.AudioEngine.activateSnapshot("snapshot:/meteo_interaction");
         }
     }
 
     public deactivateMeteoSnapshot() {
-        if (window.deactivateSnapshot) {
-            window.deactivateSnapshot("snapshot:/meteo_interaction");
+        if (window.AudioEngine) {
+            window.AudioEngine.deactivateSnapshot("snapshot:/meteo_interaction");
         }
     }
 
     public playMeteo() {
-        if (window.playMeteo) {
-            window.playMeteo();
+        if (window.AudioEngine) {
+            window.AudioEngine.playMeteo();
         }
     }
 
     public stopMeteo() {
-        if (window.stopMeteo) {
-            window.stopMeteo(true);
+        if (window.AudioEngine) {
+            window.AudioEngine.stopMeteo(true);
         }
     }
 
     public setMeteoLevel(level: number) {
-        if (window.setMeteoLevel) {
-            window.setMeteoLevel(level);
+        if (window.AudioEngine) {
+            window.AudioEngine.setMeteoLevel(level);
         }
     }
     public playMusicMenuSelection() {
-        if (window.activateSnapshot) {
-            window.activateSnapshot("snapshot:/music_menu_selection");
+        if (window.AudioEngine) {
+            window.AudioEngine.activateSnapshot("snapshot:/music_menu_selection");
         }
     }
     public stopMusicMenuSelection() {
-        if (window.deactivateSnapshot) {
-            window.deactivateSnapshot("snapshot:/music_menu_selection");
+        if (window.AudioEngine) {
+            window.AudioEngine.deactivateSnapshot("snapshot:/music_menu_selection");
         }
     }
 }

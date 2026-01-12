@@ -357,7 +357,7 @@ const HowItWorkInteraction = () => {
                                         {/* Active Icon Indicator */}
                                         <div className="w-16 h-16 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center shadow-lg transition-transform hover:scale-110">
                                             <img
-                                                src={`/assets/meteo_parameter/level_${weatherStep}.png`}
+                                                src={`${import.meta.env.BASE_URL}assets/meteo_parameter/level_${weatherStep}.png`}
                                                 alt={`Weather Level ${weatherStep}`}
                                                 className="w-10 h-10 object-contain drop-shadow-md"
                                             />
@@ -381,7 +381,7 @@ const HowItWorkInteraction = () => {
                                         {/* Active Icon Indicator */}
                                         <div className="w-16 h-16 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center shadow-lg transition-transform hover:scale-110">
                                             <img
-                                                src={`/assets/nature_parameter/level_${natureStep}.png`}
+                                                src={`${import.meta.env.BASE_URL}assets/nature_parameter/level_${natureStep}.png`}
                                                 alt={`Nature Level ${natureStep}`}
                                                 className="w-10 h-10 object-contain drop-shadow-md"
                                                 onError={(e) => {

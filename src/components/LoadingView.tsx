@@ -1,18 +1,42 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import AudioManager from '../utils/AudioManager';
 
 interface LoadingViewProps {
     onComplete?: () => void;
 }
 
 const LoadingView: React.FC<LoadingViewProps> = ({ onComplete }) => {
+    const [isAudioReady, setIsAudioReady] = useState(false);
+    const [isAnimationComplete, setIsAnimationComplete] = useState(false);
+
+    // Initial check and listener for audio status
+    useEffect(() => {
+        // If ready immediately
+        if (AudioManager.getInstance().checkReady()) {
+            setIsAudioReady(true);
+        } else {
+            // Wait for it
+            AudioManager.getInstance().waitForReady().then(() => {
+                setIsAudioReady(true);
+            });
+        }
+    }, []);
+
+    // Check if both conditions are met
+    useEffect(() => {
+        if (isAudioReady && isAnimationComplete) {
+            if (onComplete) onComplete();
+        }
+    }, [isAudioReady, isAnimationComplete, onComplete]);
+
     return (
         <motion.div
             className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background-primary"
             initial={{ opacity: 1, filter: "blur(0px)" }}
             exit={{ opacity: 0, scale: 1.1, filter: "blur(20px)" }}
             transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
-            onAnimationComplete={onComplete}
+            onAnimationComplete={() => setIsAnimationComplete(true)}
         >
             <div className="flex flex-col items-center gap-8 mb-20">
                 {/* Platform Icons */}
@@ -38,6 +62,20 @@ const LoadingView: React.FC<LoadingViewProps> = ({ onComplete }) => {
                 >
                     FRAGMNT
                 </motion.h1>
+
+                {/* Optional Loading Indicator if animation done but audio not ready */}
+                <AnimatePresence>
+                    {isAnimationComplete && !isAudioReady && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="absolute -bottom-16"
+                        >
+                            <p className="text-white/50 text-sm font-light tracking-widest uppercase">Chargement...</p>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
         </motion.div>
     );
