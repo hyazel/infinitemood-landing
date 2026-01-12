@@ -1,12 +1,7 @@
 /*==============================================================================
-Infinite Mood - FMOD Integration
-Based on Simple Event Example
+Infinite Mood - FMOD Integration (Refactored)
 Copyright (c), Firelight Technologies Pty, Ltd 2012-2025.
 ==============================================================================*/
-
-//==============================================================================
-// Prerequisite code needed to set up FMOD object.
-//==============================================================================
 
 var FMOD = {};
 FMOD['preRun'] = prerun;
@@ -14,452 +9,280 @@ FMOD['onRuntimeInitialized'] = main;
 FMOD['INITIAL_MEMORY'] = 64 * 1024 * 1024;
 FMODModule(FMOD);
 
-//==============================================================================
-// Application State
-//==============================================================================
+// Audio Engine Namespace
+window.AudioEngine = {
+    system: null,
+    core: null,
+    isReady: false,
+    events: {
+        lofi: { path: "event:/Lofi/Lofi-track1", instance: null, description: null },
+        meteo: { path: "event:/Meteo/Meteo", instance: null, description: null },
+        demoNeoclassic: { path: "event:/Sound Design/demo-neoclassic", instance: null, description: null },
+        demoLofi: { path: "event:/Sound Design/demo-lofi", instance: null, description: null }
+    },
+    snapshots: {},
 
-var gSystem;
-var gSystemCore;
+    // Config
+    basePath: (function () {
+        // Detect if we are on GitHub Pages or Localhost
+        // If hostname contains 'github.io', append repo name
+        if (window.location.hostname.includes('github.io')) {
+            return "/infinitemood-landing/js/Desktop/";
+        }
+        return "/js/Desktop/";
+    })(),
 
-// Events
-var lofiEvent = { path: "event:/Lofi/Lofi-track1", instance: {}, description: {} };
-var meteoEvent = { path: "event:/Meteo/Meteo", instance: {}, description: {} };
-var demoNeoclassicEvent = { path: "event:/Sound Design/demo-neoclassic", instance: {}, description: {} };
-var demoLofiEvent = { path: "event:/Sound Design/demo-lofi", instance: {}, description: {} };
+    // --- Core Functions ---
 
-// Snapshots (Storage)
-var activeSnapshots = {};
+    init: function (system, core) {
+        this.system = system;
+        this.core = core;
+        console.log("[AudioEngine] Initialized with System and Core.");
+    },
 
-// Helper to check results
-function CHECK_RESULT(result) {
-    if (result != FMOD.OK) {
-        var msg = "Error!!! '" + FMOD.ErrorString(result) + "'";
-        console.error(msg);
-        // alert(msg); // Alert disabled for better UX
+    loadBanks: function () {
+        if (!this.system) return;
+
+        console.log("[AudioEngine] Loading Banks from:", this.basePath);
+
+        // Helper for path
+        // Note: FMOD preloaded files use virtual filesystem "/", but creating them needs real URL.
+        // But loadBankFile uses the virtual path defined in preRun? 
+        // Actually, in preRun we map Real URL -> Virtual path.
+        // loadBankFile takes the Virtual path.
+
+        var bankhandle = {};
+
+        // We load from root "/" because that's where preRun puts them in VFS
+        var stringsResult = this.system.loadBankFile("/Master.strings.bank", FMOD.STUDIO_LOAD_BANK_NORMAL, bankhandle);
+        var websiteResult = this.system.loadBankFile("/Website.bank", FMOD.STUDIO_LOAD_BANK_NORMAL, bankhandle);
+
+        if (stringsResult === FMOD.OK && websiteResult === FMOD.OK) {
+            console.log("[AudioEngine] Critical Banks Loaded.");
+            this.loadEvents();
+            this.isReady = true;
+            window.dispatchEvent(new Event('fmod-ready'));
+        } else {
+            console.error("[AudioEngine] Bank Load Failed. Strings:", stringsResult, "Website:", websiteResult);
+        }
+    },
+
+    loadEvents: function () {
+        this._loadSingleEvent(this.events.lofi);
+        this._loadSingleEvent(this.events.meteo);
+        this._loadSingleEvent(this.events.demoNeoclassic);
+        this._loadSingleEvent(this.events.demoLofi);
+    },
+
+    _loadSingleEvent: function (eventObj) {
+        if (!this.system) return;
+
+        var descOut = {};
+        var res = this.system.getEvent(eventObj.path, descOut);
+        if (res === FMOD.OK) {
+            eventObj.description = descOut.val;
+            // Create instance
+            var instOut = {};
+            res = eventObj.description.createInstance(instOut);
+            if (res === FMOD.OK) {
+                eventObj.instance = instOut.val;
+            } else {
+                console.warn("[AudioEngine] Failed to create instance for", eventObj.path, FMOD.ErrorString(res));
+            }
+        } else {
+            console.warn("[AudioEngine] Failed to get event description for", eventObj.path, FMOD.ErrorString(res));
+        }
+    },
+
+    // --- Public API ---
+
+    loadMasterBank: function () {
+        console.log("[AudioEngine] Loading Master Bank (Deferred)...");
+        if (this.system) {
+            var bankhandle = {};
+            var result = this.system.loadBankFile("/Master.bank", FMOD.STUDIO_LOAD_BANK_NORMAL, bankhandle);
+            if (result !== FMOD.OK && result !== FMOD.ERR_EVENT_ALREADY_LOADED) {
+                console.warn("[AudioEngine] Master Bank load warning: " + FMOD.ErrorString(result));
+            } else {
+                console.log("[AudioEngine] Master Bank loaded.");
+            }
+        }
+    },
+
+    // Generic Play Helper with Auto-Recovery
+    play: function (eventName) {
+        var evt = this.events[eventName];
+        if (!evt) return;
+
+        // Auto-Recovery: Recreate instance if invalid
+        if (!evt.instance || !evt.instance.isValid()) {
+            console.warn("[AudioEngine] Instance invalid for", eventName, "- recreating.");
+            this._loadSingleEvent(evt);
+        }
+
+        if (evt.instance && evt.instance.isValid()) {
+            var state = {};
+            evt.instance.getPlaybackState(state);
+            if (state.val !== FMOD.STUDIO_PLAYBACK_PLAYING) {
+                console.log("[AudioEngine] Playing", eventName);
+                evt.instance.start();
+            }
+        }
+    },
+
+    stop: function (eventName, allowFadeOut = true) {
+        var evt = this.events[eventName];
+        if (evt && evt.instance && evt.instance.isValid()) {
+            console.log("[AudioEngine] Stopping", eventName);
+            var mode = allowFadeOut ? FMOD.STUDIO_STOP_ALLOWFADEOUT : FMOD.STUDIO_STOP_IMMEDIATE;
+            evt.instance.stop(mode);
+        }
+    },
+
+    setVolume: function (eventName, volume) {
+        var evt = this.events[eventName];
+        if (evt && evt.instance && evt.instance.isValid()) {
+            evt.instance.setVolume(volume);
+        }
+    },
+
+    // Specific Actions Mapped to Old API for compatibility or cleanliness
+    playDemoLofi: function () { this.play('demoLofi'); },
+    stopDemoLofi: function (f) { this.stop('demoLofi', f); },
+    setDemoLofiVolume: function (v) { this.setVolume('demoLofi', v); },
+
+    playMeteo: function () { this.play('meteo'); },
+    stopMeteo: function (f) { this.stop('meteo', f); },
+    setMeteoLevel: function (level) {
+        // Original logic: global parameter "meteo_type"
+        if (this.system) {
+            this.system.setParameterByName("meteo_type", level, false);
+        }
+    },
+
+    playDemoNeoclassic: function () { this.play('demoNeoclassic'); },
+    stopDemoNeoclassic: function (f) { this.stop('demoNeoclassic', f); },
+    setDemoNeoclassicVolume: function (v) { this.setVolume('demoNeoclassic', v); },
+
+    // Snapshots
+    activateSnapshot: function (name) {
+        if (!this.system) return;
+
+        if (!this.snapshots[name] || !this.snapshots[name].isValid()) {
+            var desc = {};
+            var res = this.system.getEvent(name, desc);
+            if (res === FMOD.OK) {
+                var inst = {};
+                desc.val.createInstance(inst);
+                this.snapshots[name] = inst.val;
+            }
+        }
+
+        if (this.snapshots[name] && this.snapshots[name].isValid()) {
+            console.log("[AudioEngine] Snapshot Activate:", name);
+            this.snapshots[name].start();
+        }
+    },
+
+    deactivateSnapshot: function (name) {
+        if (this.snapshots[name] && this.snapshots[name].isValid()) {
+            console.log("[AudioEngine] Snapshot Deactivate:", name);
+            this.snapshots[name].stop(FMOD.STUDIO_STOP_ALLOWFADEOUT);
+        }
+    },
+
+    // Global Parameters
+    setGlobalParameter: function (name, value) {
+        if (this.system) {
+            this.system.setParameterByName(name, value, false);
+        }
+    },
+
+    // Helper for main loop
+    update: function () {
+        if (this.system) {
+            this.system.update();
+        }
     }
-}
+};
 
-// Pre-load files
+// --- FMOD Glue Code ---
+
 function prerun() {
-    var fileUrl = "js/Desktop/"; // Adjusted path for InfiniteMood
+    // Dynamic Preload Path
+    var fileUrl = window.AudioEngine.basePath;
     var fileName = [
         "Master.bank",
         "Master.strings.bank",
         "Website.bank"
     ];
-    var folderName = "/";
+    var folderName = "/"; // Virtual File System Root
+
+    console.log("[FMOD] Preloading files from:", fileUrl);
 
     for (var count = 0; count < fileName.length; count++) {
+        // (folderName, fileName, url, readable, writable)
         FMOD.FS_createPreloadedFile(folderName, fileName[count], fileUrl + fileName[count], true, false);
     }
 }
 
-// Main Initialization
 function main() {
     var outval = {};
     var result;
 
-    console.log("Creating FMOD System object");
+    console.log("[FMOD] Creating System object");
     result = FMOD.Studio_System_Create(outval);
     CHECK_RESULT(result);
 
-    gSystem = outval.val;
+    var gSystem = outval.val;
     result = gSystem.getCoreSystem(outval);
     CHECK_RESULT(result);
-    gSystemCore = outval.val;
+    var gSystemCore = outval.val;
 
     // Optional: DSP Buffer
-    console.log("set DSP Buffer size");
-    result = gSystemCore.setDSPBufferSize(2048, 2);
-    CHECK_RESULT(result);
+    gSystemCore.setDSPBufferSize(2048, 2);
 
     // Initialize
-    console.log("initialize FMOD");
+    console.log("[FMOD] Initializing");
+    // 1024 virtual channels
     result = gSystem.initialize(1024, FMOD.STUDIO_INIT_NORMAL, FMOD.INIT_NORMAL, null);
     CHECK_RESULT(result);
 
-    // Start App
-    console.log("initialize Application");
-    initApplication();
+    // Handover to AudioEngine
+    window.AudioEngine.init(gSystem, gSystemCore);
+    window.AudioEngine.loadBanks();
 
-    // Loop
-    console.log("Start game loop");
-    window.setInterval(updateApplication, 20);
+    // Start Loop
+    window.setInterval(function () {
+        window.AudioEngine.update();
+    }, 20);
 
     return FMOD.OK;
 }
 
-// Load Banks and Events
-function initApplication() {
-    console.log("Loading events");
-
-    // Load Banks
-    var bankhandle = {};
-    var stringsResult = gSystem.loadBankFile("/Master.strings.bank", FMOD.STUDIO_LOAD_BANK_NORMAL, bankhandle);
-    CHECK_RESULT(stringsResult);
-
-    var websiteResult = gSystem.loadBankFile("/Website.bank", FMOD.STUDIO_LOAD_BANK_NORMAL, bankhandle);
-    CHECK_RESULT(websiteResult);
-
-    // Only proceed if critical banks loaded
-    if (stringsResult === FMOD.OK && websiteResult === FMOD.OK) {
-        // Load Lofi Event
-        console.log("Loading Lofi: " + lofiEvent.path);
-        var result = gSystem.getEvent(lofiEvent.path, lofiEvent.description);
-        if (result === FMOD.OK) {
-            CHECK_RESULT(lofiEvent.description.val.createInstance(lofiEvent.instance));
-        } else {
-            console.warn("Failed to load Lofi: " + FMOD.ErrorString(result));
-        }
-
-        // Load Meteo Event
-        console.log("Loading Meteo: " + meteoEvent.path);
-        result = gSystem.getEvent(meteoEvent.path, meteoEvent.description);
-        if (result === FMOD.OK) {
-            CHECK_RESULT(meteoEvent.description.val.createInstance(meteoEvent.instance));
-        } else {
-            console.warn("Failed to load Meteo: " + FMOD.ErrorString(result));
-        }
-
-        // Load Demo Neoclassic Event
-        console.log("Loading Demo Neoclassic: " + demoNeoclassicEvent.path);
-        result = gSystem.getEvent(demoNeoclassicEvent.path, demoNeoclassicEvent.description);
-        if (result === FMOD.OK) {
-            CHECK_RESULT(demoNeoclassicEvent.description.val.createInstance(demoNeoclassicEvent.instance));
-        } else {
-            console.warn("Failed to load Demo Neoclassic: " + FMOD.ErrorString(result));
-        }
-
-        // Load Demo Lofi Event
-        console.log("Loading Demo Lofi: " + demoLofiEvent.path);
-        result = gSystem.getEvent(demoLofiEvent.path, demoLofiEvent.description);
-        if (result === FMOD.OK) {
-            CHECK_RESULT(demoLofiEvent.description.val.createInstance(demoLofiEvent.instance));
-        } else {
-            console.warn("Failed to load Demo Lofi: " + FMOD.ErrorString(result));
-        }
-
-        // Signal ready ONLY if banks loaded
-        console.log("FMOD Banks Loaded. Dispatching Ready.");
-        window.dispatchEvent(new Event('fmod-ready'));
-    } else {
-        console.error("Critical FMOD Banks failed to load. Strings: " + stringsResult + ", Website: " + websiteResult);
-    }
-
-    // Check playback state regardless? No, only if ready.
-    ensurePlaybackState();
-}
-
-// Update Loop
-function updateApplication() {
-    var result = gSystem.update();
-    CHECK_RESULT(result);
-}
-
-//==============================================================================
-// Public Interface (called from HTML/UI)
-//==============================================================================
-
-// Playback State Tracking
-var isPlaybackDesired = false;
-
-// Play/Stop All Audio
-function playEvent(soundid) {
-    if (soundid == 1) { // PLAY
-        console.log("Starting Audio (Request)...");
-        isPlaybackDesired = true;
-    } else if (soundid == 2) { // STOP
-        console.log("Stopping Audio (Request)...");
-        isPlaybackDesired = false;
-    }
-
-    ensurePlaybackState();
-}
-
-// Ensure FMOD matches desired state
-function ensurePlaybackState() {
-    // If events aren't loaded yet, we can't do anything. 
-    // We just wait for initApplication to call this function later.
-    if (!lofiEvent.instance.val || !meteoEvent.instance.val) return;
-
-    if (isPlaybackDesired) {
-        // Start Lofi
-        var isPlaying = {};
-        lofiEvent.instance.val.getPlaybackState(isPlaying);
-        if (isPlaying.val !== FMOD.STUDIO_PLAYBACK_PLAYING) {
-            console.log("Starting Lofi Event...");
-            CHECK_RESULT(lofiEvent.instance.val.start());
-        }
-
-        // Start Meteo
-        meteoEvent.instance.val.getPlaybackState(isPlaying);
-        if (isPlaying.val !== FMOD.STUDIO_PLAYBACK_PLAYING) {
-            console.log("Starting Meteo Event...");
-            CHECK_RESULT(meteoEvent.instance.val.start());
-        }
-    } else {
-        // Stop All
-        console.log("Stopping Events...");
-        lofiEvent.instance.val.stop(FMOD.STUDIO_STOP_ALLOWFADEOUT);
-        meteoEvent.instance.val.stop(FMOD.STUDIO_STOP_ALLOWFADEOUT);
+function CHECK_RESULT(result) {
+    if (result != FMOD.OK) {
+        console.error("[FMOD Error]", FMOD.ErrorString(result));
     }
 }
 
-// Set Meteo Level (Global Parameter: meteo_type)
-function setMeteoLevel(level) {
-    // 0: calm, 1: light, 2: rain, 3: storm
-    console.log("Setting Meteo Global Parameter 'meteo_type' to:", level);
+// Legacy Global API Shims (for existing code compatibility, but calling into Engine)
+// This ensures we don't break AudioManager.ts immediately, or we can update AudioManager.ts to use window.AudioEngine directly.
+// User requested "Quali" code, so I should update AudioManager.ts to use window.AudioEngine.
+// But keeping shims for safety during transition is smart.
+window.playDemoNeoclassic = function () { window.AudioEngine.playDemoNeoclassic(); };
+window.stopDemoNeoclassic = function (f) { window.AudioEngine.stopDemoNeoclassic(f); };
+window.setDemoNeoclassicVolume = function (v) { window.AudioEngine.setDemoNeoclassicVolume(v); };
 
-    if (gSystem) {
-        // meteo_type is a Global Parameter
-        CHECK_RESULT(gSystem.setParameterByName("meteo_type", level, false));
-    } else {
-        console.warn("FMOD System not ready");
-    }
-}
+window.playDemoLofi = function () { window.AudioEngine.playDemoLofi(); };
+window.stopDemoLofi = function (f) { window.AudioEngine.stopDemoLofi(f); };
+window.setDemoLofiVolume = function (v) { window.AudioEngine.setDemoLofiVolume(v); };
 
-// Set Day/Night (Global Parameter: DayTime)
-function setDayTime(dayTimeValue) {
-    if (gSystem) {
-        var fmodValue;
-        if (dayTimeValue === "day" || dayTimeValue === 0) fmodValue = 12; // day
-        else if (dayTimeValue === "night" || dayTimeValue === 1) fmodValue = 20; // night
-        else return;
+window.playMeteo = function () { window.AudioEngine.playMeteo(); };
+window.stopMeteo = function (f) { window.AudioEngine.stopMeteo(f); };
+window.setMeteoLevel = function (v) { window.AudioEngine.setMeteoLevel(v); };
 
-        console.log("Setting Global DayTime to:", fmodValue);
-        CHECK_RESULT(gSystem.setParameterByName("DayTime", fmodValue, false));
-    }
-}
+window.activateSnapshot = function (n) { window.AudioEngine.activateSnapshot(n); };
+window.deactivateSnapshot = function (n) { window.AudioEngine.deactivateSnapshot(n); };
 
-// Set Generic Global Parameter (Continuous or Labeled)
-function setGlobalParameter(name, value) {
-    if (gSystem) {
-        console.log("Setting Global Parameter '" + name + "' to:", value);
-        CHECK_RESULT(gSystem.setParameterByName(name, value, false));
-    } else {
-        console.warn("FMOD System not ready for parameter: " + name);
-    }
-}
-
-// Set Local Event Parameter (Continuous or Labeled)
-// Target specific event instances
-function setEventParameter(trackName, paramName, value) {
-    let targetInstance = null;
-
-    if (trackName === "Lofi-Track1") {
-        targetInstance = lofiEvent.instance.val;
-    }
-    // Add other cases here if needed
-
-    if (targetInstance) {
-        // console.log(`Setting Local Parameter '${paramName}' on '${trackName}' to: ${value}`);
-        var result = targetInstance.setParameterByName(paramName, value, false);
-        if (result !== FMOD.OK) {
-            console.warn(`Failed to set local parameter '${paramName}' on '${trackName}': ${FMOD.ErrorString(result)}`);
-        }
-    } else {
-        console.warn("Event Instance not found for track: " + trackName);
-    }
-}
-
-// --- Generic Snapshot Interface ---
-
-// Activate a Snapshot by name (e.g., "snapshot:/meteo_interaction")
-function activateSnapshot(snapshotName) {
-    if (!gSystem) return;
-
-    console.log("Activating Snapshot:", snapshotName);
-
-    // If not already in our cache, create it
-    if (!activeSnapshots[snapshotName]) {
-        var desc = {};
-        var result = gSystem.getEvent(snapshotName, desc);
-        if (result === FMOD.OK) {
-            var inst = {};
-            desc.val.createInstance(inst);
-            activeSnapshots[snapshotName] = inst.val;
-        } else {
-            console.warn("Snapshot not found:", snapshotName);
-            return;
-        }
-    }
-
-    // Start it
-    if (activeSnapshots[snapshotName]) {
-        activeSnapshots[snapshotName].start();
-    }
-}
-
-// Deactivate a Snapshot
-function deactivateSnapshot(snapshotName) {
-    if (activeSnapshots[snapshotName]) {
-        console.log("Deactivating Snapshot:", snapshotName);
-        activeSnapshots[snapshotName].stop(FMOD.STUDIO_STOP_ALLOWFADEOUT);
-    }
-}
-
-// Toggle a Snapshot
-function toggleSnapshot(snapshotName) {
-    if (!gSystem) return;
-
-    // Ensure it exists first to check state
-    if (!activeSnapshots[snapshotName]) {
-        activateSnapshot(snapshotName);
-        return;
-    }
-
-    var isPlaying = {};
-    activeSnapshots[snapshotName].getPlaybackState(isPlaying);
-
-    if (isPlaying.val === FMOD.STUDIO_PLAYBACK_PLAYING) {
-        deactivateSnapshot(snapshotName);
-    } else {
-        activateSnapshot(snapshotName);
-    }
-}
-
-/**
- * Helpers for home.html (Meteo Interaction)
- */
-function startMeteoSnapshot() {
-    activateSnapshot("snapshot:/meteo_interaction");
-}
-
-function stopMeteoSnapshot() {
-    deactivateSnapshot("snapshot:/meteo_interaction");
-}
-
-// Demo Neoclassic Controls
-function playDemoNeoclassic() {
-    // Helper to ensure instance exists
-    if (!demoNeoclassicEvent.instance.val || !demoNeoclassicEvent.instance.val.isValid()) {
-        var result = gSystem.getEvent(demoNeoclassicEvent.path, demoNeoclassicEvent.description);
-        if (result === FMOD.OK) {
-            demoNeoclassicEvent.description.val.createInstance(demoNeoclassicEvent.instance);
-        }
-    }
-
-    if (demoNeoclassicEvent.instance.val) {
-        var isPlaying = {};
-        demoNeoclassicEvent.instance.val.getPlaybackState(isPlaying);
-        if (isPlaying.val !== FMOD.STUDIO_PLAYBACK_PLAYING) {
-            console.log("Starting Demo Neoclassic...");
-            var result = demoNeoclassicEvent.instance.val.start();
-            CHECK_RESULT(result);
-        }
-    }
-}
-
-function stopDemoNeoclassic(allowFadeOut = true) {
-    if (demoNeoclassicEvent.instance.val && demoNeoclassicEvent.instance.val.isValid()) {
-        console.log("Stopping Demo Neoclassic...");
-        var stopMode = allowFadeOut ? FMOD.STUDIO_STOP_ALLOWFADEOUT : FMOD.STUDIO_STOP_IMMEDIATE;
-        CHECK_RESULT(demoNeoclassicEvent.instance.val.stop(stopMode));
-    }
-}
-
-function setDemoNeoclassicVolume(volume) {
-    if (demoNeoclassicEvent.instance.val && demoNeoclassicEvent.instance.val.isValid()) {
-        CHECK_RESULT(demoNeoclassicEvent.instance.val.setVolume(volume));
-    }
-}
-
-// Demo Lofi Controls
-function playDemoLofi() {
-    // Helper to ensure instance exists
-    if (!demoLofiEvent.instance.val || !demoLofiEvent.instance.val.isValid()) {
-        var result = gSystem.getEvent(demoLofiEvent.path, demoLofiEvent.description);
-        if (result === FMOD.OK) {
-            demoLofiEvent.description.val.createInstance(demoLofiEvent.instance);
-        }
-    }
-
-    if (demoLofiEvent.instance.val) {
-        var isPlaying = {};
-        demoLofiEvent.instance.val.getPlaybackState(isPlaying);
-        if (isPlaying.val !== FMOD.STUDIO_PLAYBACK_PLAYING) {
-            console.log("Starting Demo Lofi...");
-            var result = demoLofiEvent.instance.val.start();
-            CHECK_RESULT(result);
-        }
-    }
-}
-
-function stopDemoLofi(allowFadeOut = true) {
-    if (demoLofiEvent.instance.val && demoLofiEvent.instance.val.isValid()) {
-        console.log("Stopping Demo Lofi...");
-        var stopMode = allowFadeOut ? FMOD.STUDIO_STOP_ALLOWFADEOUT : FMOD.STUDIO_STOP_IMMEDIATE;
-        CHECK_RESULT(demoLofiEvent.instance.val.stop(stopMode));
-    }
-}
-
-function setDemoLofiVolume(volume) {
-    if (demoLofiEvent.instance.val && demoLofiEvent.instance.val.isValid()) {
-        CHECK_RESULT(demoLofiEvent.instance.val.setVolume(volume));
-    }
-}
-
-// Meteo Event Controls
-function playMeteo() {
-    // Helper to ensure instance exists
-    if (!meteoEvent.instance.val || !meteoEvent.instance.val.isValid()) {
-        var result = gSystem.getEvent(meteoEvent.path, meteoEvent.description);
-        if (result === FMOD.OK) {
-            meteoEvent.description.val.createInstance(meteoEvent.instance);
-        }
-    }
-
-    if (meteoEvent.instance.val) {
-        var isPlaying = {};
-        meteoEvent.instance.val.getPlaybackState(isPlaying);
-        if (isPlaying.val !== FMOD.STUDIO_PLAYBACK_PLAYING) {
-            console.log("Starting Meteo...");
-            var result = meteoEvent.instance.val.start();
-            CHECK_RESULT(result);
-        }
-    }
-}
-
-function stopMeteo(allowFadeOut = true) {
-    if (meteoEvent.instance.val && meteoEvent.instance.val.isValid()) {
-        console.log("Stopping Meteo...");
-        var stopMode = allowFadeOut ? FMOD.STUDIO_STOP_ALLOWFADEOUT : FMOD.STUDIO_STOP_IMMEDIATE;
-        CHECK_RESULT(meteoEvent.instance.val.stop(stopMode));
-    }
-}
-
-// NOTE: setMeteoLevel already existed as a global parameter setter earlier in the file (Line 212).
-// I will not duplicate it here. The previous code had duplications.
-// I see I defined setMeteoLevel at line 212: function setMeteoLevel(level) { ... }
-// So I don't need to redefine it unless the new logic (volume?) is different.
-// The user's code previously called it to set GLOBAL PARAMETER "meteo_type".
-// So I should KEEP the one at line 212 and NOT add a new one that sets volume.
-// Double check usage: WhatIsIt.tsx:106 -> AudioManager.setMeteoLevel.
-// If it was setting volume before, it might be different.
-// But given the name "meteo_type" in the original code, it suggests parameter.
-// I will stick to the original setMeteoLevel implementation at line 212.
-// I will REMOVE the duplicated setMeteoLevel stub I wrote in previous thoughts.
-
-// Load Master Bank (Deferred)
-function loadMasterBank() {
-    console.log("Loading Master Bank (Deferred)...");
-    if (gSystem) {
-        var bankhandle = {};
-        var result = gSystem.loadBankFile("/Master.bank", FMOD.STUDIO_LOAD_BANK_NORMAL, bankhandle);
-        if (result !== FMOD.OK && result !== FMOD.ERR_EVENT_ALREADY_LOADED) {
-            console.warn("Master Bank load warning: " + FMOD.ErrorString(result));
-        } else {
-            console.log("Master Bank loaded successfully post-deferral.");
-        }
-    }
-}
-
-// Expose Snapshot and Event Functions to Window
-window.activateSnapshot = activateSnapshot;
-window.deactivateSnapshot = deactivateSnapshot;
-window.playMeteo = playMeteo;
-window.stopMeteo = stopMeteo;
-// setMeteoLevel is already window.setMeteoLevel if it was defined globally?
-// No, it needs to be assigned.
-window.setMeteoLevel = setMeteoLevel;
-window.loadMasterBank = loadMasterBank;
+window.loadMasterBank = function () { window.AudioEngine.loadMasterBank(); };
