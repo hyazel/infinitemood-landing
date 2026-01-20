@@ -18,15 +18,20 @@ window.AudioEngine = {
         lofi: { path: "event:/Lofi/Lofi-track1", instance: null, description: null },
         meteo: { path: "event:/Meteo/Meteo", instance: null, description: null },
         demoNeoclassic: { path: "event:/Sound Design/demo-neoclassic", instance: null, description: null },
-        demoLofi: { path: "event:/Sound Design/demo-lofi", instance: null, description: null }
+        demoLofi: { path: "event:/Sound Design/demo-lofi", instance: null, description: null },
+        // New Events
+        demoHouse: { path: "event:/Sound Design/demo-house", instance: null, description: null },
+        demoAcoustic: { path: "event:/Sound Design/demo-acoustic", instance: null, description: null },
+        demoAmbient: { path: "event:/Sound Design/demo-ambient", instance: null, description: null },
+        demoPiano: { path: "event:/Sound Design/demo-piano", instance: null, description: null },
+        demoJungle: { path: "event:/Sound Design/demo-jungle", instance: null, description: null }
     },
     snapshots: {},
 
     // Config
     basePath: (function () {
-        // Detect if we are on GitHub Pages or Localhost
-        // If hostname contains 'github.io', append repo name
-        if (window.location.hostname.includes('github.io')) {
+        // Detect if we are running under the specific base path (Localhost or Prod)
+        if (window.location.pathname.includes('/infinitemood-landing/')) {
             return "/infinitemood-landing/js/Desktop/";
         }
         return "/js/Desktop/";
@@ -68,10 +73,12 @@ window.AudioEngine = {
     },
 
     loadEvents: function () {
-        this._loadSingleEvent(this.events.lofi);
-        this._loadSingleEvent(this.events.meteo);
-        this._loadSingleEvent(this.events.demoNeoclassic);
-        this._loadSingleEvent(this.events.demoLofi);
+        // Iterate over all defined events to load them
+        for (var key in this.events) {
+            if (this.events.hasOwnProperty(key)) {
+                this._loadSingleEvent(this.events[key]);
+            }
+        }
     },
 
     _loadSingleEvent: function (eventObj) {
@@ -108,6 +115,8 @@ window.AudioEngine = {
             }
         }
     },
+
+
 
     // Generic Play Helper with Auto-Recovery
     play: function (eventName) {
@@ -191,18 +200,88 @@ window.AudioEngine = {
         }
     },
 
-    // Global Parameters
-    setGlobalParameter: function (name, value) {
-        if (this.system) {
-            this.system.setParameterByName(name, value, false);
+    stopAllSnapshots: function () {
+        for (var name in this.snapshots) {
+            if (this.snapshots.hasOwnProperty(name)) {
+                this.deactivateSnapshot(name);
+            }
         }
     },
 
-    // Helper for main loop
+    // Event Parameters
+    setEventParameter: function (eventName, paramName, value) {
+        console.log("[AudioEngine] setEventParameter:", eventName, paramName, value);
+        var evt = this.events[eventName];
+        if (evt) {
+            if (evt.instance && evt.instance.isValid()) {
+                var res = evt.instance.setParameterByName(paramName, value, false);
+                console.log("[AudioEngine] setParameterByName result:", res);
+                if (res !== FMOD.OK) {
+                    console.warn("[AudioEngine] Failed to set param:", FMOD.ErrorString(res));
+                }
+            } else {
+                console.warn("[AudioEngine] Instance invalid for", eventName);
+            }
+        } else {
+            console.warn("[AudioEngine] Event not found:", eventName);
+        }
+    },
+
+    // Global Parameters
+    setGlobalParameter: function (name, value) {
+        if (this.system) {
+            console.log("[AudioEngine] setGlobalParameter:", name, value);
+            var result = this.system.setParameterByName(name, value, false);
+
+            if (result !== FMOD.OK) {
+                console.warn("[AudioEngine] Failed to set global param:", name, FMOD.ErrorString(result));
+            } else {
+                console.log("[AudioEngine] Successfully set global param:", name, value);
+            }
+        }
+    },
+
+    setMute: function (isMuted) {
+        // Toggle Master Bus Volume
+        if (this.system) {
+            var masterBus = {};
+            // Get Master Bus
+            var res = this.system.getBus("bus:/", masterBus);
+            if (res === FMOD.OK && masterBus.val) {
+                masterBus.val.setMute(isMuted);
+                console.log("[AudioEngine] Mute state:", isMuted);
+            } else {
+                console.warn("[AudioEngine] Failed to get Master Bus for mute.");
+            }
+        }
+    },
+
     update: function () {
         if (this.system) {
             this.system.update();
         }
+    },
+
+    // --- Dynamic Event Handling (New) ---
+    playDynamicEvent: function (fullPath) {
+        if (!this.system) return;
+
+        console.log("[AudioEngine] Play Dynamic:", fullPath);
+
+        // Check if we already have it tracked, effectively strictly registering it if not
+        // We use the fullPath as the key in events object to cache it.
+        // This is safe because JS allows string keys.
+        if (!this.events[fullPath]) {
+            this.events[fullPath] = { path: fullPath, instance: null, description: null };
+            this._loadSingleEvent(this.events[fullPath]);
+        }
+
+        this.play(fullPath);
+    },
+
+    stopDynamicEvent: function (fullPath, fadeOut = true) {
+        if (!this.events[fullPath]) return;
+        this.stop(fullPath, fadeOut);
     }
 };
 
