@@ -59,16 +59,17 @@ window.AudioEngine = {
         var bankhandle = {};
 
         // We load from root "/" because that's where preRun puts them in VFS
+        var masterResult = this.system.loadBankFile("/Master.bank", FMOD.STUDIO_LOAD_BANK_NORMAL, bankhandle);
         var stringsResult = this.system.loadBankFile("/Master.strings.bank", FMOD.STUDIO_LOAD_BANK_NORMAL, bankhandle);
         var websiteResult = this.system.loadBankFile("/Website.bank", FMOD.STUDIO_LOAD_BANK_NORMAL, bankhandle);
 
-        if (stringsResult === FMOD.OK && websiteResult === FMOD.OK) {
-            console.log("[AudioEngine] Critical Banks Loaded.");
+        if (masterResult === FMOD.OK && stringsResult === FMOD.OK && websiteResult === FMOD.OK) {
+            console.log("[AudioEngine] Critical Banks Loaded (Master + Strings + Website).");
             this.loadEvents();
             this.isReady = true;
             window.dispatchEvent(new Event('fmod-ready'));
         } else {
-            console.error("[AudioEngine] Bank Load Failed. Strings:", stringsResult, "Website:", websiteResult);
+            console.error("[AudioEngine] Bank Load Failed. Master:", masterResult, "Strings:", stringsResult, "Website:", websiteResult);
         }
     },
 
