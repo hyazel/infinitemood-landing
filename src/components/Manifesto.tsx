@@ -18,8 +18,9 @@ const Manifesto: React.FC = () => {
     // 0.85 - 1.0: Hold / Fade out for next section
 
     // Text 1: Intro
-    const text1Opacity = useTransform(scrollYProgress, [0.05, 0.15, 0.2, 0.25], [0, 1, 1, 0]);
-    const text1Y = useTransform(scrollYProgress, [0.05, 0.25], [20, -20]);
+    // Text 1: Intro - Visible immediately from start
+    const text1Opacity = useTransform(scrollYProgress, [0, 0.15, 0.2, 0.25], [1, 1, 1, 0]);
+    const text1Y = useTransform(scrollYProgress, [0, 0.25], [0, -20]);
 
     // Text 2: Sans playlists
     const text2Opacity = useTransform(scrollYProgress, [0.25, 0.35, 0.4, 0.45], [0, 1, 1, 0]);

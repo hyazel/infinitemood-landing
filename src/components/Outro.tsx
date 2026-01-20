@@ -11,10 +11,7 @@ const Outro = () => {
 
 
     // Main section scroll - general use
-    const { scrollYProgress: mainScrollProgress } = useScroll({
-        target: containerRef,
-        offset: ["start end", "end start"]
-    });
+
 
     // Reveal scroll - specific to the text wrapper
     const { scrollYProgress: revealProgress } = useScroll({
@@ -23,7 +20,8 @@ const Outro = () => {
     });
 
     // Parallax for footer text (driven by main section scroll)
-    const yParallax = useTransform(mainScrollProgress, [0, 1], [300, -100]);
+
+
 
     const blurVariants: Variants = {
         hidden: { opacity: 0, filter: "blur(10px)" },
@@ -40,7 +38,7 @@ const Outro = () => {
             opacity: 1,
             transition: {
                 staggerChildren: 0.3,
-                delayChildren: 0.2
+                delayChildren: 3
             }
         }
     };
@@ -56,17 +54,7 @@ const Outro = () => {
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 {/* Ambient Background Gradient */}
                 <div className="absolute bottom-0 left-0 right-0 h-[60vh] bg-gradient-to-t from-[#16131B] via-transparent to-transparent z-10" />
-                <div className="absolute bottom-[-10%] left-1/2 -translate-x-1/2 w-[90vw] h-[80vh] bg-accent-tertiary/10 blur-[180px] rounded-full pointer-events-none" />
-
-                {/* Massive Anchor Text - inside clipped container */}
-                <motion.div
-                    style={{ y: yParallax }}
-                    className="absolute bottom-[5vh] left-0 right-0 flex justify-center items-end opacity-10 pointer-events-none select-none z-0"
-                >
-                    <h1 className="text-[25vw] leading-none font-display font-bold text-transparent bg-clip-text bg-gradient-to-b from-white to-transparent tracking-tighter">
-                        FRAGMNT
-                    </h1>
-                </motion.div>
+                <div className="absolute -bottom-[20vh] left-1/2 -translate-x-1/2 w-[60vw] h-[60vw] bg-accent-primary/5 blur-[120px] rounded-full mix-blend-screen opacity-60" />
             </div>
 
 
@@ -74,11 +62,11 @@ const Outro = () => {
             <div className="flex-1 flex flex-col items-center justify-center text-center max-w-6xl w-full z-20">
 
                 {/* Sticky Text Wrapper - Tall container to drive the reveal */}
-                {/* Height: 200vh ensures enough scroll distance for the lock */}
-                <div ref={textWrapperRef} className="h-[200vh] w-full relative">
+                {/* Height: 300vh ensures enough scroll distance for the lock */}
+                <div ref={textWrapperRef} className="h-[300vh] w-full relative">
                     <div className="sticky top-[45vh] -translate-y-1/2 flex justify-center">
                         <div className="max-w-4xl px-4">
-                            <p className="text-2xl md:text-4xl font-light leading-relaxed text-center flex flex-wrap justify-center gap-x-[0.3em] gap-y-2">
+                            <p className="text-2xl md:text-4xl font-light leading-relaxed text-center flex flex-wrap justify-center gap-y-2 font-display tracking-wide">
                                 {(() => {
                                     const text = "Les ambiances sont créées par des musiciens afin de garantir une identité artistique forte, une cohérence propre à chaque scène.";
                                     const words = text.split(" ");
@@ -87,21 +75,30 @@ const Outro = () => {
 
                                     return words.map((word, wordIndex) => {
                                         const wordEl = (
-                                            <span key={wordIndex} className="whitespace-nowrap inline-flex">
-                                                {word.split("").map((char, charIndex) => {
-                                                    const currentIndex = globalCharIndex;
-                                                    globalCharIndex++;
-                                                    return (
-                                                        <ScrollRevealChar
-                                                            key={`${wordIndex}-${charIndex}`}
-                                                            char={char}
-                                                            index={currentIndex}
-                                                            total={totalChars}
-                                                            scrollYProgress={revealProgress}
-                                                        />
-                                                    );
-                                                })}
-                                            </span>
+                                            <React.Fragment key={wordIndex}>
+                                                <span className="whitespace-nowrap inline-flex">
+                                                    {word.split("").map((char, charIndex) => {
+                                                        const currentIndex = globalCharIndex;
+                                                        globalCharIndex++;
+                                                        return (
+                                                            <ScrollRevealChar
+                                                                key={`${wordIndex}-${charIndex}`}
+                                                                char={char}
+                                                                index={currentIndex}
+                                                                total={totalChars}
+                                                                scrollYProgress={revealProgress}
+                                                            />
+                                                        );
+                                                    })}
+                                                </span>
+                                                {/* Add explicit space between words */}
+                                                {wordIndex < words.length - 1 && (
+                                                    <>
+                                                        <span className="inline-block w-[0.35em]">{/* Space */}</span>
+                                                        <span className="hidden"> </span>
+                                                    </>
+                                                )}
+                                            </React.Fragment>
                                         );
                                         if (wordIndex < words.length - 1) globalCharIndex++;
                                         return wordEl;
@@ -114,7 +111,7 @@ const Outro = () => {
 
                 {/* Following Content - Appears after the 200vh wrapper ends */}
                 <motion.div
-                    className="flex flex-col items-center gap-24 py-40" // Gap handled by py and flex gap
+                    className="flex flex-col items-center gap-24 pb-40 pt-96" // Increased top padding for more space
                     variants={containerVariants}
                     initial="hidden"
                     whileInView="visible"
@@ -126,7 +123,7 @@ const Outro = () => {
                         className="text-5xl md:text-7xl font-display font-medium text-white leading-tight"
                     >
                         C’est ce soin porté à chaque ambiance <br />
-                        qui donne sa forme à <span className="text-accent-primary">FRAGMNT</span>.
+                        qui donne sa forme à <span className="text-transparent bg-clip-text bg-gradient-to-r from-primitive-saffron-blossom to-primitive-saffron-core">FRAGMNT</span>.
                     </motion.h2>
 
                     {/* Glass Interaction Box */}
@@ -193,7 +190,7 @@ const ScrollRevealChar: React.FC<ScrollRevealCharProps> = ({ char, index, total,
     // I will keep color constant "text-text-primary" (via class) and just animate opacity 0.2->1
 
     return (
-        <motion.span style={{ opacity }} className="text-text-primary">
+        <motion.span style={{ opacity }} className="text-white">
             {char === " " ? "\u00A0" : char}
         </motion.span>
     );

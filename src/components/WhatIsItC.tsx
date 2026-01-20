@@ -1,0 +1,500 @@
+import React, { useRef, useState, useEffect } from 'react';
+import { motion, useScroll, useTransform, MotionValue, AnimatePresence, useMotionValueEvent, useInView, useSpring, useMotionValue } from 'framer-motion';
+import { FRAGMENTS } from '../data/fragments';
+import AudioManager from '../utils/AudioManager';
+import MouseScrollIndicator from './MouseScrollIndicator';
+
+// Import images
+
+
+interface AmbianceCard {
+    id: string;
+    title: string;
+    image: string;
+    color: string;
+    event?: string;
+    subtitle?: string;
+    wip?: boolean;
+}
+
+// ============================================
+// COMPONENT: TITLE SECTION
+// ============================================
+// ============================================
+// COMPONENT: TITLE SECTION
+// ============================================
+const TitleSection: React.FC<{ scrollYProgress: MotionValue<number> }> = ({ scrollYProgress }) => {
+    // Opacity: Fade out 0.15-0.25 (Keep visible longer before fading)
+    const opacity = useTransform(scrollYProgress, [0, 0.15, 0.25], [1, 1, 0]);
+    // Scale: Minimal change
+    const scale = useTransform(scrollYProgress, [0, 0.2], [1, 0.9]);
+    // Y: Move UP to make room for growing capsule
+    const y = useTransform(scrollYProgress, [0, 0.2], ["-5vh", "-40vh"]);
+
+    return (
+        <motion.div
+            style={{ opacity, scale, y }}
+            className="absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-none px-4"
+        >
+            <h2 className="text-6xl md:text-9xl font-display font-bold text-white text-center mb-6 drop-shadow-2xl tracking-tighter">
+                Choisis ton <span className="text-primitive-saffron-core">Fragmnt</span>
+            </h2>
+            <p className="text-2xl md:text-4xl text-white font-medium text-center max-w-4xl drop-shadow-xl tracking-wide">
+                7 packs d’ambiances, composées avec soin
+            </p>
+        </motion.div>
+    );
+};
+
+// ============================================
+// COMPONENT: CAPSULE STACK
+// ============================================
+// ============================================
+// COMPONENT: CAPSULE STACK
+// ============================================
+const CapsuleStack: React.FC<{
+    scrollYProgress: MotionValue<number>;
+    ambiances: AmbianceCard[];
+    onPlayClick: (card: AmbianceCard) => void;
+}> = ({ scrollYProgress, ambiances, onPlayClick }) => {
+
+    // Total items
+    const count = ambiances.length;
+
+    // Timeline configuration
+    // 0.00 -> 0.20: Intro (Title moves UP, Capsule 0 moves UP from bottom half)
+    // 0.20 -> 0.95: Remaining 6 capsules enter sequentially
+
+    const introEnd = 0.20;
+    const stackStart = introEnd;
+    const stackEnd = 0.95;
+
+    const segmentDuration = (stackEnd - stackStart) / (count - 1);
+
+    return (
+        <>
+            {ambiances.map((item, index) => {
+                let opacity: MotionValue<number> | number = 1;
+                let scale: MotionValue<number> | number = 1;
+                let y: MotionValue<string> | string = "0%";
+
+                // Z-index increases with index so new ones cover old ones
+                const zIndex = 20 + index;
+
+                if (index === 0) {
+                    // First capsule: Starts lower (half visible), moves to center
+                    y = useTransform(scrollYProgress, [0, introEnd], ["80vh", "0vh"]);
+                    // Scale: Start slightly smaller to give depth
+                    scale = useTransform(scrollYProgress, [0, introEnd], [0.5, 1]);
+                    // Opacity: Fully visible from start
+                    opacity = 1;
+                } else {
+                    // Subsequent capsules: Enter from bottom
+                    const myStart = stackStart + (index - 1) * segmentDuration;
+                    const myEnd = myStart + segmentDuration;
+
+                    // Logic: Before myStart, y is 100vh (offscreen bottom). At myEnd, y is 0 (centered).
+                    y = useTransform(scrollYProgress, [myStart, myEnd], ["120vh", "0vh"]);
+
+                    // Add a little scale effect on entry for flair? 
+                    scale = useTransform(scrollYProgress, [myStart, myEnd], [0.9, 1]);
+                }
+
+                return (
+                    <motion.div
+                        key={item.id}
+                        style={{ zIndex, y, scale, opacity }}
+                        className={`absolute inset-0 flex items-center justify-center pointer-events-auto cursor-pointer group ${item.wip ? 'grayscale cursor-not-allowed' : ''}`}
+                        onClick={() => !item.wip && onPlayClick(item)}
+                        transition={{ duration: 0.3 }}
+                    >
+                        <div className="relative w-[95vw] h-[90vh] rounded-[4rem] overflow-hidden shadow-2xl bg-black transition-transform duration-500">
+                            <img src={item.image} alt={item.title} className="w-full h-full object-cover opacity-80 transition-all duration-700 ease-out group-hover:opacity-100 group-hover:scale-105" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+                            <div className="absolute bottom-0 left-0 w-full p-12 md:p-20 flex flex-col items-start">
+                                {item.wip && (
+                                    <span className="bg-white/20 backdrop-blur-md px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest text-white mb-4 border border-white/10">
+                                        Coming Soon - Work In Progress
+                                    </span>
+                                )}
+                                <span className={`text-base md:text-lg font-sans uppercase tracking-[0.2em] mb-4 ${item.color}`}>
+                                    Ambiance {index + 1}
+                                </span>
+                                <h3 className="text-5xl md:text-8xl font-display font-bold text-white leading-none mb-6">
+                                    {item.title}
+                                </h3>
+                                {!item.wip && (
+                                    <div
+                                        className="w-24 h-24 rounded-full bg-white text-black flex items-center justify-center transform transition-all duration-300 group-hover:scale-110 shadow-lg shadow-white/20"
+                                    >
+                                        <svg width="24" height="28" viewBox="0 0 14 16" fill="currentColor" className="ml-1">
+                                            <path d="M12.5 6.70096C13.1667 7.08586 13.1667 8.04811 12.5 8.43301L2.75 14.0622C2.08333 14.4471 1.25 13.966 1.25 13.1961L1.25 1.93782C1.25 1.16795 2.08333 0.686824 2.75 1.07172L12.5 6.70096Z" />
+                                        </svg>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </motion.div>
+                );
+            })}
+        </>
+    );
+};
+
+// ============================================
+// COMPONENT: MOUSE FOLLOWER
+// ============================================
+const MouseFollower: React.FC<{
+    isVisible: boolean;
+}> = ({ isVisible }) => {
+    const mouseX = useMotionValue(0);
+    const mouseY = useMotionValue(0);
+
+    // Smooth spring physics for the follower
+    const springConfig = { damping: 25, stiffness: 150 };
+    const x = useSpring(mouseX, springConfig);
+    const y = useSpring(mouseY, springConfig);
+
+    useEffect(() => {
+        const handleMouseMove = (e: MouseEvent) => {
+            mouseX.set(e.clientX);
+            mouseY.set(e.clientY);
+        };
+
+        window.addEventListener("mousemove", handleMouseMove);
+        return () => window.removeEventListener("mousemove", handleMouseMove);
+    }, [mouseX, mouseY]);
+
+    return (
+        <motion.div
+            style={{ x, y }}
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{
+                opacity: isVisible ? 1 : 0,
+                scale: isVisible ? 1 : 0.5
+            }}
+            transition={{ duration: 0.3 }}
+            className="fixed top-0 left-0 z-[60] pointer-events-none mix-blend-difference"
+        >
+            <div className="relative -translate-x-1/2 -translate-y-1/2">
+                <div className="w-10 h-10 rounded-full border border-white/50 bg-white/10 backdrop-blur-sm flex items-center justify-center">
+                    <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+                </div>
+            </div>
+        </motion.div>
+    );
+};
+
+// ============================================
+// COMPONENT: SCROLL PROMPT NOTIFICATION
+// ============================================
+const ScrollPrompt: React.FC<{ scrollYProgress: MotionValue<number> }> = ({ scrollYProgress }) => {
+    const [isVisible, setIsVisible] = useState(false);
+
+    useMotionValueEvent(scrollYProgress, "change", (latest) => {
+        if (latest > 0.98) {
+            setIsVisible(true);
+        } else {
+            setIsVisible(false);
+        }
+    });
+
+    return (
+        <AnimatePresence>
+            {isVisible && (
+                <motion.div
+                    initial={{ y: 100, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: 100, opacity: 0 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    className="fixed bottom-10 left-0 right-0 z-[100] flex justify-center pointer-events-none"
+                >
+                    <div className="bg-primitive-saffron-core text-black px-8 py-4 rounded-full shadow-2xl flex items-center gap-4 animate-bounce">
+                        <span className="font-bold text-lg">Choisissez une ambiance pour continuer</span>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 5V19M12 5L6 11M12 5L18 11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="rotate-180 origin-center" />
+                        </svg>
+                    </div>
+                </motion.div>
+            )}
+        </AnimatePresence>
+    );
+};
+
+
+// ============================================
+// VIEW: MOCKUP (Reused for consistent transition)
+// ============================================
+const MockupView: React.FC<{
+    localProgress: MotionValue<number>;
+    selectedCard: AmbianceCard;
+    windowSize: { width: number; height: number };
+}> = ({ localProgress, selectedCard, windowSize }) => {
+
+    const xShift = windowSize.width * 0.25;
+    const finalWidth = windowSize.width || 1000;
+    const finalHeight = windowSize.height || 1000;
+
+    // --- TIMELINE CONFIGURATION ---
+    // 0.00 -> 0.60: Text Sequence (Side Text)
+    // 0.60 -> 0.80: Expansion to Full Screen
+    // 0.80 -> 1.00: Full Screen "Lock" & Final Title Sequence
+
+    // Mockup Transforms
+    const mockupWidth = useTransform(localProgress, [0, 0.1, 0.60, 0.80], [300, 300, 300, finalWidth + 10]);
+    const mockupHeight = useTransform(localProgress, [0, 0.1, 0.60, 0.80], [660, 660, 660, finalHeight + 200]);
+    const mockupX = useTransform(localProgress, [0, 0.05, 0.60, 0.80], [0, xShift, xShift, 0]);
+    const mockupY = useTransform(localProgress, [0.80, 0.90], [0, 30]);
+
+    // Aesthetic morphs
+    const mockupBorderRadius = useTransform(localProgress, [0, 0.05, 0.60, 0.80], ["48px", "48px", "48px", "0px"]);
+    const mockupBezelWidth = useTransform(localProgress, [0, 0.05, 0.60, 0.80], ["12px", "12px", "12px", "0px"]);
+    const mockupShadow = useTransform(localProgress, [0, 0.05, 0.55, 0.70],
+        ["0px 20px 50px rgba(234,179,8,0.3)", "0px 20px 50px rgba(234,179,8,0.3)", "0px 20px 50px rgba(234,179,8,0.3)", "0px 0px 0px rgba(0,0,0,0)"]);
+    const notchOpacity = useTransform(localProgress, [0, 0.05, 0.60, 0.80], [1, 1, 1, 0]);
+
+    // Audio hint fades out
+    const audioHintOpacity = useTransform(localProgress, [0, 0.1, 0.60], [1, 1, 0]);
+
+    // Side Text Sequence
+    const text1Opacity = useTransform(localProgress, [0.0, 0.05, 0.15, 0.20], [0, 1, 1, 0]);
+    const text1Blur = useTransform(localProgress, [0.15, 0.20], ["blur(0px)", "blur(10px)"]);
+    const text1X = useTransform(localProgress, [0.0, 0.05], ["-10%", "0%"]);
+
+    const text2Opacity = useTransform(localProgress, [0.20, 0.25, 0.35, 0.40], [0, 1, 1, 0]);
+    const text2Blur = useTransform(localProgress, [0.20, 0.25, 0.35, 0.40], ["blur(10px)", "blur(0px)", "blur(0px)", "blur(10px)"]);
+    const text2Y = useTransform(localProgress, [0.20, 0.25], ["20px", "0px"]);
+
+    const text3Opacity = useTransform(localProgress, [0.40, 0.45, 0.55, 0.60], [0, 1, 1, 0]);
+    const text3Blur = useTransform(localProgress, [0.40, 0.45, 0.55, 0.60], ["blur(10px)", "blur(0px)", "blur(0px)", "blur(10px)"]);
+    const text3Y = useTransform(localProgress, [0.40, 0.45], ["20px", "0px"]);
+
+    // Title: "Vous restez dans votre experience"
+    const finalTitleOpacity = useTransform(localProgress, [0.82, 0.86, 0.92, 0.96], [0, 1, 1, 0]);
+    const finalTitleScale = useTransform(localProgress, [0.82, 0.96], [0.95, 1]);
+    const finalOverlayOpacity = useTransform(localProgress, [0.82, 0.86, 0.92, 0.96], [0, 1, 1, 0]);
+
+    return (
+        <motion.div
+            initial={{ opacity: 1 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4 }}
+            className="absolute inset-0"
+        >
+            {/* Mouse Scroll Indicator (Bottom Right) */}
+            <motion.div
+                style={{ opacity: useTransform(localProgress, [0, 0.2], [1, 0]) }}
+                className="absolute right-8 top-1/2 z-40"
+            >
+                <MouseScrollIndicator text="SCROLLEZ" />
+            </motion.div>
+
+            {/* Left Text Area */}
+            <div className="absolute left-0 top-0 h-full w-[55%] flex flex-col justify-center items-end z-20 pointer-events-none pl-8 pr-4 md:pr-8">
+                <motion.div style={{ opacity: text1Opacity, filter: text1Blur, x: text1X }} className="absolute text-left max-w-lg">
+                    <h2 className="text-5xl md:text-6xl font-display font-bold text-white mb-6 leading-tight">
+                        La <span className="text-primitive-saffron-core">musique</span> se lance<br />et évolue.
+                    </h2>
+                </motion.div>
+
+                <motion.div style={{ opacity: text2Opacity, filter: text2Blur, y: text2Y }} className="absolute text-left max-w-lg">
+                    <h2 className="text-5xl md:text-6xl font-display font-bold text-white mb-6 leading-tight">
+                        Aucune <span className="text-primitive-saffron-core">coupure</span>.
+                    </h2>
+                </motion.div>
+
+                <motion.div style={{ opacity: text3Opacity, filter: text3Blur, y: text3Y }} className="absolute text-left max-w-lg">
+                    <h2 className="text-5xl md:text-6xl font-display font-bold text-white mb-6 leading-tight">
+                        Aucune <span className="text-primitive-saffron-core">transition</span><br />brutale.
+                    </h2>
+                </motion.div>
+            </div>
+
+            {/* iPhone Mockup */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <motion.div style={{ x: mockupX, y: mockupY, zIndex: 35 }} className="flex items-center justify-center">
+                    <motion.div
+                        style={{
+                            width: mockupWidth,
+                            height: mockupHeight,
+                            borderRadius: mockupBorderRadius,
+                            borderWidth: mockupBezelWidth,
+                            borderColor: '#111',
+                            boxShadow: mockupShadow,
+                        }}
+                        className="relative overflow-hidden bg-black border-solid"
+                    >
+                        <motion.div style={{ opacity: notchOpacity }} className="absolute top-3 left-1/2 -translate-x-1/2 w-28 h-7 bg-black rounded-full z-50 flex items-center justify-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-[#1a1a1a]" />
+                            <div className="w-3/4 h-3/4 flex items-center justify-end pr-1">
+                                <div className="w-1 h-1 bg-green-500 rounded-full animate-pulse" />
+                            </div>
+                        </motion.div>
+
+                        <img src={selectedCard.image} alt={selectedCard.title} className="w-full h-full object-cover" />
+
+                        {/* Overlay & Title */}
+                        <motion.div style={{ opacity: finalOverlayOpacity, background: 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 40%)' }} className="absolute inset-0 z-20 pointer-events-none" />
+                        <motion.div style={{ opacity: finalTitleOpacity, scale: finalTitleScale }} className="absolute inset-0 flex items-end justify-center z-50 pointer-events-none pb-32">
+                            <h2 className="text-4xl md:text-7xl font-display font-bold text-white text-center px-4 leading-tight drop-shadow-2xl">
+                                Vous restez dans<br />votre <span className="text-primitive-saffron-core">expérience</span>
+                            </h2>
+                        </motion.div>
+
+                        {/* Audio Hint */}
+                        <motion.div style={{ opacity: audioHintOpacity }} className="absolute bottom-8 left-0 right-0 flex justify-center z-40">
+                            <div className="flex items-center gap-2 bg-black/40 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 shadow-lg">
+                                <div className="flex gap-1 h-3 items-end">
+                                    <motion.div animate={{ height: [4, 12, 4] }} transition={{ repeat: Infinity, duration: 1 }} className="w-1 bg-accent-primary rounded-full" />
+                                    <motion.div animate={{ height: [8, 16, 8] }} transition={{ repeat: Infinity, duration: 1.2, delay: 0.1 }} className="w-1 bg-accent-primary rounded-full" />
+                                    <motion.div animate={{ height: [4, 10, 4] }} transition={{ repeat: Infinity, duration: 0.9, delay: 0.2 }} className="w-1 bg-accent-primary rounded-full" />
+                                </div>
+                                <span className="text-xs uppercase tracking-widest text-white/90 font-bold">Audio Actif</span>
+                            </div>
+                        </motion.div>
+
+                    </motion.div>
+                </motion.div>
+            </div>
+        </motion.div>
+    );
+};
+
+// ============================================
+// MAIN COMPONENT
+// ============================================
+const WhatIsItC: React.FC<{
+    onSelectionChange?: (fragment: any | null) => void;
+}> = ({ onSelectionChange }) => {
+    const targetRef = useRef<HTMLDivElement>(null);
+    const [selectedCard, setSelectedCard] = useState<AmbianceCard | null>(null);
+    const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
+    const clickScrollPositionRef = useRef<number>(0);
+
+    const [fragments] = useState(FRAGMENTS);
+    const currentAudioEvent = useRef<string | null>(null);
+
+    const { scrollYProgress } = useScroll({
+        target: targetRef,
+        offset: ["start start", "end end"]
+    });
+
+    // Notify parent on selection change
+    useEffect(() => {
+        if (onSelectionChange) {
+            onSelectionChange(selectedCard);
+        }
+    }, [selectedCard, onSelectionChange]);
+
+    // Create local progress: 0 at click position, 1 at end
+    const localProgress = useTransform(scrollYProgress, (v) => {
+        if (!selectedCard) return 0;
+        const clickPos = clickScrollPositionRef.current;
+        const remaining = 1 - clickPos;
+        if (remaining <= 0) return 1;
+        return Math.max(0, Math.min(1, (v - clickPos) / remaining));
+    });
+
+    useEffect(() => {
+        const handleResize = () => {
+            setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+        };
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    // Return to capsules when scrolling back before click position
+    useMotionValueEvent(scrollYProgress, "change", (latest) => {
+        if (selectedCard !== null && latest < clickScrollPositionRef.current - 0.05) {
+            setSelectedCard(null);
+        }
+    });
+
+    const isInView = useInView(targetRef, { amount: 0.1 });
+
+    // Audio / Snapshot Management
+    useEffect(() => {
+        const audioMgr = AudioManager.getInstance();
+        if (isInView && !selectedCard) {
+            audioMgr.playMusicMenuSelection();
+        } else {
+            audioMgr.stopMusicMenuSelection();
+        }
+        return () => {
+            audioMgr.stopMusicMenuSelection();
+        }
+    }, [isInView, selectedCard]);
+
+    const handlePlayClick = (card: any) => {
+        const audioMgr = AudioManager.getInstance();
+        audioMgr.stopHero();
+        if (currentAudioEvent.current) {
+            audioMgr.stop(currentAudioEvent.current);
+        }
+        if (card.event) {
+            audioMgr.play(card.event);
+            currentAudioEvent.current = card.event;
+        }
+
+        clickScrollPositionRef.current = scrollYProgress.get();
+        setSelectedCard(card);
+    };
+
+    // Mouse Follower Visibility Logic
+    const [showMouseFollower, setShowMouseFollower] = useState(false);
+
+    useMotionValueEvent(scrollYProgress, "change", (latest) => {
+        // Show after intro (capsules visible) and hide if fully scrolled or card selected
+        if (latest > 0.15 && latest < 0.95 && !selectedCard) {
+            setShowMouseFollower(true);
+        } else {
+            setShowMouseFollower(false);
+        }
+    });
+
+    // Also hide if selectedCard becomes true (handled by check above but good to be explicit in effect if needed)
+    useEffect(() => {
+        if (selectedCard) setShowMouseFollower(false);
+    }, [selectedCard]);
+
+    return (
+        <section ref={targetRef} className="relative h-[800vh] bg-background-primary overflow-clip">
+            <div className="sticky top-0 h-screen overflow-hidden flex flex-col items-center justify-center">
+
+                <AnimatePresence mode="wait">
+                    {!selectedCard ? (
+                        <motion.div
+                            key="selection-view"
+                            className="absolute inset-0"
+                            exit={{ opacity: 0, transition: { duration: 0.5 } }}
+                        >
+                            <TitleSection key="title" scrollYProgress={scrollYProgress} />
+                            <CapsuleStack
+                                key="capsules"
+                                scrollYProgress={scrollYProgress}
+                                ambiances={fragments}
+                                onPlayClick={handlePlayClick}
+                            />
+                        </motion.div>
+                    ) : (
+                        <MockupView
+                            key="mockup"
+                            localProgress={localProgress}
+                            selectedCard={selectedCard}
+                            windowSize={windowSize}
+                        />
+                    )}
+                </AnimatePresence>
+
+                {!selectedCard && <ScrollPrompt scrollYProgress={scrollYProgress} />}
+
+                <MouseFollower isVisible={showMouseFollower} />
+
+            </div>
+        </section>
+    );
+};
+
+export default WhatIsItC;

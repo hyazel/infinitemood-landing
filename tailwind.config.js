@@ -50,6 +50,7 @@ export default {
                 background: {
                     primary: "#16131B",   // orchid_ash_900
                     secondary: "#1E1A24", // orchid_ash_800
+                    tertiary: "#2A2430", // orchid_ash_800
                     inverted: "#F4EFE6"   // warm_ivory_50
                 },
                 text: {

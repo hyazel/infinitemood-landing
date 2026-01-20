@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Play, Pause } from 'lucide-react';
 import InteractionZone from '../components/InteractionZone';
 import ParameterSlider from '../components/ParameterSlider';
+import islandScene from '../assets/island_scene.png';
 import { useAudioLogic } from '../hooks/useAudioLogic';
 
 const Exploration: React.FC = () => {
@@ -44,7 +45,7 @@ const Exploration: React.FC = () => {
                 <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 w-[60%] h-12 bg-black/40 blur-2xl rounded-[100%] pointer-events-none" />
 
                 <img
-                    src="/assets/island_scene.png"
+                    src={islandScene}
                     alt="Island"
                     className="w-full h-auto drop-shadow-2xl relative z-10"
                 />

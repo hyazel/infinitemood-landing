@@ -89,23 +89,6 @@ const Hero: React.FC = () => {
 
             </div>
 
-            {/* Scroll Indicator */}
-            <motion.div
-                className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-10 cursor-pointer"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1, y: [0, 10, 0] }}
-                transition={{ delay: 1.5, duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                onClick={() => {
-                    const section = document.getElementById('what-is-it');
-                    section?.scrollIntoView({ behavior: 'smooth' });
-                }}
-            >
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M7 13l5 5 5-5" />
-                    <path d="M7 7l5 5 5-5" />
-                </svg>
-            </motion.div>
-
 
 
         </div>

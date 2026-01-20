@@ -22,11 +22,13 @@ declare global {
             init: (system: any, core: any) => void;
             loadBanks: () => void;
             loadMasterBank: () => void;
+
+            // Generic Playback
             play: (eventName: string) => void;
             stop: (eventName: string, allowFadeOut?: boolean) => void;
             setVolume: (eventName: string, volume: number) => void;
 
-            // Specifics
+            // Specifics (Legacy/Convenience)
             playDemoNeoclassic: () => void;
             stopDemoNeoclassic: (f?: boolean) => void;
             setDemoNeoclassicVolume: (v: number) => void;
@@ -39,6 +41,7 @@ declare global {
             activateSnapshot: (name: string) => void;
             deactivateSnapshot: (name: string) => void;
             setMute: (isMuted: boolean) => void;
+            setGlobalParameter: (name: string, value: number) => void;
         }
     }
 }
@@ -172,6 +175,19 @@ class AudioManager {
             window.AudioEngine.setMeteoLevel(level);
         }
     }
+
+    private currentNatureEventFullPath: string | null = null;
+
+    public setNatureType(level: number) {
+        if (window.AudioEngine) {
+            console.log("[AudioManager] setNatureType called with:", level);
+
+            // Set Global parameter "nature_type" which is expected to exist (like "meteo_type")
+            // Levels: 0=Calm, 1=Light, 2=Alive, 3=Wild
+            window.AudioEngine.setGlobalParameter("nature_type", level);
+        }
+    }
+
     public playMusicMenuSelection() {
         if (window.AudioEngine) {
             window.AudioEngine.activateSnapshot("snapshot:/music_menu_selection");
@@ -180,6 +196,85 @@ class AudioManager {
     public stopMusicMenuSelection() {
         if (window.AudioEngine) {
             window.AudioEngine.deactivateSnapshot("snapshot:/music_menu_selection");
+        }
+    }
+
+    public activateSnapshot(name: string) {
+        if (window.AudioEngine) {
+            window.AudioEngine.activateSnapshot(name);
+        }
+    }
+
+    public deactivateSnapshot(name: string) {
+        if (window.AudioEngine) {
+            window.AudioEngine.deactivateSnapshot(name);
+        }
+    }
+
+    // --- Dynamic Parameters (SoundCone) ---
+    public setMusicSpace(value: number) {
+        if (window.AudioEngine) {
+            // Try Global
+            window.AudioEngine.setGlobalParameter("music-space", value);
+            // Try Local on current track (demoLofi)
+            if ((window.AudioEngine as any).setEventParameter) {
+                (window.AudioEngine as any).setEventParameter('demoLofi', "music-space", value);
+            }
+        }
+    }
+
+    public setMusicReverb(value: number) {
+        if (window.AudioEngine) {
+            window.AudioEngine.setGlobalParameter("music-reverb", value);
+            if ((window.AudioEngine as any).setEventParameter) {
+                (window.AudioEngine as any).setEventParameter('demoLofi', "music-reverb", value);
+            }
+        }
+    }
+
+    public stopAllSnapshots() {
+        if (window.AudioEngine && (window.AudioEngine as any).stopAllSnapshots) {
+            (window.AudioEngine as any).stopAllSnapshots();
+        }
+    }
+
+    // Generic Methods for Fragments
+    public play(eventName: string) {
+        if (window.AudioEngine) {
+            window.AudioEngine.play(eventName);
+        }
+    }
+
+    public stop(eventName: string, fadeOut: boolean = true) {
+        if (window.AudioEngine) {
+            window.AudioEngine.stop(eventName, fadeOut);
+        }
+    }
+
+    // Dynamic Nature Event Handling
+    public playNatureEvent(partialPath: string) {
+        if (window.AudioEngine) {
+            // Constuct full path: event:/Nature/{partialPath}
+            const fullPath = `event:/Nature/${partialPath}`;
+            this.currentNatureEventFullPath = fullPath;
+
+            if ((window.AudioEngine as any).playDynamicEvent) {
+                (window.AudioEngine as any).playDynamicEvent(fullPath);
+            } else {
+                console.warn("AudioEngine.playDynamicEvent not found");
+            }
+        }
+    }
+
+    public stopNatureEvent(partialPath: string) {
+        if (window.AudioEngine) {
+            const fullPath = `event:/Nature/${partialPath}`;
+            if (this.currentNatureEventFullPath === fullPath) {
+                this.currentNatureEventFullPath = null;
+            }
+            if ((window.AudioEngine as any).stopDynamicEvent) {
+                (window.AudioEngine as any).stopDynamicEvent(fullPath);
+            }
         }
     }
 }
