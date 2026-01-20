@@ -22,17 +22,17 @@ const AudioControl: React.FC<AudioControlProps> = ({ trackTitle, weatherLevel, n
     // Mapping helper
     const getWeatherLabel = (level: number) => {
         if (level === 0) return 'Météo : Calme';
-        if (level === 1) return 'Météo : Pluie';
-        if (level === 2) return 'Météo : Orage';
-        if (level === 3) return 'Météo : Tempête';
+        if (level === 1) return 'Météo : Fine pluie';
+        if (level === 2) return 'Météo : Pluie';
+        if (level === 3) return 'Météo : Orage';
         return '';
     };
 
     const getNatureLabel = (level: number) => {
-        if (level === 0) return 'Nature : Calm';
-        if (level === 1) return 'Nature : Light';
-        if (level === 2) return 'Nature : Alive';
-        if (level === 3) return 'Nature : Wild';
+        if (level === 0) return 'Nature : Calme';
+        if (level === 1) return 'Nature : Léger';
+        if (level === 2) return 'Nature : Intense';
+        if (level === 3) return 'Nature : Sauvage';
         return '';
     };
 

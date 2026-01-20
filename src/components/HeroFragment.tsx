@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowDown } from 'lucide-react';
+
 
 // Image Imports
 import islandImage from '../assets/fragmnt-island.jpg';

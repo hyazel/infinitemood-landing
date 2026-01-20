@@ -1,6 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
-import redditIcon from '../assets/reddit-icon.png';
+
 
 const Header: React.FC = () => {
     return (

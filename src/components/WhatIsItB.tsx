@@ -17,27 +17,7 @@ interface AmbianceCard {
 }
 
 // Helper for subtitle word animation
-const SubtitleWordReveal: React.FC<{
-    word: string;
-    index: number;
-    totalWords: number;
-    localProgress: MotionValue<number>;
-    startOffset: number;
-}> = ({ word, index, totalWords, localProgress, startOffset }) => {
-    const duration = 0.15;
-    const wordStart = startOffset + (index / totalWords) * duration;
-    const wordEnd = wordStart + 0.02;
 
-    const opacity = useTransform(localProgress, [wordStart, wordEnd], [0.1, 1]);
-    const blur = useTransform(localProgress, [wordStart, wordEnd], ["blur(4px)", "blur(0px)"]);
-    const y = useTransform(localProgress, [wordStart, wordEnd], [5, 0]);
-
-    return (
-        <motion.span style={{ opacity, filter: blur, y }} className="inline-block mr-1">
-            {word}
-        </motion.span>
-    );
-};
 
 // ============================================
 // VIEW 1: CAPSULES
@@ -310,7 +290,7 @@ const WhatIsItB: React.FC<{
     // but ID is string vs number. Let's update AmbianceCard to use string ID or cast.
     // AmbianceCard defined locally: id: number. Fragment: id: string.
     // I will refactor AmbianceCard interface to match Fragment or just use Fragment.
-    const [fragments, setFragments] = useState(FRAGMENTS);
+    const [fragments] = useState(FRAGMENTS);
     const currentAudioEvent = useRef<string | null>(null);
 
     const { scrollYProgress } = useScroll({

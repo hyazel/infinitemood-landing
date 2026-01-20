@@ -185,8 +185,7 @@ const NatureSlider = ({ level, onChange }: { level: number, onChange: (val: numb
         }
     }, [showConfirmation]);
 
-    const labels = ["PURE NATURE", "JARDIN", "PARC", "URBAIN"];
-    const textColors = ["text-emerald-300", "text-emerald-100", "text-amber-200", "text-orange-200"];
+
 
     // Segment colors for gauge effect
     const segmentColors = [

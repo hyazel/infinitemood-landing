@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from 'react';
-import { motion, useScroll, useTransform, useSpring, useMotionValue } from 'framer-motion';
-import { ArrowRight, Play } from 'lucide-react';
+import React, { useEffect } from 'react';
+import { motion, useMotionValue } from 'framer-motion';
+import { Play } from 'lucide-react';
 import { startScroll } from './SmoothScroll';
 import AudioManager from '../utils/AudioManager';
 
