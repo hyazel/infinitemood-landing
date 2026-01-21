@@ -1,5 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import Home from './views/Home';
 import Exploration from './views/Exploration';
@@ -8,19 +8,18 @@ import LoadingView from './components/LoadingView';
 function App() {
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    // Simulate loading time or wait for assets
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2500); // 2.5 seconds total display time
-
-    return () => clearTimeout(timer);
-  }, []);
+  // Modified to wait for LoadingView to signal completion
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     setIsLoading(false);
+  //   }, 2500); 
+  //   return () => clearTimeout(timer);
+  // }, []);
 
   return (
     <>
       <AnimatePresence mode="wait">
-        {isLoading && <LoadingView key="loading" />}
+        {isLoading && <LoadingView key="loading" onComplete={() => setIsLoading(false)} />}
       </AnimatePresence>
 
       {!isLoading && (

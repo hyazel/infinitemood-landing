@@ -56,12 +56,37 @@ class AudioManager {
     private readonly FADE_DURATION = 2000; // ms
 
     private constructor() {
+        // Check if already ready (Race condition fix)
+        if (window.AudioEngine && (window.AudioEngine as any).isReady) {
+            console.log("AudioManager: AudioEngine already ready during initialization.");
+            this.isReady = true;
+        }
+
         // Listen for FMOD ready event
         window.addEventListener('fmod-ready', () => {
             console.log("AudioManager: FMOD Ready signal received.");
             this.isReady = true;
             this.notifyReady();
         });
+
+        this.setupStealthResume();
+    }
+
+    private setupStealthResume() {
+        const resume = () => {
+            // This is just to ensure the browser sees an interaction and we log it
+            // FMOD/Emscripten usually hooks into these globally too, but having our own confirmation helps debugging
+            console.log("[AudioManager] User interaction detected - AudioContext authorized.");
+
+            // Remove listeners once triggered
+            window.removeEventListener('pointerdown', resume);
+            window.removeEventListener('keydown', resume);
+            window.removeEventListener('touchstart', resume);
+        };
+
+        window.addEventListener('pointerdown', resume);
+        window.addEventListener('keydown', resume);
+        window.addEventListener('touchstart', resume);
     }
 
     public static getInstance(): AudioManager {
@@ -84,6 +109,10 @@ class AudioManager {
     }
 
     public checkReady(): boolean {
+        // Double check against the global engine state if we think we aren't ready
+        if (!this.isReady && window.AudioEngine && (window.AudioEngine as any).isReady) {
+            this.isReady = true;
+        }
         return this.isReady;
     }
 
