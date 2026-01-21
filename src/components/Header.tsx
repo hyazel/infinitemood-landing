@@ -1,11 +1,11 @@
 import React from 'react';
-
+import { NavLink, Link } from 'react-router-dom';
 
 const Header: React.FC = () => {
     return (
         <header className="absolute top-0 left-0 w-full flex items-start justify-between px-12 py-8 z-50">
             {/* Logo */}
-            <div className="flex items-center gap-2">
+            <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
                 <div className="font-display font-bold text-xl tracking-wider text-text-inverted">
                     FRAGMNT
                 </div>
@@ -13,10 +13,10 @@ const Header: React.FC = () => {
                     <span>•</span>
                     <span>Chapitre 1</span>
                 </div>
-            </div>
+            </Link>
 
             {/* Navigation */}
-            {/*
+            
             <nav className="flex flex-col items-start gap-2 font-display font-medium text-lg text-text-inverted">
                 <NavLink to="/blog" className={({ isActive }) => `relative hover:text-text-tertiary transition-colors ${isActive ? 'text-text-tertiary' : ''}`}>
                     Blog
@@ -26,7 +26,7 @@ const Header: React.FC = () => {
                     Project
                 </NavLink>
             </nav>
-            */}
+            
         </header>
     );
 };
