@@ -241,9 +241,15 @@ const MockupView: React.FC<{
     // 0.80 -> 1.00: Full Screen "Lock" & Final Title Sequence
 
     // Mockup Transforms
-    const mockupWidth = useTransform(localProgress, [0, 0.1, 0.60, 0.80], [300, 300, 300, finalWidth + 10]);
-    const mockupHeight = useTransform(localProgress, [0, 0.1, 0.60, 0.80], [660, 660, 660, finalHeight + 200]);
-    const mockupX = useTransform(localProgress, [0, 0.05, 0.60, 0.80], [0, xShift, xShift, 0]);
+    // Mobile: smaller mockup (200x440), Desktop: original (300x660)
+    const isMobile = windowSize.width < 768;
+    const initialWidth = isMobile ? 200 : 300;
+    const initialHeight = isMobile ? 440 : 660;
+    const mockupWidth = useTransform(localProgress, [0, 0.1, 0.60, 0.80], [initialWidth, initialWidth, initialWidth, finalWidth + 10]);
+    const mockupHeight = useTransform(localProgress, [0, 0.1, 0.60, 0.80], [initialHeight, initialHeight, initialHeight, finalHeight + 200]);
+    // Mobile: no horizontal shift (centered), Desktop: original (25%)
+    const xShiftAmount = isMobile ? 0 : xShift;
+    const mockupX = useTransform(localProgress, [0, 0.05, 0.60, 0.80], [0, xShiftAmount, xShiftAmount, 0]);
     const mockupY = useTransform(localProgress, [0.80, 0.90], [0, 30]);
 
     // Aesthetic morphs
@@ -282,31 +288,31 @@ const MockupView: React.FC<{
             transition={{ duration: 0.4 }}
             className="absolute inset-0"
         >
-            {/* Mouse Scroll Indicator (Bottom Right) */}
+            {/* Mouse Scroll Indicator - Visible on mobile too */}
             <motion.div
                 style={{ opacity: useTransform(localProgress, [0, 0.2], [1, 0]) }}
-                className="absolute right-8 top-1/2 z-40"
+                className="absolute right-4 md:right-8 top-1/2 z-40"
             >
                 <MouseScrollIndicator text="SCROLLEZ" />
             </motion.div>
 
-            {/* Left Text Area */}
-            <div className="absolute left-0 top-0 h-full w-[55%] flex flex-col justify-center items-end z-20 pointer-events-none pl-8 pr-4 md:pr-8">
-                <motion.div style={{ opacity: text1Opacity, filter: text1Blur, x: text1X }} className="absolute text-left max-w-lg">
-                    <h2 className="text-5xl md:text-6xl font-display font-bold text-white mb-6 leading-tight">
-                        La <span className="text-primitive-saffron-core">musique</span> se lance<br />et évolue.
+            {/* Text Area - Bottom on mobile, Left on desktop */}
+            <div className="absolute left-0 right-0 bottom-24 md:right-auto md:top-0 md:bottom-auto h-auto md:h-full w-full md:w-[55%] flex flex-col justify-center items-center md:items-end z-20 pointer-events-none px-6 md:px-8 md:pl-8 md:pr-8">
+                <motion.div style={{ opacity: text1Opacity, filter: text1Blur, x: text1X }} className="absolute text-center md:text-left max-w-sm md:max-w-lg">
+                    <h2 className="text-3xl md:text-6xl font-display font-bold text-white leading-tight drop-shadow-2xl">
+                        La <span className="text-primitive-saffron-core">musique</span> se lance et évolue.
                     </h2>
                 </motion.div>
 
-                <motion.div style={{ opacity: text2Opacity, filter: text2Blur, y: text2Y }} className="absolute text-left max-w-lg">
-                    <h2 className="text-5xl md:text-6xl font-display font-bold text-white mb-6 leading-tight">
+                <motion.div style={{ opacity: text2Opacity, filter: text2Blur, y: text2Y }} className="absolute text-center md:text-left max-w-sm md:max-w-lg">
+                    <h2 className="text-3xl md:text-6xl font-display font-bold text-white leading-tight drop-shadow-2xl">
                         Aucune <span className="text-primitive-saffron-core">coupure</span>.
                     </h2>
                 </motion.div>
 
-                <motion.div style={{ opacity: text3Opacity, filter: text3Blur, y: text3Y }} className="absolute text-left max-w-lg">
-                    <h2 className="text-5xl md:text-6xl font-display font-bold text-white mb-6 leading-tight">
-                        Aucune <span className="text-primitive-saffron-core">transition</span><br />brutale.
+                <motion.div style={{ opacity: text3Opacity, filter: text3Blur, y: text3Y }} className="absolute text-center md:text-left max-w-sm md:max-w-lg">
+                    <h2 className="text-3xl md:text-6xl font-display font-bold text-white leading-tight drop-shadow-2xl">
+                        Aucune <span className="text-primitive-saffron-core">transition</span> brutale.
                     </h2>
                 </motion.div>
             </div>
@@ -325,7 +331,7 @@ const MockupView: React.FC<{
                         }}
                         className="relative overflow-hidden bg-black border-solid"
                     >
-                        <motion.div style={{ opacity: notchOpacity }} className="absolute top-3 left-1/2 -translate-x-1/2 w-28 h-7 bg-black rounded-full z-50 flex items-center justify-center gap-2">
+                        <motion.div style={{ opacity: notchOpacity }} className="absolute top-2 md:top-3 left-1/2 -translate-x-1/2 w-20 h-5 md:w-28 md:h-7 bg-black rounded-full z-50 flex items-center justify-center gap-1 md:gap-2">
                             <div className="w-2 h-2 rounded-full bg-[#1a1a1a]" />
                             <div className="w-3/4 h-3/4 flex items-center justify-end pr-1">
                                 <div className="w-1 h-1 bg-green-500 rounded-full animate-pulse" />
@@ -336,21 +342,21 @@ const MockupView: React.FC<{
 
                         {/* Overlay & Title */}
                         <motion.div style={{ opacity: finalOverlayOpacity, background: 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 40%)' }} className="absolute inset-0 z-20 pointer-events-none" />
-                        <motion.div style={{ opacity: finalTitleOpacity, scale: finalTitleScale }} className="absolute inset-0 flex items-end justify-center z-50 pointer-events-none pb-32">
-                            <h2 className="text-4xl md:text-7xl font-display font-bold text-white text-center px-4 leading-tight drop-shadow-2xl">
+                        <motion.div style={{ opacity: finalTitleOpacity, scale: finalTitleScale }} className="absolute inset-0 flex items-end justify-center z-50 pointer-events-none pb-32 md:pb-32">
+                            <h2 className="text-2xl md:text-7xl font-display font-bold text-white text-center px-4 leading-tight drop-shadow-2xl">
                                 Vous restez dans<br />votre <span className="text-primitive-saffron-core">expérience</span>
                             </h2>
                         </motion.div>
 
                         {/* Audio Hint */}
-                        <motion.div style={{ opacity: audioHintOpacity }} className="absolute bottom-8 left-0 right-0 flex justify-center z-40">
-                            <div className="flex items-center gap-2 bg-black/40 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 shadow-lg">
+                        <motion.div style={{ opacity: audioHintOpacity }} className="absolute bottom-4 md:bottom-8 left-0 right-0 flex justify-center z-40">
+                            <div className="flex items-center gap-1 md:gap-2 bg-black/40 backdrop-blur-md px-2 md:px-4 py-1 md:py-2 rounded-full border border-white/10 shadow-lg">
                                 <div className="flex gap-1 h-3 items-end">
                                     <motion.div animate={{ height: [4, 12, 4] }} transition={{ repeat: Infinity, duration: 1 }} className="w-1 bg-accent-primary rounded-full" />
                                     <motion.div animate={{ height: [8, 16, 8] }} transition={{ repeat: Infinity, duration: 1.2, delay: 0.1 }} className="w-1 bg-accent-primary rounded-full" />
                                     <motion.div animate={{ height: [4, 10, 4] }} transition={{ repeat: Infinity, duration: 0.9, delay: 0.2 }} className="w-1 bg-accent-primary rounded-full" />
                                 </div>
-                                <span className="text-xs uppercase tracking-widest text-white/90 font-bold">Audio Actif</span>
+                                <span className="text-[8px] md:text-xs uppercase tracking-widest text-white/90 font-bold">Audio Actif</span>
                             </div>
                         </motion.div>
 

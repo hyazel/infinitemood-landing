@@ -30,7 +30,7 @@ const HeroFragment: React.FC<HeroProps> = ({ onExplore }) => {
                 </p>
             </div>
 
-            <div className="relative w-full h-[50vh] mt-auto">
+            <div className="relative w-full h-[15vh] md:h-[50vh] mt-auto">
                 {/* 1. The Screen Mask: Turns background WHITE, leaves text as viewport to image */}
                 <div className="absolute inset-0 flex items-end justify-center pointer-events-none z-10 bg-white mix-blend-screen">
                     <h1 className="text-[18vw] leading-[0.8] font-black text-black tracking-tighter mb-4 font-display">FRAGMNT</h1>
@@ -40,11 +40,11 @@ const HeroFragment: React.FC<HeroProps> = ({ onExplore }) => {
                 <div className="absolute inset-0 z-20 bg-background-inverted mix-blend-multiply pointer-events-none" />
 
                 {/* 3. The Image layer (Bottom) */}
-                <div className="absolute inset-0 flex items-center justify-center overflow-hidden z-0">
+                <div className="absolute inset-0 flex items-end justify-center overflow-hidden z-0">
                     <motion.div
                         animate={{ x: [-50, 50, -50] }}
                         transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-                        className="w-[120%] h-full flex pt-12"
+                        className="w-[120%] h-full flex pt-0 md:pt-12"
                     >
                         {IMAGES.map((img, i) => (
                             <img
@@ -55,7 +55,7 @@ const HeroFragment: React.FC<HeroProps> = ({ onExplore }) => {
                         ))}
                     </motion.div>
                 </div>
-                <button onClick={onExplore} className="absolute bottom-12 left-1/2 -translate-x-1/2 z-20 bg-background-primary text-text-primary px-8 py-3 rounded-full uppercase text-xs font-bold hover:scale-105 hover:bg-primitive-saffron-core hover:text-text-inverted transition-all shadow-xl">
+                <button onClick={onExplore} className="absolute bottom-32 md:bottom-12 left-1/2 -translate-x-1/2 z-20 bg-background-primary text-text-primary px-8 py-3 rounded-full uppercase text-xs font-bold hover:scale-105 hover:bg-primitive-saffron-core hover:text-text-inverted transition-all shadow-xl">
                     Explorer
                 </button>
 
