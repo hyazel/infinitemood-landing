@@ -1,7 +1,6 @@
 import React, { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import type { Variants } from 'framer-motion';
-import { Link } from 'react-router-dom';
 
 const Outro = () => {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -38,7 +37,7 @@ const Outro = () => {
             opacity: 1,
             transition: {
                 staggerChildren: 0.3,
-                delayChildren: 3
+                delayChildren: 0.2
             }
         }
     };
@@ -48,7 +47,7 @@ const Outro = () => {
         // min-h reduced as we have internal height providers now
         <section
             ref={containerRef}
-            className="w-full bg-background-primary relative flex flex-col items-center pt-96 pb-40 px-6"
+            className="w-full bg-background-primary relative flex flex-col items-center pt-40 pb-20 px-6"
         >
             {/* Background Elements Container - now handles the overflow clipping */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -62,8 +61,8 @@ const Outro = () => {
             <div className="flex-1 flex flex-col items-center justify-center text-center max-w-6xl w-full z-20">
 
                 {/* Sticky Text Wrapper - Tall container to drive the reveal */}
-                {/* Height: 300vh ensures enough scroll distance for the lock */}
-                <div ref={textWrapperRef} className="h-[300vh] w-full relative">
+                {/* Height: 150vh ensures enough scroll distance for the lock without being excessive */}
+                <div ref={textWrapperRef} className="h-[150vh] w-full relative">
                     <div className="sticky top-[45vh] -translate-y-1/2 flex justify-center">
                         <div className="max-w-4xl px-4">
                             <p className="text-2xl md:text-4xl font-light leading-relaxed text-center flex flex-wrap justify-center gap-y-2 font-display tracking-wide">
@@ -109,9 +108,9 @@ const Outro = () => {
                     </div>
                 </div>
 
-                {/* Following Content - Appears after the 200vh wrapper ends */}
+                {/* Following Content - Appears after the 150vh wrapper ends */}
                 <motion.div
-                    className="flex flex-col items-center gap-24 pb-40 pt-96" // Increased top padding for more space
+                    className="flex flex-col items-center gap-24 pb-20 pt-20" // Reduced top padding
                     variants={containerVariants}
                     initial="hidden"
                     whileInView="visible"
@@ -120,10 +119,9 @@ const Outro = () => {
                     {/* Hook */}
                     <motion.h2
                         variants={blurVariants}
-                        className="text-5xl md:text-7xl font-display font-medium text-white leading-tight"
+                        className="text-5xl md:text-7xl font-display font-medium text-accent-primary leading-relaxed py-4"
                     >
-                        C’est ce soin porté à chaque ambiance <br />
-                        qui donne sa forme à <span className="text-transparent bg-clip-text bg-gradient-to-r from-primitive-saffron-blossom to-primitive-saffron-core">FRAGMNT</span>.
+                        Et ça s'entend.
                     </motion.h2>
 
                     {/* Glass Interaction Box */}
@@ -131,7 +129,7 @@ const Outro = () => {
                         variants={blurVariants}
                         className="mt-12 p-4 pl-10 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-full flex flex-col md:flex-row items-center gap-8 shadow-2xl hover:bg-white/10 transition-colors duration-500 group"
                     >
-                        <div className="flex flex-col items-start gap-2 mr-8">
+                        <div className="flex flex-col items-start gap-2">
                             <span className="text-[10px] uppercase tracking-widest text-text-secondary font-bold group-hover:text-white transition-colors">Restez informé</span>
                             <input
                                 type="email"
@@ -148,11 +146,7 @@ const Outro = () => {
                             </button>
                         </div>
 
-                        <div className="w-[1px] h-12 bg-white/10 mx-2 hidden md:block" />
 
-                        <Link to="/exploration" className="px-12 py-5 bg-white text-black text-lg font-bold rounded-full hover:bg-primitive-saffron-core hover:scale-105 transition-all duration-300 focus:ring-4 focus:ring-white/20">
-                            DEMO
-                        </Link>
                     </motion.div>
                 </motion.div>
 

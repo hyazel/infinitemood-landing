@@ -8,7 +8,7 @@ import MouseScrollIndicator from './MouseScrollIndicator';
 const steps = [
     {
         id: 'intro',
-        title: "Modifiez l’ambiance sonore, c'est personnalisable",
+        title: "L’ambiance sonore est personnalisable",
         subtitle: "",
         highlight: "personnalisable",
         slider: null
