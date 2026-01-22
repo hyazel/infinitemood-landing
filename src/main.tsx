@@ -7,6 +7,12 @@ import SmoothScroll from './components/SmoothScroll.tsx'
 import './index.css'
 
 // Polyfill Buffer for gray-matter
+
+declare global {
+  interface Window {
+    Buffer: typeof Buffer
+  }
+}
 window.Buffer = Buffer
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
