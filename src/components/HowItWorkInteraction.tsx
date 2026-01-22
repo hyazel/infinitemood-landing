@@ -509,7 +509,7 @@ const HowItWorkInteraction = ({
                 <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-center gap-12 md:gap-24 h-full">
 
                     {/* --- LEFT: PHONE MOCKUP (Fixed) --- */}
-                    <div className="relative w-[300px] h-[660px] shrink-0">
+                    <div className="relative w-0 md:w-[300px] md:h-[660px] shrink-0">
                         {/* Progress Label Positioned Relative to this column or floating? 
                             Let's float it relative to the mockup wrapper as it's sticky 
                         */}
@@ -525,7 +525,7 @@ const HowItWorkInteraction = ({
                         ></div>
 
                         {/* Dynamic Island */}
-                        <div className="absolute top-3 left-1/2 -translate-x-1/2 w-28 h-7 bg-black rounded-full z-30 flex items-center justify-center gap-2">
+                        <div className="absolute top-3 left-1/2 -translate-x-1/2 w-0 h-0md:w-28 md:h-7 bg-black rounded-full z-30 flex items-center justify-center gap-2">
                             <div className="w-2 h-2 rounded-full bg-[#1a1a1a]" />
                             <div className="w-3/4 h-3/4 flex items-center justify-end pr-1">
                                 <div className="w-1 h-1 bg-green-500 rounded-full animate-pulse" />
@@ -656,7 +656,7 @@ const HowItWorkInteraction = ({
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: 10, transition: { duration: 0.1 } }}
                                     transition={{ delay: 1, duration: 0.8 }}
-                                    className="absolute bottom-4 left-1/2 -translate-x-1/2" // Centered
+                                    className="absolute bottom-4" // Centered
                                 >
                                     <MouseScrollIndicator text="SCROLLEZ" />
                                 </motion.div>

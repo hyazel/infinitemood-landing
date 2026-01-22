@@ -111,7 +111,7 @@ const SoundCone = ({ space, reverb, onChange }: SoundConeProps) => {
             {/* Interactive Zone */}
             <div
                 ref={containerRef}
-                className="relative w-72 h-72 cursor-crosshair touch-none select-none flex items-end justify-center z-50 bg-white/5 rounded-2xl"
+                className="relative w-48 h-48 md:w-72 md:h-72 cursor-crosshair touch-none select-none flex items-end justify-center z-50 bg-white/5 rounded-2xl"
                 onPointerDown={handlePointerDown}
                 onPointerMove={handlePointerMove}
                 onPointerUp={handlePointerUp}

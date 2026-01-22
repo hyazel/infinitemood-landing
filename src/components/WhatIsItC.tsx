@@ -243,8 +243,8 @@ const MockupView: React.FC<{
     // Mockup Transforms
     // Mobile: smaller mockup (200x440), Desktop: original (300x660)
     const isMobile = windowSize.width < 768;
-    const initialWidth = isMobile ? 200 : 300;
-    const initialHeight = isMobile ? 440 : 660;
+    const initialWidth = isMobile ? windowSize.width * 0.5 : 300;
+    const initialHeight = isMobile ? windowSize.height * 0.6 : 660;
     const mockupWidth = useTransform(localProgress, [0, 0.1, 0.60, 0.80], [initialWidth, initialWidth, initialWidth, finalWidth + 10]);
     const mockupHeight = useTransform(localProgress, [0, 0.1, 0.60, 0.80], [initialHeight, initialHeight, initialHeight, finalHeight + 200]);
     // Mobile: no horizontal shift (centered), Desktop: original (25%)
@@ -318,7 +318,7 @@ const MockupView: React.FC<{
             </div>
 
             {/* iPhone Mockup */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="absolute left-0 right-0 top-16 md:inset-0 flex items-center justify-center pointer-events-none">
                 <motion.div style={{ x: mockupX, y: mockupY, zIndex: 35 }} className="flex items-center justify-center">
                     <motion.div
                         style={{
