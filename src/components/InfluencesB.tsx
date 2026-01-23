@@ -285,30 +285,6 @@ const InfluencesB: React.FC = () => {
                     {/* Glossy Overlay/Gradient for text readability */}
                     <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/60 pointer-events-none z-10" />
 
-                    {/* --- INTERACTIVE HOTSPOTS --- */}
-                    <motion.div
-                        style={{
-                            opacity: hotspotsOpacity,
-                            pointerEvents: hotspotsPointerEvents,
-                            scale: imageScale,
-                            y: imageY
-                        }}
-                        className="absolute inset-0 z-50"
-                    >
-                        <AnimatePresence>
-                            {activePoint && (
-                                <InfluenceModal point={activePoint} />
-                            )}
-                        </AnimatePresence>
-
-                        {HOTSPOTS.map(point => (
-                            <Hotspot
-                                key={point.id}
-                                point={point}
-                                onHover={setActivePoint}
-                            />
-                        ))}
-                    </motion.div>
                 </motion.div>
             </div>
         </section>

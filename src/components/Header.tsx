@@ -16,7 +16,7 @@ const Header: React.FC = () => {
             </Link>
 
             {/* Navigation */}
-            
+            {/*
             <nav className="flex flex-col items-start gap-2 font-display font-medium text-lg text-text-inverted">
                 <NavLink to="/blog" className={({ isActive }) => `relative hover:text-text-tertiary transition-colors ${isActive ? 'text-text-tertiary' : ''}`}>
                     Blog
@@ -26,6 +26,7 @@ const Header: React.FC = () => {
                     Project
                 </NavLink>
             </nav>
+            */}
             
         </header>
     );

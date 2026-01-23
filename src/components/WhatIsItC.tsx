@@ -246,11 +246,11 @@ const MockupView: React.FC<{
     const initialWidth = isMobile ? windowSize.width * 0.5 : 300;
     const initialHeight = isMobile ? windowSize.height * 0.6 : 660;
     const mockupWidth = useTransform(localProgress, [0, 0.1, 0.60, 0.80], [initialWidth, initialWidth, initialWidth, finalWidth + 10]);
-    const mockupHeight = useTransform(localProgress, [0, 0.1, 0.60, 0.80], [initialHeight, initialHeight, initialHeight, finalHeight + 200]);
+    const mockupHeight = useTransform(localProgress, [0, 0.1, 0.60, 0.80], [initialHeight, initialHeight, initialHeight, finalHeight + (isMobile ? 60 : 200)]);
     // Mobile: no horizontal shift (centered), Desktop: original (25%)
     const xShiftAmount = isMobile ? 0 : xShift;
     const mockupX = useTransform(localProgress, [0, 0.05, 0.60, 0.80], [0, xShiftAmount, xShiftAmount, 0]);
-    const mockupY = useTransform(localProgress, [0.80, 0.90], [0, 30]);
+    const mockupY = useTransform(localProgress, [0.80, 0.90], [0, isMobile ? 0 : 30]);
 
     // Aesthetic morphs
     const mockupBorderRadius = useTransform(localProgress, [0, 0.05, 0.60, 0.80], ["48px", "48px", "48px", "0px"]);
@@ -258,6 +258,13 @@ const MockupView: React.FC<{
     const mockupShadow = useTransform(localProgress, [0, 0.05, 0.55, 0.70],
         ["0px 20px 50px rgba(234,179,8,0.3)", "0px 20px 50px rgba(234,179,8,0.3)", "0px 20px 50px rgba(234,179,8,0.3)", "0px 0px 0px rgba(0,0,0,0)"]);
     const notchOpacity = useTransform(localProgress, [0, 0.05, 0.60, 0.80], [1, 1, 1, 0]);
+
+    // Expanded state to toggle minor layout class (helps center-to-fullscreen transition)
+    const [expanded, setExpanded] = useState(false);
+    useMotionValueEvent(localProgress, "change", (latest) => {
+        if (latest >= 0.6 && !expanded) setExpanded(true);
+        if (latest < 0.6 && expanded) setExpanded(false);
+    });
 
     // Audio hint fades out
     const audioHintOpacity = useTransform(localProgress, [0, 0.1, 0.60], [1, 1, 0]);
@@ -318,7 +325,7 @@ const MockupView: React.FC<{
             </div>
 
             {/* iPhone Mockup */}
-            <div className="absolute left-0 right-0 top-16 md:inset-0 flex items-center justify-center pointer-events-none">
+            <div className={`absolute left-0 right-0 ${expanded ? 'top-0' : 'top-16'} md:inset-0 flex items-center justify-center pointer-events-none transition-all duration-500`}>
                 <motion.div style={{ x: mockupX, y: mockupY, zIndex: 35 }} className="flex items-center justify-center">
                     <motion.div
                         style={{
@@ -450,10 +457,11 @@ const WhatIsItC: React.FC<{
 
     // Mouse Follower Visibility Logic
     const [showMouseFollower, setShowMouseFollower] = useState(false);
-
+    const isMobile = windowSize.width < 768;
+    
     useMotionValueEvent(scrollYProgress, "change", (latest) => {
         // Show after intro (capsules visible) and hide if fully scrolled or card selected
-        if (latest > 0.15 && latest < 0.95 && !selectedCard) {
+        if (latest > 0.15 && latest < 0.95 && !selectedCard && isMobile === false) {
             setShowMouseFollower(true);
         } else {
             setShowMouseFollower(false);

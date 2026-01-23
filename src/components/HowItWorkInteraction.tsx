@@ -521,7 +521,7 @@ const HowItWorkInteraction = ({
                                 borderColor: '#111',
                                 boxShadow: '0px 0px 50px rgba(255,179,92,0.3)' // Saffron glow
                             }}
-                            className="absolute inset-0 border-[12px] rounded-[48px] z-20 pointer-events-none"
+                            className="absolute inset-0 md:border-[12px] rounded-[48px] z-20 pointer-events-none"
                         ></div>
 
                         {/* Dynamic Island */}
