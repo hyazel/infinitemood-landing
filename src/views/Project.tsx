@@ -41,17 +41,10 @@ const Project: React.FC = () => {
 
         {/* Problème */}
         <section className="mb-16 pb-16 border-b border-primitive-neutral-warm_ivory_400/20">
-          <h2 className="font-display text-2xl font-semibold mb-6">Problème</h2>
+          <h2 className="font-display text-2xl font-semibold mb-6">Contexte</h2>
           <div className="space-y-4 text-lg leading-relaxed">
             <p>
-              Environ 60 % des professionnels écoutent de la musique en travaillant. 
-              Des millions d'utilisateurs diffusent désormais en continu des musiques pour étudier, travailler, méditer, ...
-            </p>
-            <p className="italic">
-              Fragmnt propose de se recentrer et de s'inspirer (et pourquoi pas s'émerveiller).
-            </p>
-            <p>
-              Dans un monde extrêmement prenant, il devient primordial de pouvoir se recentrer et retrouver son flow.
+              Environ 60 % des professionnels écoutent de la musique en travaillant. Des millions d’utilisateurs diffusent en continu des ambiances pour étudier, travailler, méditer…
             </p>
           </div>
         </section>
@@ -67,8 +60,8 @@ const Project: React.FC = () => {
               </h3>
               <p className="leading-relaxed">
                 Des solutions populaires pour se mettre en ambiance (ex : playlists "Deep Focus", radios lofi). 
-                Elles apportent une musique d'accompagnement facile d'accès, mais sans adaptativité ni interactivité. 
-                L'écoute y reste figée (morceaux prédéfinis) et souvent passive ; en outre, les transitions ou 
+                Elles apportent une musique d'accompagnement facile d'accès, mais sans personnalisation ni interactivité. 
+                L'écoute y reste figée (morceaux prédéfinis) et souvent passive ; les transitions ou 
                 la publicité peuvent rompre le flow du travail.
               </p>
             </div>
@@ -78,7 +71,7 @@ const Project: React.FC = () => {
                 Applications de sons génératifs (Endel, Brain.fm)
               </h3>
               <p className="leading-relaxed">
-                Des apps qui génèrent des paysages sonores en temps réel via l'IA, avec une approche très utilitaire 
+                Des apps qui génèrent des paysages sonores en temps réel, avec une approche très utilitaire 
                 (augmenter la productivité, réduire le stress, etc.). Ces solutions fournissent une diffusion continue 
                 sans rupture, efficace pour éviter les distractions classiques. Cependant, la musique y est pensée 
                 pour être « à peine entendue » : des sons très neutres, sans mélodie marquante, que l'on subit en 
@@ -109,13 +102,12 @@ const Project: React.FC = () => {
           <div className="space-y-6 leading-relaxed">
             <p>
               Fragmnt se distingue en combinant le meilleur de ces approches tout en suivant sa propre voie : 
-              une dimension artistique et interactive absente des playlists classiques, une richesse sensible 
-              que n'offrent pas les générateurs automatiques, et une focalisation sur le focus créatif plutôt 
-              que sur la simple détente ou le divertissement.
+              une dimension artistique et interactive absente des playlists classiques, une richesse musical 
+              que n'offrent pas les générateurs automatiques.
             </p>
             <p className="italic font-medium">
-              Fragmnt apporte une réponse innovante avec ses scènes musicales interactives : 
-              de véritables environnements sonores conçus pour le focus créatif.
+              Fragmnt apporte une réponse innovante avec ses scènes musicales personnalisables : 
+              de véritables environnements sonores conçus pour le focus et l'évasion.
             </p>
             
             <div className="space-y-6 mt-8">
@@ -123,7 +115,7 @@ const Project: React.FC = () => {
                 <h3 className="font-semibold mb-2">Immersion cohérente</h3>
                 <p>
                   Chaque scène est un univers musical complet, avec une esthétique cohérente et une identité forte 
-                  (par ex. techno minimaliste ou piano ambient contemplatif). Ce n'est pas une suite aléatoire de morceaux, 
+                  (ex. house minimaliste, piano ambient contemplatif). Ce n'est pas une suite aléatoire de morceaux, 
                   mais une composition continue pensée pour soutenir l'attention.
                 </p>
               </div>
@@ -132,7 +124,7 @@ const Project: React.FC = () => {
                 <h3 className="font-semibold mb-2">Interactivité discrète</h3>
                 <p>
                   L'utilisateur peut interagir subtilement avec la scène – par exemple en ajustant un paramètre 
-                  ou en déclenchant une légère variation. Ces interactions, inspirées du game design contemplatif, 
+                  ou en déclenchant une légère variation. Ces interactions 
                   offrent un sentiment d'implication et de contrôle sans jamais casser le flow du travail.
                 </p>
               </div>
@@ -164,11 +156,10 @@ const Project: React.FC = () => {
               l'expérience plutôt que l'optimisation de l'attention.
             </p>
             <p>
-              Les ambiances sont créées avec des musiciens et sound designers, afin de garantir une identité 
-              artistique forte, une cohérence par scène, et une production premium.
+              Les ambiances sont créées avec des musiciens et sound designers, afin de garantir une production premium.
             </p>
             <p>
-              Côté interface, Fragmnt emprunte certains codes du jeu contemplatif (scènes vivantes, animation, 
+              Côté interface, Fragmnt emprunte certains codes du jeu vidéo (scènes vivantes, animation, 
               micro-interactions) pour rendre l'audio plus "présent", sans imposer une interaction permanente.
             </p>
           </div>
@@ -178,7 +169,7 @@ const Project: React.FC = () => {
         <section className="mb-16 pb-16 border-b border-primitive-neutral-warm_ivory_400/20">
           <h2 className="font-display text-2xl font-semibold mb-6">Cible prioritaire</h2>
           <p className="leading-relaxed">
-            Créatifs et travailleurs du savoir (dev, design, écriture, étude) qui écoutent déjà de l'audio 
+            Créatifs et travailleurs (dev, design, écriture, étude) qui écoutent déjà de l'audio 
             pour se concentrer et créer, et recherchent une alternative plus vivante qu'une playlist.
           </p>
         </section>
@@ -198,7 +189,7 @@ const Project: React.FC = () => {
               (cohérence et identité par scène)
             </li>
             <li>
-              Scènes vivantes inspirées du jeu contemplatif (présence, attention douce)
+              Scènes vivantes inspirées du jeu vidéo (présence, attention douce)
             </li>
             <li>
               Interactivité légère: on influence l'ambiance, sans contrainte d'usage
@@ -206,34 +197,11 @@ const Project: React.FC = () => {
           </ul>
         </section>
 
-        {/* Modèle économique */}
-        <section className="mb-16 pb-16 border-b border-primitive-neutral-warm_ivory_400/20">
-          <h2 className="font-display text-2xl font-semibold mb-6">
-            Modèle économique <span className="text-base font-normal text-primitive-neutral-warm_ivory_600">(hypothèse)</span>
-          </h2>
-          <div className="space-y-4 leading-relaxed">
-            <p>
-              <strong>Freemium de base</strong> : accès gratuit à l'application (quelques scènes offertes pour démarrer).
-            </p>
-            <p>
-              <strong>Abonnement premium</strong> : accès illimité à toutes les scènes et fonctionnalités avancées.
-            </p>
-            <p>
-              <strong>Achats in-app optionnels</strong> : acquisition à la carte de scènes ou de packs additionnels (sans abonnement obligatoire).
-            </p>
-            <p className="italic pt-2">
-              Validation bêta : les tests privés ont confirmé l'intérêt des utilisateurs et leur disposition 
-              à payer pour ces contenus.
-            </p>
-          </div>
-        </section>
-
         {/* État du projet */}
         <section className="mb-16 pb-16 border-b border-primitive-neutral-warm_ivory_400/20">
           <h2 className="font-display text-2xl font-semibold mb-6">État du projet</h2>
           <p className="leading-relaxed">
-            Prototype fonctionnel existant permettant des tests utilisateurs et l'itération sur l'expérience 
-            (compréhension du concept, plaisir, rétention).
+            Prototype fonctionnel existant. Demande via waiting list.
           </p>
         </section>
 

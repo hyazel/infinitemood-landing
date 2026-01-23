@@ -1,5 +1,5 @@
 import React from 'react';
-import { /*NavLink,*/ Link } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 
 const Header: React.FC = () => {
     return (
@@ -16,17 +16,19 @@ const Header: React.FC = () => {
             </Link>
 
             {/* Navigation */}
-            {/*
+            {
             <nav className="flex flex-col items-start gap-2 font-display font-medium text-lg text-text-inverted">
+                {/*
                 <NavLink to="/blog" className={({ isActive }) => `relative hover:text-text-tertiary transition-colors ${isActive ? 'text-text-tertiary' : ''}`}>
                     Blog
                     <span className="absolute -top-0.5 -right-2 w-1.5 h-1.5 rounded-full bg-primitive-mint-deep shadow-[0_0_8px_rgba(102,230,178,0.6)] animate-pulse"></span>
                 </NavLink>
+                */}
                 <NavLink to="/project" className={({ isActive }) => `hover:text-text-tertiary transition-colors ${isActive ? 'text-text-tertiary' : ''}`}>
                     Project
                 </NavLink>
             </nav>
-            */}
+            }
             
         </header>
     );
