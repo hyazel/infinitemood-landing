@@ -1,40 +1,8 @@
 
 
-import React, { useRef, useState } from 'react';
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import React, { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import fragmntAnimated from '../assets/fragmnt-animated.mp4';
-import dioramaNature from '../assets/diorama-nature.jpg';
-import dioramaBooknnok from '../assets/diorama-booknnok.jpg';
-
-// --- INTERFACES ---
-interface InfluencerPoint {
-    id: number;
-    x: number; // Percent 0-100
-    y: number; // Percent 0-100
-    label: string;
-    description: string;
-    image: string;
-}
-
-// --- DATA ---
-const HOTSPOTS: InfluencerPoint[] = [
-    {
-        id: 1,
-        x: 75,
-        y: 45,
-        label: "Lumières Volumétriques",
-        description: "Rendu atmosphérique temps réel",
-        image: dioramaNature
-    },
-    {
-        id: 2,
-        x: 35,
-        y: 60,
-        label: "Book Nook",
-        description: "Création de mondes miniatures",
-        image: dioramaBooknnok
-    }
-];
 
 // --- SUB-COMPONENTS ---
 
@@ -76,66 +44,12 @@ const MiniPlayer: React.FC = () => {
     );
 };
 
-const InfluenceModal: React.FC<{ point: InfluencerPoint }> = ({ point }) => {
-    return (
-        <div
-            className="absolute z-50 pointer-events-none"
-            style={{
-                left: `${point.x}%`,
-                top: `${point.y}%`
-            }}
-        >
-            <motion.div
-                initial={{ opacity: 0, x: 20, y: 10, scale: 0.95 }}
-                animate={{ opacity: 1, x: 20, y: 0, scale: 1 }}
-                exit={{ opacity: 0, x: 20, y: 5, scale: 0.95 }}
-                transition={{ duration: 0.2 }}
-                className="bg-black/80 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-2xl w-48 flex flex-col gap-2"
-            >
-                <div className="w-full aspect-video rounded-lg overflow-hidden relative">
-                    <img src={point.image} alt={point.label} className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                </div>
-                <div>
-                    <h4 className="text-white text-xs font-medium font-display tracking-wide">{point.label}</h4>
-                    <p className="text-white/60 text-[10px] leading-tight mt-0.5">{point.description}</p>
-                </div>
-            </motion.div>
-        </div>
-    );
-};
-
-const Hotspot: React.FC<{ point: InfluencerPoint; onHover: (p: InfluencerPoint | null) => void }> = ({ point, onHover }) => {
-    return (
-        <div
-            className="absolute w-8 h-8 -ml-4 -mt-4 z-40 cursor-pointer group flex items-center justify-center"
-            style={{ left: `${point.x}%`, top: `${point.y}%` }}
-            onMouseEnter={() => onHover(point)}
-            onMouseLeave={() => onHover(null)}
-        >
-            {/* Pulse Ring */}
-            <motion.div
-                animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0, 0.3] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute inset-0 rounded-full border border-white/30"
-            />
-
-            {/* Core Dot (expands on hover) */}
-            <motion.div
-                className="w-2 h-2 bg-white rounded-full group-hover:scale-150 transition-transform duration-300 shadow-[0_0_10px_rgba(255,255,255,0.5)]"
-            />
-        </div>
-    );
-};
-
 const InfluencesB: React.FC = () => {
     const targetRef = useRef<HTMLDivElement>(null);
     const { scrollYProgress } = useScroll({
         target: targetRef,
         offset: ["start start", "end end"]
     });
-
-    const [activePoint, setActivePoint] = useState<InfluencerPoint | null>(null);
 
     // --- TIMELINE (0.00 - 1.00) ---
     // Total height: 550vh
@@ -183,10 +97,6 @@ const InfluencesB: React.FC = () => {
 
     // Capsule Shadow: Standardize on 4 values (x, y, blur, spread) + color to match end state
     const capsuleShadow = useTransform(scrollYProgress, [0.80, 0.85], ["0px 0px 0px 0px rgba(0,0,0,0)", "0px 25px 50px -12px rgba(0,0,0,0.5)"]);
-
-    // HOTSPOT OPACITY
-    const hotspotsOpacity = useTransform(scrollYProgress, [0.86, 0.89], [0, 1]);
-    const hotspotsPointerEvents = useTransform(scrollYProgress, (v) => v > 0.87 ? "auto" : "none");
 
     // IMAGE PARALLAX
     const imageScale = useTransform(scrollYProgress, [0.75, 1.00], [1.3, 1.2]);
