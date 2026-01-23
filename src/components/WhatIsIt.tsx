@@ -268,7 +268,7 @@ const WhatIsIt: React.FC = () => {
 
                 {/* --- LEFT TEXT AREA (State 2 Sequence) --- */}
                 {/* Fixed container for stable alignment */}
-                <div className="absolute left-0 top-0 h-full w-[55%] flex flex-col justify-center items-end z-20 pointer-events-none pl-8 pr-4 md:pr-8">
+                <div className="absolute left-2 top-0 h-full w-[55%] flex flex-col justify-center items-end z-20 pointer-events-none pl-8 pr-4 md:pr-8">
 
                     {/* Text 1: La musique se lance */}
                     <motion.div
@@ -278,18 +278,6 @@ const WhatIsIt: React.FC = () => {
                         <h2 className="text-5xl md:text-6xl font-display font-bold text-white mb-6 leading-tight">
                             La <span className="text-primitive-saffron-core">musique</span> se lance<br />et évolue.
                         </h2>
-                        <p className="text-xl text-text-secondary leading-relaxed font-light">
-                            {/* Scroll-driven Word Reveal */}
-                            {"Chaque fragmnt contient de la musique originale pensée pour être modulée et recombinées dans l’application, afin de créer des variations infinies.".split(" ").map((word, i, arr) => (
-                                <SubtitleWordReveal
-                                    key={i}
-                                    word={word}
-                                    index={i}
-                                    totalWords={arr.length}
-                                    scrollYProgress={scrollYProgress}
-                                />
-                            ))}
-                        </p>
                     </motion.div>
 
                     {/* Text 2: Aucune coupure */}
