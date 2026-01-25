@@ -21,8 +21,7 @@ const Manifesto: React.FC = () => {
 
     // Text 1: Intro
     // Text 1: Intro - Visible immediately from start
-    const text1Opacity = useTransform(scrollYProgress, [0, 0.15, 0.2, 0.25], [1, 1, 1, 0]);
-    const text1Y = useTransform(scrollYProgress, [0, 0.25], [0, -20]);
+    const text1Opacity = useTransform(scrollYProgress, [0, 0.2, 0.25], [1, 1, 0]);
 
     // Text 2: Sans playlists
     const text2Opacity = useTransform(scrollYProgress, [0.25, 0.35, 0.4, 0.45], [0, 1, 1, 0]);
@@ -44,8 +43,8 @@ const Manifesto: React.FC = () => {
 
                 {/* Text 1 */}
                 <motion.div
-                    style={{ opacity: text1Opacity, y: text1Y }}
-                    className="absolute text-center max-w-4xl"
+                    style={{ opacity: text1Opacity }}
+                    className="absolute text-center w-[90vw] max-w-4xl"
                 >
                     <p className="text-3xl md:text-5xl font-display font-light text-text-primary leading-tight">
                         {t('manifesto.intro')}
