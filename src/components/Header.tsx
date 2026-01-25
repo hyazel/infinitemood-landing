@@ -3,8 +3,8 @@ import { NavLink, Link } from 'react-router-dom';
 import { useTranslation } from '../i18n';
 
 const Header: React.FC = () => {
-    const { t, language, setLanguage } = useTranslation();
-    
+    const { t } = useTranslation();
+
     return (
         <header className="absolute top-0 left-0 w-full flex items-start justify-between px-12 py-8 z-50">
             {/* Logo */}
@@ -32,7 +32,7 @@ const Header: React.FC = () => {
                     </NavLink>
                 </nav>
             </div>
-            
+
         </header>
     );
 };

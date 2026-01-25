@@ -14,7 +14,7 @@ import { LanguageProvider } from './i18n';
 function App() {
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(true);
-  
+
   // Initialize viewport height management globally
   // This sets CSS variables (--vh, --svh) for use throughout the app
 

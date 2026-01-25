@@ -26,7 +26,7 @@ interface AmbianceCard {
 // ============================================
 const TitleSection: React.FC<{ scrollYProgress: MotionValue<number> }> = ({ scrollYProgress }) => {
     const { t } = useTranslation();
-    
+
     // Opacity: Fade out 0.15-0.25 (Keep visible longer before fading)
     const opacity = useTransform(scrollYProgress, [0, 0.15, 0.25], [1, 1, 0]);
     // Scale: Minimal change
@@ -192,9 +192,9 @@ const MouseFollower: React.FC<{
 // ============================================
 // COMPONENT: SCROLL PROMPT NOTIFICATION
 // ============================================
-const ScrollPrompt: React.FC<{ 
+const ScrollPrompt: React.FC<{
     scrollYProgress: MotionValue<number>;
-    targetRef: React.RefObject<HTMLDivElement>;
+    targetRef: React.RefObject<HTMLDivElement | null>;
 }> = ({ scrollYProgress, targetRef }) => {
     const { t } = useTranslation();
     const [isVisible, setIsVisible] = useState(false);
@@ -221,7 +221,7 @@ const ScrollPrompt: React.FC<{
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                     className="fixed bottom-10 left-2 right-2 z-[100] flex justify-center"
                 >
-                    <div 
+                    <div
                         onClick={handleClick}
                         className="bg-primitive-saffron-core text-black px-8 py-4 rounded-full shadow-2xl flex items-center gap-4 animate-bounce cursor-pointer hover:scale-105 transition-transform"
                     >
@@ -474,7 +474,7 @@ const WhatIsItC: React.FC<{
     // Mouse Follower Visibility Logic
     const [showMouseFollower, setShowMouseFollower] = useState(false);
     const isMobile = windowSize.width < 768;
-    
+
     useMotionValueEvent(scrollYProgress, "change", (latest) => {
         // Show after intro (capsules visible) and hide if fully scrolled or card selected
         if (latest > 0.15 && latest < 0.95 && !selectedCard && isMobile === false) {
