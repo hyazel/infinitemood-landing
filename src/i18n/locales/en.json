@@ -34,18 +34,29 @@
     "subtitle": "7 ambience packs, carefully composed",
     "ambiance": "Ambience",
     "comingSoon": "Coming Soon - Work In Progress",
-    "selectPrompt": "Choose an ambience to continue",
-    "mockupView": {
-      "stayInExperience": "You stay in",
-      "yourExperience": "your",
-      "experienceHighlight": "experience",
-      "audioActive": "Audio Active",
-      "musicLaunches": "The music starts and evolves.",
-      "musicLaunchesHighlight": "music",
-      "noCuts": "No interruptions.",
-      "noCutsHighlight": "interruptions",
-      "noTransitions": "No harsh transitions.",
-      "noTransitionsHighlight": "transitions"
+    "scrollPrompt": "Choose an ambience to continue",
+    "scroll": "SCROLL",
+    "mockup": {
+      "text1": {
+        "part1": "The",
+        "highlight": "music",
+        "part2": "starts and evolves."
+      },
+      "text2": {
+        "part1": "No",
+        "highlight": "interruptions"
+      },
+      "text3": {
+        "part1": "No",
+        "highlight": "harsh transitions",
+        "part2": ""
+      },
+      "finalTitle": {
+        "part1": "You stay in",
+        "part2": "your",
+        "highlight": "experience"
+      },
+      "audioActive": "Audio Active"
     }
   },
   "howItWork": {

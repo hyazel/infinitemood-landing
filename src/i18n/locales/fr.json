@@ -34,18 +34,29 @@
     "subtitle": "7 packs d'ambiances, composées avec soin",
     "ambiance": "Ambiance",
     "comingSoon": "Coming Soon - Work In Progress",
-    "selectPrompt": "Choisissez une ambiance pour continuer",
-    "mockupView": {
-      "stayInExperience": "Vous restez dans",
-      "yourExperience": "votre",
-      "experienceHighlight": "expérience",
-      "audioActive": "Audio Actif",
-      "musicLaunches": "La musique se lance et évolue.",
-      "musicLaunchesHighlight": "musique",
-      "noCuts": "Aucune coupure.",
-      "noCutsHighlight": "coupure",
-      "noTransitions": "Aucune transition brutale.",
-      "noTransitionsHighlight": "transition"
+    "scrollPrompt": "Choisissez une ambiance pour continuer",
+    "scroll": "SCROLLEZ",
+    "mockup": {
+      "text1": {
+        "part1": "La",
+        "highlight": "musique",
+        "part2": "se lance et évolue."
+      },
+      "text2": {
+        "part1": "Aucune",
+        "highlight": "coupure"
+      },
+      "text3": {
+        "part1": "Aucune",
+        "highlight": "transition",
+        "part2": "brutale"
+      },
+      "finalTitle": {
+        "part1": "Vous restez dans",
+        "part2": "votre",
+        "highlight": "expérience"
+      },
+      "audioActive": "Audio Actif"
     }
   },
   "howItWork": {

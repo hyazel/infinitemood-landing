@@ -3,6 +3,7 @@ import { motion, useScroll, useTransform, MotionValue, AnimatePresence, useMotio
 import { FRAGMENTS } from '../data/fragments';
 import AudioManager from '../utils/AudioManager';
 import MouseScrollIndicator from './MouseScrollIndicator';
+import { useTranslation } from '../i18n';
 
 // Import images
 
@@ -24,6 +25,8 @@ interface AmbianceCard {
 // COMPONENT: TITLE SECTION
 // ============================================
 const TitleSection: React.FC<{ scrollYProgress: MotionValue<number> }> = ({ scrollYProgress }) => {
+    const { t } = useTranslation();
+    
     // Opacity: Fade out 0.15-0.25 (Keep visible longer before fading)
     const opacity = useTransform(scrollYProgress, [0, 0.15, 0.25], [1, 1, 0]);
     // Scale: Minimal change
@@ -57,6 +60,7 @@ const CapsuleStack: React.FC<{
     ambiances: AmbianceCard[];
     onPlayClick: (card: AmbianceCard) => void;
 }> = ({ scrollYProgress, ambiances, onPlayClick }) => {
+    const { t } = useTranslation();
 
     // Total items
     const count = ambiances.length;
@@ -188,7 +192,11 @@ const MouseFollower: React.FC<{
 // ============================================
 // COMPONENT: SCROLL PROMPT NOTIFICATION
 // ============================================
-const ScrollPrompt: React.FC<{ scrollYProgress: MotionValue<number> }> = ({ scrollYProgress }) => {
+const ScrollPrompt: React.FC<{ 
+    scrollYProgress: MotionValue<number>;
+    targetRef: React.RefObject<HTMLDivElement>;
+}> = ({ scrollYProgress, targetRef }) => {
+    const { t } = useTranslation();
     const [isVisible, setIsVisible] = useState(false);
 
     useMotionValueEvent(scrollYProgress, "change", (latest) => {
@@ -199,6 +207,10 @@ const ScrollPrompt: React.FC<{ scrollYProgress: MotionValue<number> }> = ({ scro
         }
     });
 
+    const handleClick = () => {
+        targetRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
     return (
         <AnimatePresence>
             {isVisible && (
@@ -207,12 +219,15 @@ const ScrollPrompt: React.FC<{ scrollYProgress: MotionValue<number> }> = ({ scro
                     animate={{ y: 0, opacity: 1 }}
                     exit={{ y: 100, opacity: 0 }}
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                    className="fixed bottom-10 left-0 right-0 z-[100] flex justify-center pointer-events-none"
+                    className="fixed bottom-10 left-2 right-2 z-[100] flex justify-center"
                 >
-                    <div className="bg-primitive-saffron-core text-black px-8 py-4 rounded-full shadow-2xl flex items-center gap-4 animate-bounce">
-                        <span className="font-bold text-lg">Choisissez une ambiance pour continuer</span>
+                    <div 
+                        onClick={handleClick}
+                        className="bg-primitive-saffron-core text-black px-8 py-4 rounded-full shadow-2xl flex items-center gap-4 animate-bounce cursor-pointer hover:scale-105 transition-transform"
+                    >
+                        <span className="font-bold text-lg">{t('whatIsItC.scrollPrompt')}</span>
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 5V19M12 5L6 11M12 5L18 11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="rotate-180 origin-center" />
+                            <path d="M12 5V19M12 5L6 11M12 5L18 11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                     </div>
                 </motion.div>
@@ -230,6 +245,7 @@ const MockupView: React.FC<{
     selectedCard: AmbianceCard;
     windowSize: { width: number; height: number };
 }> = ({ localProgress, selectedCard, windowSize }) => {
+    const { t } = useTranslation();
 
     const xShift = windowSize.width * 0.25;
     const finalWidth = windowSize.width || 1000;
@@ -300,26 +316,26 @@ const MockupView: React.FC<{
                 style={{ opacity: useTransform(localProgress, [0, 0.2], [1, 0]) }}
                 className="absolute right-4 md:right-8 top-1/2 z-40"
             >
-                <MouseScrollIndicator text="SCROLLEZ" />
+                <MouseScrollIndicator text={t('whatIsItC.scroll')} />
             </motion.div>
 
             {/* Text Area - Bottom on mobile, Left on desktop */}
             <div className="absolute left-0 right-0 bottom-24 md:right-auto md:top-0 md:bottom-auto h-auto md:h-full w-full md:w-[55%] flex flex-col justify-center items-center md:items-end z-20 pointer-events-none px-6 md:px-8 md:pl-8 md:pr-8">
                 <motion.div style={{ opacity: text1Opacity, filter: text1Blur, x: text1X }} className="absolute text-center md:text-left max-w-sm md:max-w-lg">
                     <h2 className="text-3xl md:text-6xl font-display font-bold text-white leading-tight drop-shadow-2xl">
-                        La <span className="text-primitive-saffron-core">musique</span> se lance et évolue.
+                        {t('whatIsItC.mockup.text1.part1')} <span className="text-primitive-saffron-core">{t('whatIsItC.mockup.text1.highlight')}</span> {t('whatIsItC.mockup.text1.part2')}
                     </h2>
                 </motion.div>
 
                 <motion.div style={{ opacity: text2Opacity, filter: text2Blur, y: text2Y }} className="absolute text-center md:text-left max-w-sm md:max-w-lg">
                     <h2 className="text-3xl md:text-6xl font-display font-bold text-white leading-tight drop-shadow-2xl">
-                        Aucune <span className="text-primitive-saffron-core">coupure</span>.
+                        {t('whatIsItC.mockup.text2.part1')} <span className="text-primitive-saffron-core">{t('whatIsItC.mockup.text2.highlight')}</span>.
                     </h2>
                 </motion.div>
 
                 <motion.div style={{ opacity: text3Opacity, filter: text3Blur, y: text3Y }} className="absolute text-center md:text-left max-w-sm md:max-w-lg">
                     <h2 className="text-3xl md:text-6xl font-display font-bold text-white leading-tight drop-shadow-2xl">
-                        Aucune <span className="text-primitive-saffron-core">transition</span> brutale.
+                        {t('whatIsItC.mockup.text3.part1')} <span className="text-primitive-saffron-core">{t('whatIsItC.mockup.text3.highlight')}</span> {t('whatIsItC.mockup.text3.part2')}.
                     </h2>
                 </motion.div>
             </div>
@@ -351,7 +367,7 @@ const MockupView: React.FC<{
                         <motion.div style={{ opacity: finalOverlayOpacity, background: 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 40%)' }} className="absolute inset-0 z-20 pointer-events-none" />
                         <motion.div style={{ opacity: finalTitleOpacity, scale: finalTitleScale }} className="absolute inset-0 flex items-end justify-center z-50 pointer-events-none pb-32 md:pb-32">
                             <h2 className="text-2xl md:text-7xl font-display font-bold text-white text-center px-4 leading-tight drop-shadow-2xl">
-                                Vous restez dans<br />votre <span className="text-primitive-saffron-core">expérience</span>
+                                {t('whatIsItC.mockup.finalTitle.part1')}<br />{t('whatIsItC.mockup.finalTitle.part2')} <span className="text-primitive-saffron-core">{t('whatIsItC.mockup.finalTitle.highlight')}</span>
                             </h2>
                         </motion.div>
 
@@ -363,7 +379,7 @@ const MockupView: React.FC<{
                                     <motion.div animate={{ height: [8, 16, 8] }} transition={{ repeat: Infinity, duration: 1.2, delay: 0.1 }} className="w-1 bg-accent-primary rounded-full" />
                                     <motion.div animate={{ height: [4, 10, 4] }} transition={{ repeat: Infinity, duration: 0.9, delay: 0.2 }} className="w-1 bg-accent-primary rounded-full" />
                                 </div>
-                                <span className="text-[8px] md:text-xs uppercase tracking-widest text-white/90 font-bold">Audio Actif</span>
+                                <span className="text-[8px] md:text-xs uppercase tracking-widest text-white/90 font-bold">{t('whatIsItC.mockup.audioActive')}</span>
                             </div>
                         </motion.div>
 
@@ -502,7 +518,7 @@ const WhatIsItC: React.FC<{
                     )}
                 </AnimatePresence>
 
-                {!selectedCard && <ScrollPrompt scrollYProgress={scrollYProgress} />}
+                {!selectedCard && <ScrollPrompt scrollYProgress={scrollYProgress} targetRef={targetRef} />}
 
                 <MouseFollower isVisible={showMouseFollower} />
 
