@@ -34,31 +34,6 @@ const WordBlur = ({ word, index, scrollYProgress }: { word: string, index: numbe
     );
 };
 
-
-// Helper for subtitle word animation (Start at 0.55, word by word)
-const SubtitleWordReveal = ({ word, index, totalWords, scrollYProgress }: { word: string, index: number, totalWords: number, scrollYProgress: any }) => {
-    // Start revealing AFTER title is fully visible (Title ends fade-in at 0.58)
-    const startOffset = 0.59;
-    const duration = 0.07; // Total duration for the whole sentence to reveal
-
-    // Stagger each word within the duration
-    const wordStart = startOffset + (index / totalWords) * duration;
-    // Each word takes a tiny bit to fade in
-    const wordEnd = wordStart + 0.01;
-
-    const opacity = useTransform(scrollYProgress, [wordStart, wordEnd], [0.1, 1]);
-    const blur = useTransform(scrollYProgress, [wordStart, wordEnd], ["blur(4px)", "blur(0px)"]);
-    const y = useTransform(scrollYProgress, [wordStart, wordEnd], [5, 0]);
-
-    return (
-        <motion.span
-            style={{ opacity, filter: blur, y }}
-            className="inline-block mr-1"
-        >
-            {word}
-        </motion.span>
-    );
-};
 const WhatIsIt: React.FC = () => {
     const containerRef = useRef<HTMLDivElement>(null);
     const hasTriggeredMusic = useRef(false);

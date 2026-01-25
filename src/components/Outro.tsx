@@ -1,8 +1,10 @@
 import React, { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import type { Variants } from 'framer-motion';
+import { useTranslation } from '../i18n';
 
 const Outro = () => {
+    const { t } = useTranslation();
     const containerRef = useRef<HTMLDivElement>(null);
     const textWrapperRef = useRef<HTMLDivElement>(null);
 
@@ -67,7 +69,7 @@ const Outro = () => {
                         <div className="max-w-4xl px-4">
                             <p className="text-2xl md:text-4xl font-light leading-relaxed text-center flex flex-wrap justify-center gap-y-2 font-display tracking-wide">
                                 {(() => {
-                                    const text = "Les ambiances sont créées par des musiciens afin de garantir une identité artistique forte, une cohérence propre à chaque scène.";
+                                    const text = t('outro.text');
                                     const words = text.split(" ");
                                     let globalCharIndex = 0;
                                     const totalChars = text.length;
@@ -127,20 +129,20 @@ const Outro = () => {
                     {/* Glass Interaction Box */}
                     <motion.div
                         variants={blurVariants}
-                        className="mt-12 p-4 pl-10 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-full flex flex-col md:flex-row items-center gap-8 shadow-2xl hover:bg-white/10 transition-colors duration-500 group"
+                        className="mt-12 p-5 md:p-4 md:pl-10 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[1.5rem] md:rounded-full flex flex-col md:flex-row items-center gap-4 md:gap-8 shadow-2xl hover:bg-white/10 transition-colors duration-500 group w-auto max-w-[85vw] md:max-w-none"
                     >
-                        <div className="flex flex-col items-start gap-2">
-                            <span className="text-[10px] uppercase tracking-widest text-text-secondary font-bold group-hover:text-white transition-colors">Restez informé</span>
+                        <div className="flex flex-col items-center md:items-start gap-1 w-full md:w-auto">
+                            <span className="text-[9px] uppercase tracking-widest text-text-secondary font-bold group-hover:text-white transition-colors">{t('outro.stayInformed')}</span>
                             <input
                                 type="email"
-                                placeholder="votre@email.com"
-                                className="bg-transparent border-none text-white placeholder-white/30 outline-none w-64 text-lg font-light"
+                                placeholder={t('outro.emailPlaceholder')}
+                                className="bg-transparent border-none text-white placeholder-white/30 outline-none w-full md:w-64 text-base md:text-lg font-light text-center md:text-left py-1"
                             />
                         </div>
 
                         <div className="flex items-center gap-2">
-                            <button className="w-14 h-14 rounded-full bg-white/10 hover:bg-white text-white hover:text-black flex items-center justify-center transition-all duration-300 transform hover:rotate-45">
-                                <svg width="16" height="16" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" className="currentColor">
+                            <button className="w-10 h-10 md:w-14 md:h-14 rounded-full bg-white/10 hover:bg-white text-white hover:text-black flex items-center justify-center transition-all duration-300 transform hover:rotate-45">
+                                <svg width="14" height="14" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" className="currentColor md:w-4 md:h-4">
                                     <path d="M1 6H11M11 6L6 1M11 6L6 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                                 </svg>
                             </button>

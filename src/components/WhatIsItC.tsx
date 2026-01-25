@@ -37,10 +37,10 @@ const TitleSection: React.FC<{ scrollYProgress: MotionValue<number> }> = ({ scro
             className="absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-none px-4"
         >
             <h2 className="text-6xl md:text-9xl font-display font-bold text-white text-center mb-6 drop-shadow-2xl tracking-tighter">
-                Choisis ton <span className="text-primitive-saffron-core">Fragmnt</span>
+                {t('whatIsItC.title')} <span className="text-primitive-saffron-core">{t('whatIsItC.titleHighlight')}</span>
             </h2>
             <p className="text-2xl md:text-4xl text-white font-medium text-center max-w-4xl drop-shadow-xl tracking-wide">
-                7 packs d’ambiances, composées avec soin
+                {t('whatIsItC.subtitle')}
             </p>
         </motion.div>
     );
@@ -114,11 +114,11 @@ const CapsuleStack: React.FC<{
                             <div className="absolute bottom-0 left-0 w-full p-12 md:p-20 flex flex-col items-start">
                                 {item.wip && (
                                     <span className="bg-white/20 backdrop-blur-md px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest text-white mb-4 border border-white/10">
-                                        Coming Soon - Work In Progress
+                                        {t('whatIsItC.comingSoon')}
                                     </span>
                                 )}
                                 <span className={`text-base md:text-lg font-sans uppercase tracking-[0.2em] mb-4 ${item.color}`}>
-                                    Ambiance {index + 1}
+                                    {t('whatIsItC.ambiance')} {index + 1}
                                 </span>
                                 <h3 className="text-5xl md:text-8xl font-display font-bold text-white leading-none mb-6">
                                     {item.title}

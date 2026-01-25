@@ -9,10 +9,16 @@ import BlogPost from './views/BlogPost';
 import LoadingView from './components/LoadingView';
 import PageTransition from './components/PageTransition';
 import { useLocation } from 'react-router-dom';
+import { LanguageProvider } from './i18n';
+import { useViewportHeight } from './hooks/useViewportHeight';
 
 function App() {
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Initialize viewport height management globally
+  // This sets CSS variables (--vh, --svh) for use throughout the app
+  useViewportHeight();
 
   // Modified to wait for LoadingView to signal completion
   // useEffect(() => {
@@ -23,7 +29,7 @@ function App() {
   // }, []);
 
   return (
-    <>
+    <LanguageProvider>
       <AnimatePresence mode="wait">
         {isLoading && <LoadingView key="loading" onComplete={() => setIsLoading(false)} />}
       </AnimatePresence>
@@ -59,7 +65,7 @@ function App() {
           </Routes>
         </AnimatePresence>
       )}
-    </>
+    </LanguageProvider>
   );
 }
 

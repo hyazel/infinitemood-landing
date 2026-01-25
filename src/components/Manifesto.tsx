@@ -1,7 +1,9 @@
 import React, { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
+import { useTranslation } from '../i18n';
 
 const Manifesto: React.FC = () => {
+    const { t } = useTranslation();
     const targetRef = useRef<HTMLDivElement>(null);
     const { scrollYProgress } = useScroll({
         target: targetRef,
@@ -38,7 +40,7 @@ const Manifesto: React.FC = () => {
 
     return (
         <section ref={targetRef} className="relative h-[350vh] bg-background-primary z-20">
-            <div className="sticky top-0 h-screen flex items-center justify-center overflow-hidden px-6">
+            <div className="sticky top-0 h-[100dvh] flex items-center justify-center overflow-hidden px-6">
 
                 {/* Text 1 */}
                 <motion.div
@@ -46,7 +48,7 @@ const Manifesto: React.FC = () => {
                     className="absolute text-center max-w-4xl"
                 >
                     <p className="text-3xl md:text-5xl font-display font-light text-text-primary leading-tight">
-                        Fragmnt est une app de musiques d’ambiances composées par des musiciens.
+                        {t('manifesto.intro')}
                     </p>
                 </motion.div>
 
@@ -56,7 +58,7 @@ const Manifesto: React.FC = () => {
                     className="absolute text-center"
                 >
                     <p className="text-4xl md:text-7xl font-display font-bold text-text-primary tracking-tight">
-                        Sans playlists.
+                        {t('manifesto.noPlaylists')}
                     </p>
                 </motion.div>
 
@@ -66,7 +68,7 @@ const Manifesto: React.FC = () => {
                     className="absolute text-center"
                 >
                     <p className="text-4xl md:text-7xl font-display font-bold text-text-primary tracking-tight">
-                        Sans streaming.
+                        {t('manifesto.noStreaming')}
                     </p>
                 </motion.div>
 
@@ -76,7 +78,7 @@ const Manifesto: React.FC = () => {
                     className="absolute text-center"
                 >
                     <p className="text-5xl md:text-9xl font-display font-bold tracking-tighter">
-                        Sans IA.
+                        {t('manifesto.noAI')}
                     </p>
                 </motion.div>
 

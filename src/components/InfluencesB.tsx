@@ -3,10 +3,13 @@
 import React, { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import fragmntAnimated from '../assets/fragmnt-animated.mp4';
+import { useTranslation } from '../i18n';
 
 // --- SUB-COMPONENTS ---
 
 const MiniPlayer: React.FC = () => {
+    const { t } = useTranslation();
+    
     return (
         <div className="flex items-center gap-4 bg-white/50 backdrop-blur-md border border-white/20 px-6 py-3 rounded-full shadow-lg">
             {/* Play Button Icon */}
@@ -37,14 +40,15 @@ const MiniPlayer: React.FC = () => {
             </div>
 
             <div className="flex flex-col">
-                <span className="text-[10px] font-display font-bold uppercase tracking-wider text-black/40">Now Playing</span>
-                <span className="text-xs font-display font-medium text-black">Neo Classic</span>
+                <span className="text-[10px] font-display font-bold uppercase tracking-wider text-black/40">{t('influencesB.nowPlaying')}</span>
+                <span className="text-xs font-display font-medium text-black">{t('influencesB.track')}</span>
             </div>
         </div>
     );
 };
 
 const InfluencesB: React.FC = () => {
+    const { t } = useTranslation();
     const targetRef = useRef<HTMLDivElement>(null);
     const { scrollYProgress } = useScroll({
         target: targetRef,
@@ -119,7 +123,7 @@ const InfluencesB: React.FC = () => {
                     className="absolute z-10 text-center px-4"
                 >
                     <h2 className="text-4xl md:text-7xl font-display font-medium leading-[1.1] tracking-tighter text-text-inverted">
-                        Des ambiances <br /> qui s'écoutent
+                        {t('influencesB.listen')} <br /> {t('influencesB.listenLine2')}
                     </h2>
                 </motion.div>
 
@@ -129,7 +133,7 @@ const InfluencesB: React.FC = () => {
                     className="absolute z-10 text-center px-4"
                 >
                     <h2 className="text-4xl md:text-7xl font-display italic font-light leading-[1.1] tracking-tighter text-text-inverted">
-                        Et se regardent
+                        {t('influencesB.watch')}
                     </h2>
                 </motion.div>
 
@@ -139,8 +143,8 @@ const InfluencesB: React.FC = () => {
                     className="absolute z-10 text-center px-4 flex flex-col items-center gap-8"
                 >
                     <h2 className="text-[28px] md:text-5xl font-display font-light leading-tight tracking-tight text-text-inverted max-w-2xl">
-                        Chaque Fragmnt associe <br />
-                        <span className="font-normal italic">une composition musicale</span>
+                        {t('influencesB.musicTitle')} <br />
+                        <span className="font-normal italic">{t('influencesB.musicSubtitle')}</span>
                     </h2>
 
                     <MiniPlayer />
@@ -159,7 +163,7 @@ const InfluencesB: React.FC = () => {
                         style={{ color: textColor, textShadow: textShadow }}
                         className="text-[28px] md:text-6xl font-display font-light leading-tight tracking-tight text-text-inverted italic"
                     >
-                        à une scène 3D animée
+                        {t('influencesB.visualTitle')}
                     </motion.h2>
                 </motion.div>
 

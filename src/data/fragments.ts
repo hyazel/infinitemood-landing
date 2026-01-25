@@ -20,8 +20,8 @@ export interface Fragment {
 export const FRAGMENTS: Fragment[] = [
     {
         id: 'chill-beats',
-        title: 'Chill beats',
-        subtitle: 'Chill beats',
+        title: 'Chill Beats',
+        subtitle: 'Chill Beats',
         image: islandImage,
         event: 'demoLofi', // Mapping to property name in AudioEngine.events (camelsCase) or raw event name? 
         // Plan said: event: demo-lofi. 
@@ -58,7 +58,7 @@ export const FRAGMENTS: Fragment[] = [
         image: desertImage,
         event: 'demoAcoustic',
         color: 'text-orange-300',
-        eventNature: 'Tokyo/Tokyo-nature'
+        eventNature: 'Desert/Desert-nature'
     },
     {
         id: 'ambient',

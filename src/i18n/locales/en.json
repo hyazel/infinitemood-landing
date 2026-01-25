@@ -1,0 +1,167 @@
+{
+  "header": {
+    "logo": "FRAGMNT",
+    "chapter": "Chapter 1",
+    "nav": {
+      "project": "Project"
+    }
+  },
+  "heroFragment": {
+    "title": "Soundlandscapes.",
+    "subtitle": "Composed to last.",
+    "description": "To focus. To escape. Freely.",
+    "exploreBtn": "Explore"
+  },
+  "manifesto": {
+    "intro": "Fragmnt is an app of ambient music composed by musicians.",
+    "noPlaylists": "No playlists.",
+    "noStreaming": "No streaming.",
+    "noAI": "No AI."
+  },
+  "influencesB": {
+    "listen": "Ambiences",
+    "listenLine2": "to listen to",
+    "watch": "And to watch",
+    "musicTitle": "Each Fragmnt combines",
+    "musicSubtitle": "a musical composition",
+    "visualTitle": "with an animated 3D scene",
+    "nowPlaying": "Now Playing",
+    "track": "Neo Classic"
+  },
+  "whatIsItC": {
+    "title": "Choose your",
+    "titleHighlight": "Fragmnt",
+    "subtitle": "7 ambience packs, carefully composed",
+    "ambiance": "Ambience",
+    "comingSoon": "Coming Soon - Work In Progress",
+    "selectPrompt": "Choose an ambience to continue",
+    "mockupView": {
+      "stayInExperience": "You stay in",
+      "yourExperience": "your",
+      "experienceHighlight": "experience",
+      "audioActive": "Audio Active",
+      "musicLaunches": "The music starts and evolves.",
+      "musicLaunchesHighlight": "music",
+      "noCuts": "No interruptions.",
+      "noCutsHighlight": "interruptions",
+      "noTransitions": "No harsh transitions.",
+      "noTransitionsHighlight": "transitions"
+    }
+  },
+  "howItWork": {
+    "stepLabels": {
+      "weather": "WEATHER",
+      "space": "SPACE",
+      "environment": "WORLD"
+    },
+    "intro": {
+      "title": "The sonic ambience is customizable",
+      "highlight": "customizable"
+    },
+    "weather": {
+      "title": "Change the weather.",
+      "subtitle": "Calm, rain, storm… the weather adapts in real time.",
+      "highlight": "weather",
+      "label": "Intensity",
+      "left": "Calm",
+      "right": "Storm"
+    },
+    "space": {
+      "title": "Open the sonic space.",
+      "subtitle": "Closer or more distant: reverb and space change in real time.",
+      "highlight": "space",
+      "label": "Space",
+      "left": "Intimate",
+      "right": "Vast"
+    },
+    "environment": {
+      "title": "Adjust the world around.",
+      "subtitle": "More or less environmental sounds, instantly.",
+      "highlight": "world"
+    }
+  },
+  "outro": {
+    "text": "Ambiences are created by musicians to guarantee a strong artistic identity, a coherence unique to each scene.",
+    "stayInformed": "Stay informed",
+    "emailPlaceholder": "your@email.com"
+  },
+  "project": {
+    "title": "FRAGMNT",
+    "tagline": "Interactive musical scenes for creative focus.",
+    "release": "Expected release end of 2026",
+    "pitch": {
+      "title": "Pitch",
+      "p1": "Fragmnt is a mobile app for interactive musical ambiences.",
+      "p2": "Explore animated soundscapes that evolve over time through simple parameters, to support focus and creation without going in circles."
+    },
+    "context": {
+      "title": "Context",
+      "p1": "About 60% of professionals listen to music while working. Millions of users stream ambiences continuously to study, work, meditate…"
+    },
+    "existing": {
+      "title": "Existing solutions",
+      "playlists": {
+        "title": "Focus playlists (Spotify, YouTube)",
+        "text": "Popular solutions to set the mood (e.g., \"Deep Focus\" playlists, lofi radios). They provide easily accessible background music, but without customization or interactivity. Listening remains fixed (predefined tracks) and often passive; transitions or advertising can break the workflow."
+      },
+      "generative": {
+        "title": "Generative sound apps (Endel, Brain.fm)",
+        "text": "Apps that generate soundscapes in real time, with a very utilitarian approach (increase productivity, reduce stress, etc.). These solutions provide continuous streaming without interruption, effective for avoiding classic distractions. However, the music is designed to be \"barely heard\": very neutral sounds, without striking melody, that one endures in the background rather than actively listening to."
+      },
+      "meditation": {
+        "title": "Meditation/relaxation apps",
+        "text": "Services like Headspace or Calm offer soothing ambiences (soft music, white noise) to help concentrate or de-stress. However, it remains a general wellness approach, with almost no artistic or interactive dimension."
+      },
+      "conclusion": "A premium format between music and focus tool is missing."
+    },
+    "solution": {
+      "title": "Solution",
+      "p1": "Fragmnt stands out by combining the best of these approaches while following its own path: an artistic and interactive dimension absent from classic playlists, a musical richness that automatic generators don't offer.",
+      "p2": "Fragmnt provides an innovative answer with its customizable musical scenes: true sound environments designed for focus and escape.",
+      "immersion": {
+        "title": "Coherent immersion",
+        "text": "Each scene is a complete musical universe, with a coherent aesthetic and strong identity (e.g. minimalist house, contemplative ambient piano). It's not a random sequence of tracks, but a continuous composition designed to support attention."
+      },
+      "interactivity": {
+        "title": "Discrete interactivity",
+        "text": "The user can subtly interact with the scene – for example by adjusting a parameter or triggering a slight variation. These interactions offer a sense of involvement and control without ever breaking the workflow."
+      }
+    },
+    "musicalContent": {
+      "title": "Musical content",
+      "p1": "Fragmnt is not based on a streaming catalog or playlists.",
+      "p2": "Each pack contains original music (motifs, textures, sound loops) designed to be modulated and recombined in the application, to create infinite variations while maintaining a strong musical identity."
+    },
+    "positioning": {
+      "title": "Positioning",
+      "p1": "Fragmnt takes a counter-current approach: slowing down and favoring musical quality and experience rather than attention optimization.",
+      "p2": "Ambiences are created with musicians and sound designers to guarantee premium production.",
+      "p3": "On the interface side, Fragmnt borrows certain codes from video games (living scenes, animation, micro-interactions) to make the audio more \"present\", without imposing permanent interaction."
+    },
+    "target": {
+      "title": "Priority target",
+      "text": "Creatives and workers (dev, design, writing, study) who already listen to audio to concentrate and create, and are looking for a more lively alternative than a playlist."
+    },
+    "alternatives": {
+      "title": "Alternatives & comparables",
+      "text": "Focus playlists (streaming), YouTube mixes, ambience generators, audio focus apps, \"chill\" contemplative games.",
+      "differentiation": {
+        "title": "Differentiation",
+        "item1": "Original musical content designed for interactivity, produced with artists (coherence and identity per scene)",
+        "item2": "Living scenes inspired by video games (presence, gentle attention)",
+        "item3": "Light interactivity: we influence the ambience, without usage constraints"
+      }
+    },
+    "status": {
+      "title": "Project status",
+      "text": "Existing functional prototype. Request via waiting list."
+    },
+    "roadmap": {
+      "title": "Roadmap",
+      "subtitle": "(6–12 months)",
+      "step1": "Finalize musical content.",
+      "step2": "Design and animate visual scenes.",
+      "step3": "Iterate on onboarding, catalog and economy, then expanded beta."
+    }
+  }
+}

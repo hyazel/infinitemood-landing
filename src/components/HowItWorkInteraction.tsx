@@ -4,36 +4,7 @@ import interactionImage from '../assets/fragmnt-interaction-full.jpg';
 import AudioManager from '../utils/AudioManager';
 import SoundCone from './SoundCone';
 import MouseScrollIndicator from './MouseScrollIndicator';
-
-const steps = [
-    {
-        id: 'intro',
-        title: "L’ambiance sonore est personnalisable",
-        subtitle: "",
-        highlight: "personnalisable",
-        slider: null
-    },
-    {
-        id: 'weather',
-        title: "Changez la météo.",
-        subtitle: "Calme, pluie, orage… la météo s’adapte en temps réel.",
-        highlight: "météo",
-        slider: { label: "Intensité", left: "Calme", right: "Tempête" }
-    },
-    {
-        id: 'space',
-        title: "Ouvrez l’espace sonore.",
-        subtitle: "Plus proche ou plus lointain: la réverbération et l’espace changent en direct.",
-        highlight: "l’espace",
-        slider: { label: "Espace", left: "Intime", right: "Vaste" }
-    },
-    {
-        id: 'environment',
-        title: "Ajustez le monde autour.",
-        subtitle: "Plus ou moins de sons environnents, instantanément.",
-        highlight: "monde",
-    }
-];
+import { useTranslation } from '../i18n';
 
 // Icons
 // import { Sun, CloudLightning, TreeDeciduous, Building2 } from 'lucide-react'; // REMOVED
@@ -314,10 +285,12 @@ const NatureSlider = ({ level, onChange }: { level: number, onChange: (val: numb
 // COMPONENT: STEP INDICATOR (Kicker)
 // ============================================
 const StepIndicator: React.FC<{ activeStep: number }> = ({ activeStep }) => {
+    const { t } = useTranslation();
+    
     const config = {
-        1: "MÉTÉO",
-        2: "ESPACE",
-        3: "MONDE",
+        1: t('howItWork.stepLabels.weather'),
+        2: t('howItWork.stepLabels.space'),
+        3: t('howItWork.stepLabels.environment'),
     } as const;
 
     const label = config[activeStep as keyof typeof config];
@@ -375,8 +348,40 @@ const HowItWorkInteraction = ({
     natureLevel: number,
     setNatureLevel: (val: number) => void
 }) => {
+    const { t } = useTranslation();
     const containerRef = useRef<HTMLDivElement>(null);
     const [activeStep, setActiveStep] = useState(0);
+    
+    // Dynamic steps based on translations
+    const steps = [
+        {
+            id: 'intro',
+            title: t('howItWork.intro.title'),
+            subtitle: "",
+            highlight: t('howItWork.intro.highlight'),
+            slider: null
+        },
+        {
+            id: 'weather',
+            title: t('howItWork.weather.title'),
+            subtitle: t('howItWork.weather.subtitle'),
+            highlight: t('howItWork.weather.highlight'),
+            slider: { label: t('howItWork.weather.label'), left: t('howItWork.weather.left'), right: t('howItWork.weather.right') }
+        },
+        {
+            id: 'space',
+            title: t('howItWork.space.title'),
+            subtitle: t('howItWork.space.subtitle'),
+            highlight: t('howItWork.space.highlight'),
+            slider: { label: t('howItWork.space.label'), left: t('howItWork.space.left'), right: t('howItWork.space.right') }
+        },
+        {
+            id: 'environment',
+            title: t('howItWork.environment.title'),
+            subtitle: t('howItWork.environment.subtitle'),
+            highlight: t('howItWork.environment.highlight'),
+        }
+    ];
     // Removed local weather/nature state
     // Space/Reverb remains local as it's not requested in player yet
     const [spaceValues, setSpaceValues] = useState({ x: 1, y: 0 }); // Default: Space=1 (Wide), Reverb=0 (Short)

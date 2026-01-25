@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useTranslation } from '../i18n';
 
 
 // Image Imports
@@ -18,15 +19,17 @@ interface HeroProps {
 }
 
 const HeroFragment: React.FC<HeroProps> = ({ onExplore }) => {
+    const { t } = useTranslation();
+
     return (
-        <section className="relative w-full h-screen bg-background-inverted text-text-inverted flex flex-col justify-between pt-12 overflow-hidden">
+        <section className="relative w-full h-[100dvh] bg-background-inverted text-text-inverted flex flex-col justify-between pt-12 overflow-hidden">
             <div className="px-8 md:px-16 z-10 w-full flex flex-col items-center text-center mt-24 md:mt-32">
-                <h1 className="text-5xl md:text-7xl font-bold max-w-5xl leading-tight mb-12 font-display">
-                    Des paysages sonores.<br />
-                    <span className="text-text-inverted">Composées pour durer.</span>
+                <h1 className="text-2xl md:text-7xl font-bold max-w-5xl leading-tight mb-12 font-display">
+                    {t('heroFragment.title')}<br />
+                    <span className="text-text-inverted">{t('heroFragment.subtitle')}</span>
                 </h1>
                 <p className="text-base md:text-lg text-text-inverted font-display tracking-[0.2em] uppercase opacity-80">
-                    Pour se concentrer. S’évader. Librement.
+                    {t('heroFragment.description')}
                 </p>
             </div>
 
@@ -56,7 +59,7 @@ const HeroFragment: React.FC<HeroProps> = ({ onExplore }) => {
                     </motion.div>
                 </div>
                 <button onClick={onExplore} className="absolute bottom-32 md:bottom-12 left-1/2 -translate-x-1/2 z-20 bg-background-primary text-text-primary px-8 py-3 rounded-full uppercase text-xs font-bold hover:scale-105 hover:bg-primitive-saffron-core hover:text-text-inverted transition-all shadow-xl">
-                    Explorer
+                    {t('heroFragment.exploreBtn')}
                 </button>
 
 
