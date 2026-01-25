@@ -107,7 +107,7 @@ const InfluencesB: React.FC = () => {
     const imageY = useTransform(scrollYProgress, [0.75, 1.00], ["-10%", "0%"]);
 
     return (
-        <section ref={targetRef} className="relative h-[650vh] bg-background-inverted overflow-clip z-30">
+        <section ref={targetRef} className="relative bg-background-inverted overflow-clip z-30" style={{ height: 'calc(var(--vh, 1vh) * 650)' }}>
             {/* STICKY CONTAINER */}
             <div className="sticky top-0 h-screen w-full flex flex-col items-center justify-center overflow-hidden">
 

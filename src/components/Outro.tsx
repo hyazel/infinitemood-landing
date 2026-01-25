@@ -54,8 +54,8 @@ const Outro = () => {
             {/* Background Elements Container - now handles the overflow clipping */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 {/* Ambient Background Gradient */}
-                <div className="absolute bottom-0 left-0 right-0 h-[60vh] bg-gradient-to-t from-[#16131B] via-transparent to-transparent z-10" />
-                <div className="absolute -bottom-[20vh] left-1/2 -translate-x-1/2 w-[60vw] h-[60vw] bg-accent-primary/5 blur-[120px] rounded-full mix-blend-screen opacity-60" />
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#16131B] via-transparent to-transparent z-10" style={{ height: 'calc(var(--vh, 1vh) * 60)' }} />
+                <div className="absolute left-1/2 -translate-x-1/2 w-[60vw] h-[60vw] bg-accent-primary/5 blur-[120px] rounded-full mix-blend-screen opacity-60" style={{ bottom: 'calc(var(--vh, 1vh) * -20)' }} />
             </div>
 
 
@@ -64,8 +64,8 @@ const Outro = () => {
 
                 {/* Sticky Text Wrapper - Tall container to drive the reveal */}
                 {/* Height: 150vh ensures enough scroll distance for the lock without being excessive */}
-                <div ref={textWrapperRef} className="h-[150vh] w-full relative">
-                    <div className="sticky top-[45vh] -translate-y-1/2 flex justify-center">
+                <div ref={textWrapperRef} className="w-full relative" style={{ height: 'calc(var(--vh, 1vh) * 150)' }}>
+                    <div className="sticky -translate-y-1/2 flex justify-center" style={{ top: 'calc(var(--vh, 1vh) * 45)' }}>
                         <div className="max-w-4xl px-4">
                             <p className="text-2xl md:text-4xl font-light leading-relaxed text-center flex flex-wrap justify-center gap-y-2 font-display tracking-wide">
                                 {(() => {

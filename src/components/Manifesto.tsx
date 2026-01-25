@@ -39,7 +39,7 @@ const Manifesto: React.FC = () => {
     const text4Color = useTransform(scrollYProgress, [0.75, 0.95], ["#F4EFE6", "#E35AB8"]); // Fade to accent?
 
     return (
-        <section ref={targetRef} className="relative h-[350vh] bg-background-primary z-20">
+        <section ref={targetRef} className="relative bg-background-primary z-20" style={{ height: 'calc(var(--vh, 1vh) * 350)' }}>
             <div className="sticky top-0 h-[100dvh] flex items-center justify-center overflow-hidden px-6">
 
                 {/* Text 1 */}

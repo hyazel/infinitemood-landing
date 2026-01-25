@@ -508,7 +508,7 @@ const HowItWorkInteraction = ({
     });
 
     return (
-        <section ref={containerRef} className="relative h-[600vh] bg-background-primary z-10">
+        <section ref={containerRef} className="relative bg-background-primary z-10" style={{ height: 'calc(var(--vh, 1vh) * 600)' }}>
 
             <div className="sticky top-0 h-screen w-full flex flex-col md:flex-row items-center justify-center overflow-hidden">
                 <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-center gap-12 md:gap-24 h-full">

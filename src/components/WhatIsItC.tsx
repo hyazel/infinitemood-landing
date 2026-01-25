@@ -112,7 +112,7 @@ const CapsuleStack: React.FC<{
                         onClick={() => !item.wip && onPlayClick(item)}
                         transition={{ duration: 0.3 }}
                     >
-                        <div className="relative w-[95vw] h-[90vh] rounded-[4rem] overflow-hidden shadow-2xl bg-black transition-transform duration-500">
+                        <div className="relative w-[95vw] rounded-[4rem] overflow-hidden shadow-2xl bg-black transition-transform duration-500" style={{ height: 'calc(var(--vh, 1vh) * 90)' }}>
                             <img src={item.image} alt={item.title} className="w-full h-full object-cover opacity-80 transition-all duration-700 ease-out group-hover:opacity-100 group-hover:scale-105" />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
                             <div className="absolute bottom-0 left-0 w-full p-12 md:p-20 flex flex-col items-start">
@@ -490,7 +490,7 @@ const WhatIsItC: React.FC<{
     }, [selectedCard]);
 
     return (
-        <section ref={targetRef} className="relative h-[800vh] bg-background-primary overflow-clip">
+        <section ref={targetRef} className="relative bg-background-primary overflow-clip" style={{ height: 'calc(var(--vh, 1vh) * 800)' }}>
             <div className="sticky top-0 h-screen overflow-hidden flex flex-col items-center justify-center">
 
                 <AnimatePresence mode="wait">
