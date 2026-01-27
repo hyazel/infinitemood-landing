@@ -472,14 +472,27 @@ const WhatIsItC: React.FC<{
         }
     }, [selectedCard, onSelectionChange]);
 
-    // Create local progress: 0 at click position, 1 at end
-    const localProgress = useTransform(scrollYProgress, (v) => {
+    // Use global scrollY for absolute pixel tracking
+    const { scrollY } = useScroll();
+
+    // Create local progress based on PIXELS, not percentage. This prevents jumps when height changes.
+    // 3.5vh * 100 = 350vh of scroll distance for the animation
+    const ANIMATION_SCROLL_DISTANCE_VH = 350;
+
+    const localProgress = useTransform(scrollY, (currentY) => {
         if (!selectedCard) return 0;
-        const clickPos = clickScrollPositionRef.current;
-        const remaining = 1 - clickPos;
-        if (remaining <= 0) return 1;
-        return Math.max(0, Math.min(1, (v - clickPos) / remaining));
+        const startY = clickScrollPositionRef.current;
+        const endY = startY + (windowSize.height * (ANIMATION_SCROLL_DISTANCE_VH / 100));
+
+        if (currentY < startY) return 0;
+        if (currentY > endY) return 1;
+        return (currentY - startY) / (endY - startY);
     });
+
+    const [extraHeight, setExtraHeight] = useState(0);
+
+    // Auto-play progress for when we click "Continue" at the bottom
+    // Removed auto-play in favor of dynamic scroll extension
 
     useEffect(() => {
         const handleResize = () => {
@@ -490,10 +503,11 @@ const WhatIsItC: React.FC<{
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    // Return to capsules when scrolling back before click position
-    useMotionValueEvent(scrollYProgress, "change", (latest) => {
-        if (selectedCard !== null && latest < clickScrollPositionRef.current - 0.05) {
+    // Return to capsules when scrolling back before click position - using Absolute Y
+    useMotionValueEvent(scrollY, "change", (latest) => {
+        if (selectedCard !== null && latest < clickScrollPositionRef.current - 100) { // 100px buffer zone
             setSelectedCard(null);
+            setExtraHeight(0); // Reset height when backing out
         }
     });
 
@@ -523,7 +537,36 @@ const WhatIsItC: React.FC<{
             currentAudioEvent.current = card.event;
         }
 
-        clickScrollPositionRef.current = scrollYProgress.get();
+        // Capture current absolute scroll position
+        const currentScrollY = scrollY.get();
+        clickScrollPositionRef.current = currentScrollY;
+
+        // Calculate if we need more height
+        if (targetRef.current) {
+            const sectionTop = targetRef.current.offsetTop || 0;
+            const currentSectionHeight = targetRef.current.offsetHeight;
+            const viewportHeight = window.innerHeight;
+
+            // Where we are relative to the section top
+            // const relativeScroll = currentScrollY - sectionTop; // Unused
+
+            // How much space is physically left in the section?
+            // "Sticky" logic: The section stays pinned. The physical end of scrolling is when the bottom of the section hits the bottom of viewport.
+            // Max scrollable Y = sectionTop + sectionHeight - viewportHeight.
+            const maxScrollY = sectionTop + currentSectionHeight - viewportHeight;
+            const remainingScroll = maxScrollY - currentScrollY;
+
+            const neededScroll = viewportHeight * (ANIMATION_SCROLL_DISTANCE_VH / 100);
+
+            if (remainingScroll < neededScroll) {
+                // We need to extend the section
+                const addedHeight = neededScroll - remainingScroll;
+                setExtraHeight(addedHeight);
+            } else {
+                setExtraHeight(0);
+            }
+        }
+
         setSelectedCard(card);
     };
 
@@ -546,7 +589,7 @@ const WhatIsItC: React.FC<{
     }, [selectedCard]);
 
     return (
-        <section ref={targetRef} className="relative bg-background-primary overflow-clip" style={{ height: 'calc(var(--vh, 1vh) * 800)' }}>
+        <section ref={targetRef} className="relative bg-background-primary overflow-clip" style={{ height: `calc((var(--vh, 1vh) * 800) + ${extraHeight}px)` }}>
             <div className="sticky top-0 h-screen overflow-hidden flex flex-col items-center justify-center">
 
                 <AnimatePresence mode="wait">
