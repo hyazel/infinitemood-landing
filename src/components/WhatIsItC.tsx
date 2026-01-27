@@ -112,9 +112,38 @@ const CapsuleStack: React.FC<{
                         onClick={() => !item.wip && onPlayClick(item)}
                         transition={{ duration: 0.3 }}
                     >
-                        <div className="relative w-[95vw] rounded-[4rem] overflow-hidden shadow-2xl bg-black transition-transform duration-500" style={{ height: 'calc(var(--vh, 1vh) * 90)' }}>
+                        <div className="relative w-[92vw] md:w-[90vw] rounded-[2rem] md:rounded-[4rem] overflow-hidden shadow-2xl bg-black transition-transform duration-500" style={{ height: 'calc(var(--vh, 1vh) * 85)', maxHeight: 'calc(var(--vh, 1vh) * 85)' }}>
                             <img src={item.image} alt={item.title} className="w-full h-full object-cover opacity-80 transition-all duration-700 ease-out group-hover:opacity-100 group-hover:scale-105" />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+                            
+                            {/* Now Playing Badge for Neo Classic (index 1) */}
+                            {index === 1 && (
+                                <div className="absolute top-8 left-8 md:top-12 md:left-12">
+                                    <div className="bg-primitive-saffron-core/90 backdrop-blur-md px-4 py-2 rounded-full flex items-center gap-3 border border-primitive-saffron-core shadow-lg shadow-primitive-saffron-core/30">
+                                        <div className="flex gap-1 h-4 items-end">
+                                            <motion.div 
+                                                animate={{ height: [8, 16, 8] }} 
+                                                transition={{ repeat: Infinity, duration: 0.6, ease: "easeInOut" }} 
+                                                className="w-1 bg-black rounded-full"
+                                            />
+                                            <motion.div 
+                                                animate={{ height: [12, 20, 12] }} 
+                                                transition={{ repeat: Infinity, duration: 0.8, ease: "easeInOut", delay: 0.1 }} 
+                                                className="w-1 bg-black rounded-full"
+                                            />
+                                            <motion.div 
+                                                animate={{ height: [8, 14, 8] }} 
+                                                transition={{ repeat: Infinity, duration: 0.7, ease: "easeInOut", delay: 0.2 }} 
+                                                className="w-1 bg-black rounded-full"
+                                            />
+                                        </div>
+                                        <span className="text-xs font-bold uppercase tracking-widest text-black">
+                                            {t('whatIsItC.nowPlaying')}
+                                        </span>
+                                    </div>
+                                </div>
+                            )}
+                            
                             <div className="absolute bottom-0 left-0 w-full p-12 md:p-20 flex flex-col items-start">
                                 {item.wip && (
                                     <span className="bg-white/20 backdrop-blur-md px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest text-white mb-4 border border-white/10">
@@ -195,7 +224,10 @@ const MouseFollower: React.FC<{
 const ScrollPrompt: React.FC<{
     scrollYProgress: MotionValue<number>;
     targetRef: React.RefObject<HTMLDivElement | null>;
-}> = ({ scrollYProgress, targetRef }) => {
+    ambiances: AmbianceCard[];
+    onPlayClick: (card: AmbianceCard) => void;
+    clickScrollPositionRef: React.MutableRefObject<number>;
+}> = ({ scrollYProgress, targetRef, ambiances, onPlayClick, clickScrollPositionRef }) => {
     const { t } = useTranslation();
     const [isVisible, setIsVisible] = useState(false);
 
@@ -207,8 +239,15 @@ const ScrollPrompt: React.FC<{
         }
     });
 
-    const handleClick = () => {
+    const handleExplore = () => {
         targetRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
+    const handleContinue = () => {
+        const neoClassic = ambiances[1];
+        if (neoClassic) {
+            onPlayClick(neoClassic);
+        }
     };
 
     return (
@@ -219,16 +258,34 @@ const ScrollPrompt: React.FC<{
                     animate={{ y: 0, opacity: 1 }}
                     exit={{ y: 100, opacity: 0 }}
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                    className="fixed bottom-10 left-2 right-2 z-[100] flex justify-center"
+                    className="fixed bottom-10 left-4 right-4 z-[100] flex justify-center px-4"
                 >
-                    <div
-                        onClick={handleClick}
-                        className="bg-primitive-saffron-core text-black px-8 py-4 rounded-full shadow-2xl flex items-center gap-4 animate-bounce cursor-pointer hover:scale-105 transition-transform"
-                    >
-                        <span className="font-bold text-lg">{t('whatIsItC.scrollPrompt')}</span>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 5V19M12 5L6 11M12 5L18 11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
+                    <div className="flex flex-col md:flex-row gap-3 w-full max-w-4xl">
+                        {/* Primary Button: Continue with Neo Classic */}
+                        <motion.button
+                            onClick={handleContinue}
+                            className="flex-[7] bg-primitive-saffron-core text-black px-6 py-4 md:px-8 md:py-5 rounded-full shadow-2xl flex items-center justify-center gap-3 font-bold text-base md:text-lg cursor-pointer"
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                        >
+                            <svg width="20" height="24" viewBox="0 0 14 16" fill="currentColor" className="flex-shrink-0">
+                                <path d="M12.5 6.70096C13.1667 7.08586 13.1667 8.04811 12.5 8.43301L2.75 14.0622C2.08333 14.4471 1.25 13.966 1.25 13.1961L1.25 1.93782C1.25 1.16795 2.08333 0.686824 2.75 1.07172L12.5 6.70096Z" />
+                            </svg>
+                            <span className="whitespace-nowrap">{t('whatIsItC.continueWith')}</span>
+                        </motion.button>
+
+                        {/* Secondary Button: Explore */}
+                        <motion.button
+                            onClick={handleExplore}
+                            className="flex-[3] bg-white/10 backdrop-blur-md border border-white/20 text-white px-6 py-4 md:px-8 md:py-5 rounded-full shadow-xl flex items-center justify-center gap-3 font-bold text-base md:text-lg cursor-pointer"
+                            whileHover={{ scale: 1.02, backgroundColor: 'rgba(255,255,255,0.15)' }}
+                            whileTap={{ scale: 0.98 }}
+                        >
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0">
+                                <path d="M12 5V19M12 5L6 11M12 5L18 11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                            <span className="whitespace-nowrap">{t('whatIsItC.exploreOthers')}</span>
+                        </motion.button>
                     </div>
                 </motion.div>
             )}
@@ -518,7 +575,7 @@ const WhatIsItC: React.FC<{
                     )}
                 </AnimatePresence>
 
-                {!selectedCard && <ScrollPrompt scrollYProgress={scrollYProgress} targetRef={targetRef} />}
+                {!selectedCard && <ScrollPrompt scrollYProgress={scrollYProgress} targetRef={targetRef} ambiances={fragments} onPlayClick={handlePlayClick} clickScrollPositionRef={clickScrollPositionRef} />}
 
                 <MouseFollower isVisible={showMouseFollower} />
 

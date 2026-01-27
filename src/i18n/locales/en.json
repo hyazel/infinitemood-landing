@@ -36,6 +36,9 @@
     "comingSoon": "Coming Soon - Work In Progress",
     "scrollPrompt": "Choose an ambience to continue",
     "scroll": "SCROLL",
+    "nowPlaying": "Now Playing",
+    "continueWith": "Continue with Neo Classic",
+    "exploreOthers": "Choose another ambience",
     "mockup": {
       "text1": {
         "part1": "The",
