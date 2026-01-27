@@ -465,6 +465,16 @@ const WhatIsItC: React.FC<{
         offset: ["start start", "end end"]
     });
 
+    // Proxy value for background elements (Title, Capsules).
+    // We freeze this when a card is selected to prevent "jumps" when the section height changes.
+    const visualProgress = useMotionValue(0);
+
+    useMotionValueEvent(scrollYProgress, "change", (latest) => {
+        if (!selectedCard) {
+            visualProgress.set(latest);
+        }
+    });
+
     // Notify parent on selection change
     useEffect(() => {
         if (onSelectionChange) {
@@ -599,10 +609,10 @@ const WhatIsItC: React.FC<{
                             className="absolute inset-0"
                             exit={{ opacity: 0, transition: { duration: 0.5 } }}
                         >
-                            <TitleSection key="title" scrollYProgress={scrollYProgress} />
+                            <TitleSection key="title" scrollYProgress={visualProgress} />
                             <CapsuleStack
                                 key="capsules"
-                                scrollYProgress={scrollYProgress}
+                                scrollYProgress={visualProgress}
                                 ambiances={fragments}
                                 onPlayClick={handlePlayClick}
                             />
