@@ -115,25 +115,25 @@ const CapsuleStack: React.FC<{
                         <div className="relative w-[92vw] md:w-[90vw] rounded-[2rem] md:rounded-[4rem] overflow-hidden shadow-2xl bg-black transition-transform duration-500" style={{ height: 'calc(var(--vh, 1vh) * 85)', maxHeight: 'calc(var(--vh, 1vh) * 85)' }}>
                             <img src={item.image} alt={item.title} className="w-full h-full object-cover opacity-80 transition-all duration-700 ease-out group-hover:opacity-100 group-hover:scale-105" />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
-                            
+
                             {/* Now Playing Badge for Neo Classic (index 1) */}
                             {index === 1 && (
                                 <div className="absolute top-8 left-8 md:top-12 md:left-12">
                                     <div className="bg-primitive-saffron-core/90 backdrop-blur-md px-4 py-2 rounded-full flex items-center gap-3 border border-primitive-saffron-core shadow-lg shadow-primitive-saffron-core/30">
                                         <div className="flex gap-1 h-4 items-end">
-                                            <motion.div 
-                                                animate={{ height: [8, 16, 8] }} 
-                                                transition={{ repeat: Infinity, duration: 0.6, ease: "easeInOut" }} 
+                                            <motion.div
+                                                animate={{ height: [8, 16, 8] }}
+                                                transition={{ repeat: Infinity, duration: 0.6, ease: "easeInOut" }}
                                                 className="w-1 bg-black rounded-full"
                                             />
-                                            <motion.div 
-                                                animate={{ height: [12, 20, 12] }} 
-                                                transition={{ repeat: Infinity, duration: 0.8, ease: "easeInOut", delay: 0.1 }} 
+                                            <motion.div
+                                                animate={{ height: [12, 20, 12] }}
+                                                transition={{ repeat: Infinity, duration: 0.8, ease: "easeInOut", delay: 0.1 }}
                                                 className="w-1 bg-black rounded-full"
                                             />
-                                            <motion.div 
-                                                animate={{ height: [8, 14, 8] }} 
-                                                transition={{ repeat: Infinity, duration: 0.7, ease: "easeInOut", delay: 0.2 }} 
+                                            <motion.div
+                                                animate={{ height: [8, 14, 8] }}
+                                                transition={{ repeat: Infinity, duration: 0.7, ease: "easeInOut", delay: 0.2 }}
                                                 className="w-1 bg-black rounded-full"
                                             />
                                         </div>
@@ -143,7 +143,7 @@ const CapsuleStack: React.FC<{
                                     </div>
                                 </div>
                             )}
-                            
+
                             <div className="absolute bottom-0 left-0 w-full p-12 md:p-20 flex flex-col items-start">
                                 {item.wip && (
                                     <span className="bg-white/20 backdrop-blur-md px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest text-white mb-4 border border-white/10">
@@ -226,8 +226,7 @@ const ScrollPrompt: React.FC<{
     targetRef: React.RefObject<HTMLDivElement | null>;
     ambiances: AmbianceCard[];
     onPlayClick: (card: AmbianceCard) => void;
-    clickScrollPositionRef: React.MutableRefObject<number>;
-}> = ({ scrollYProgress, targetRef, ambiances, onPlayClick, clickScrollPositionRef }) => {
+}> = ({ scrollYProgress, targetRef, ambiances, onPlayClick }) => {
     const { t } = useTranslation();
     const [isVisible, setIsVisible] = useState(false);
 
@@ -575,7 +574,7 @@ const WhatIsItC: React.FC<{
                     )}
                 </AnimatePresence>
 
-                {!selectedCard && <ScrollPrompt scrollYProgress={scrollYProgress} targetRef={targetRef} ambiances={fragments} onPlayClick={handlePlayClick} clickScrollPositionRef={clickScrollPositionRef} />}
+                {!selectedCard && <ScrollPrompt scrollYProgress={scrollYProgress} targetRef={targetRef} ambiances={fragments} onPlayClick={handlePlayClick} />}
 
                 <MouseFollower isVisible={showMouseFollower} />
 
