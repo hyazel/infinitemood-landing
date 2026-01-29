@@ -65,7 +65,7 @@ const HeroFragment: React.FC<HeroProps> = ({ onExplore }) => {
                         ))}
                     </motion.div>
                 </div>
-                <button onClick={onExplore} className="absolute bottom-32 md:bottom-12 left-1/2 -translate-x-1/2 z-20 bg-background-primary text-text-primary px-8 py-3 rounded-full uppercase text-xs font-bold hover:scale-105 hover:bg-primitive-saffron-core hover:text-text-inverted transition-all shadow-xl">
+                <button onClick={onExplore} className="absolute bottom-32 md:bottom-[18vw] left-1/2 -translate-x-1/2 z-20 bg-background-primary text-text-primary px-8 py-3 rounded-full uppercase text-xs font-bold hover:scale-105 hover:bg-primitive-saffron-core hover:text-text-inverted transition-all shadow-xl">
                     {t('heroFragment.exploreBtn')}
                 </button>
 

@@ -2,6 +2,7 @@
   "header": {
     "logo": "FRAGMNT",
     "chapter": "Chapitre 1",
+    "newsletter_cta": "SUIVRE",
     "nav": {
       "project": "Project"
     }
@@ -96,8 +97,13 @@
   },
   "outro": {
     "text": "Les ambiances sont créées par des musiciens afin de garantir une identité artistique forte, une cohérence propre à chaque scène.",
-    "stayInformed": "Restez informé",
-    "emailPlaceholder": "votre@email.com"
+    "hook": "Et ça s'entend.",
+    "ctaLabel": "SUIVRE FRAGMNT",
+    "ctaLabelHover": "ACCÈS ANTICIPÉ",
+    "ctaSublabel": "Prototypes, démos jouables, et accès anticipé — rejoignez l'aventure.",
+    "emailPlaceholder": "votre@email.com",
+    "successTitle": "Bienvenue à bord.",
+    "successSubtitle": "Tu recevras les nouveautés, une à une."
   },
   "project": {
     "title": "FRAGMNT",
