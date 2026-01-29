@@ -94,21 +94,76 @@ const WeightScaleCTA: React.FC<SimpleNewsletterProps> = ({ t }) => {
                 style={{ transformOrigin: 'center bottom' }}
             >
                 {/* Aurora gradient background - inside card so it tilts together */}
-                <motion.div
-                    className="absolute inset-0 -z-10"
-                    style={{
-                        background: 'linear-gradient(45deg, #667eea, #764ba2, #f093fb, #f5576c, #4facfe)',
-                        backgroundSize: '400% 400%',
-                    }}
-                    animate={{
-                        backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
-                    }}
-                    transition={{
-                        duration: 15,
-                        repeat: Infinity,
-                        ease: "linear",
-                    }}
-                />
+                {/* Lava Lamp Background Effect */}
+                <div className="absolute inset-0 -z-10 overflow-hidden bg-background-primary">
+                    {/* Blob 1: Orchid */}
+                    <motion.div
+                        className="absolute -top-[20%] -left-[20%] w-[70%] h-[70%] rounded-full opacity-60 mix-blend-screen blur-3xl"
+                        style={{ backgroundColor: '#E35AB8' }} // Orchid
+                        animate={{
+                            x: ['0%', '20%', '-10%', '0%'],
+                            y: ['0%', '10%', '-20%', '0%'],
+                            scale: [1, 1.2, 0.9, 1],
+                        }}
+                        transition={{
+                            duration: 18,
+                            repeat: Infinity,
+                            repeatType: "mirror",
+                            ease: "easeInOut"
+                        }}
+                    />
+
+                    {/* Blob 2: Mint */}
+                    <motion.div
+                        className="absolute top-[10%] -right-[20%] w-[60%] h-[60%] rounded-full opacity-60 mix-blend-screen blur-3xl"
+                        style={{ backgroundColor: '#66E6B2' }} // Mint
+                        animate={{
+                            x: ['0%', '-30%', '10%', '0%'],
+                            y: ['0%', '-20%', '10%', '0%'],
+                            scale: [1, 1.1, 0.8, 1],
+                        }}
+                        transition={{
+                            duration: 22,
+                            repeat: Infinity,
+                            repeatType: "mirror",
+                            ease: "easeInOut"
+                        }}
+                    />
+
+                    {/* Blob 3: Saffron */}
+                    <motion.div
+                        className="absolute -bottom-[30%] left-[10%] w-[80%] h-[80%] rounded-full opacity-50 mix-blend-screen blur-3xl"
+                        style={{ backgroundColor: '#FFB35C' }} // Saffron
+                        animate={{
+                            x: ['0%', '15%', '-25%', '0%'],
+                            y: ['0%', '-15%', '5%', '0%'],
+                            scale: [1, 1.3, 0.9, 1],
+                        }}
+                        transition={{
+                            duration: 25,
+                            repeat: Infinity,
+                            repeatType: "mirror",
+                            ease: "easeInOut"
+                        }}
+                    />
+
+                    {/* Blob 4: Ember Coral */}
+                    <motion.div
+                        className="absolute bottom-[20%] right-[20%] w-[50%] h-[50%] rounded-full opacity-40 mix-blend-screen blur-3xl"
+                        style={{ backgroundColor: '#FF6B7A' }} // Ember Coral
+                        animate={{
+                            x: ['0%', '-20%', '20%', '0%'],
+                            y: ['0%', '20%', '-20%', '0%'],
+                            rotate: [0, 45, -45, 0],
+                        }}
+                        transition={{
+                            duration: 20,
+                            repeat: Infinity,
+                            repeatType: "mirror",
+                            ease: "easeInOut"
+                        }}
+                    />
+                </div>
 
                 {/* Dark overlay for readability */}
                 <div className="absolute inset-0 bg-black/40 -z-10" />

@@ -97,7 +97,7 @@ const Outro = () => {
 
                 {/* Following Content */}
                 <motion.div
-                    className="flex flex-col items-center gap-24 pb-20 pt-20"
+                    className="flex flex-col items-center gap-64 pb-20 pt-20"
                     variants={containerVariants}
                     initial="hidden"
                     whileInView="visible"
