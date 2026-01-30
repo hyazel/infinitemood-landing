@@ -12,6 +12,8 @@ import AudioControl from '../components/AudioControl';
 import Manifesto from '../components/Manifesto';
 import AudioManager from '../utils/AudioManager';
 import { useState, useEffect } from 'react';
+import { useTranslation } from '../i18n';
+import CursorPrompt from '../components/CursorPrompt';
 // // import HeroAlternativeL from '../components/HeroAlternativeL';
 // // import HeroAlternativeL from '../components/HeroAlternativeL';
 // import HeroAlternativeM from '../components/HeroAlternativeM';
@@ -22,7 +24,8 @@ import HeroFragment from '../components/HeroFragment';
 // import HeroAlternativeH from '../components/HeroAlternativeH';
 
 const Home = () => {
-    const [hasExplored, setHasExplored] = useState(false);
+    const { t } = useTranslation();
+    const [isAudioStarted, setIsAudioStarted] = useState(false);
     // Track if an ambiance is selected to unlock scrolling
     const [selectedFragment, setSelectedFragment] = useState<any | null>(null);
 
@@ -51,30 +54,6 @@ const Home = () => {
         }
     }, []);
 
-    // Listen for hasExplored state change to trigger scroll
-    useEffect(() => {
-        if (hasExplored) {
-            import('../components/SmoothScroll').then(mod => {
-                const lenis = mod.getLenis();
-                if (lenis) {
-                    // Critical: Force Lenis to recalculate dimensions immediately because content just appeared
-                    lenis.resize();
-
-                    // Use double requestAnimationFrame to wait for layout/paint cycles
-                    // This ensures the new height is fully registered before scrolling
-                    requestAnimationFrame(() => {
-                        requestAnimationFrame(() => {
-                            lenis.scrollTo('#manifesto', {
-                                duration: 2.0,
-                                force: true // Force scroll even if it thinks it's at the limit (safety)
-                            });
-                        });
-                    });
-                }
-            });
-        }
-    }, [hasExplored]);
-
     // Recalculate layout when selection changes (content appears/disappears)
     useEffect(() => {
         import('../components/SmoothScroll').then(mod => {
@@ -84,48 +63,53 @@ const Home = () => {
     }, [selectedFragment]);
 
 
-    const handleIntroComplete = () => {
-        setHasExplored(true);
-        AudioManager.getInstance().playHero();
+    const handleStartAudio = () => {
+        if (!isAudioStarted) {
+            setIsAudioStarted(true);
+            AudioManager.getInstance().playHero();
+        }
     };
 
     return (
-        <main className="w-full bg-background-primary">
-            <HeroFragment onExplore={handleIntroComplete} />
+        <main
+            onClick={handleStartAudio}
+            className={`w-full bg-background-primary transition-cursor duration-300 ${!isAudioStarted ? 'cursor-none' : ''}`}
+        >
+            <CursorPrompt active={!isAudioStarted} label={t('heroFragment.clickForSound')} />
 
-            {hasExplored && (
+            <HeroFragment onStartAudio={handleStartAudio} isAudioStarted={isAudioStarted} />
+
+            <div id="manifesto">
+                <Manifesto />
+            </div>
+            <Influences />
+
+            {/* WhatIsItC controls the flow. It notifies when an ambiance is selected. */}
+            <WhatIsItC onSelectionChange={setSelectedFragment} />
+
+            {/* Only show the rest of the page if an ambiance is selected */}
+            {selectedFragment && (
                 <>
-                    <div id="manifesto">
-                        <Manifesto />
+                    <div id="how-it-works">
+                        <HowItWorkInteraction
+                            selectedFragment={selectedFragment}
+                            weatherLevel={weatherLevel}
+                            setWeatherLevel={setWeatherLevel}
+                            natureLevel={natureLevel}
+                            setNatureLevel={setNatureLevel}
+                        />
                     </div>
-                    <Influences />
-
-                    {/* WhatIsItC controls the flow. It notifies when an ambiance is selected. */}
-                    <WhatIsItC onSelectionChange={setSelectedFragment} />
-
-                    {/* Only show the rest of the page if an ambiance is selected */}
-                    {selectedFragment && (
-                        <>
-                            <div id="how-it-works">
-                                <HowItWorkInteraction
-                                    selectedFragment={selectedFragment}
-                                    weatherLevel={weatherLevel}
-                                    setWeatherLevel={setWeatherLevel}
-                                    natureLevel={natureLevel}
-                                    setNatureLevel={setNatureLevel}
-                                />
-                            </div>
-                            <Outro />
-                        </>
-                    )}
-
-                    {/* AudioControl always visible after exploration */}
-                    <AudioControl
-                        trackTitle={selectedFragment?.title}
-                        weatherLevel={weatherLevel}
-                        natureLevel={natureLevel}
-                    />
+                    <Outro />
                 </>
+            )}
+
+            {/* AudioControl always visible after exploration */}
+            {isAudioStarted && (
+                <AudioControl
+                    trackTitle={selectedFragment?.title}
+                    weatherLevel={weatherLevel}
+                    natureLevel={natureLevel}
+                />
             )}
         </main>
     );

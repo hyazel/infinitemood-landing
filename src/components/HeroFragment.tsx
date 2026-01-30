@@ -15,15 +15,20 @@ import jungleImage from '../assets/fragmnt-jungle.jpg';
 const IMAGES = [islandImage, islandeImage, desertImage, townImage, europeImage, brutalismImage, jungleImage];
 
 interface HeroProps {
-    onExplore: () => void;
+    onStartAudio: () => void;
+    isAudioStarted: boolean;
 }
 
-const HeroFragment: React.FC<HeroProps> = ({ onExplore }) => {
+const HeroFragment: React.FC<HeroProps> = ({ onStartAudio }) => {
     const { t } = useTranslation();
 
     return (
-        <section className="relative w-full bg-background-inverted text-text-inverted flex flex-col justify-between pt-12 overflow-hidden" style={{ height: 'calc(var(--vh, 1vh) * 100)' }}>
-            <div className="px-8 md:px-16 z-10 w-full flex flex-col items-center text-center mt-24 md:mt-32">
+        <section
+            onClick={onStartAudio}
+            className="relative w-full bg-background-inverted text-text-inverted flex flex-col justify-between pt-12 overflow-hidden"
+            style={{ height: 'calc(var(--vh, 1vh) * 100)' }}
+        >
+            <div className="px-8 md:px-16 z-10 w-full flex flex-col items-center text-center mt-24 md:mt-32 pointer-events-none">
                 <h1 className="text-2xl md:text-7xl font-bold max-w-5xl leading-tight mb-12 font-display">
                     {t('heroFragment.title')}<br />
                     <span className="text-text-inverted">{t('heroFragment.subtitle')}</span>
@@ -50,7 +55,7 @@ const HeroFragment: React.FC<HeroProps> = ({ onExplore }) => {
                 <div className="absolute inset-0 z-20 bg-background-inverted mix-blend-multiply pointer-events-none" />
 
                 {/* 3. The Image layer (Bottom) */}
-                <div className="absolute inset-0 flex items-end justify-center overflow-hidden z-0">
+                <div className="absolute inset-0 flex items-end justify-center overflow-hidden z-0 pointer-events-none">
                     <motion.div
                         animate={{ x: [-50, 50, -50] }}
                         transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
@@ -65,10 +70,6 @@ const HeroFragment: React.FC<HeroProps> = ({ onExplore }) => {
                         ))}
                     </motion.div>
                 </div>
-                <button onClick={onExplore} className="absolute bottom-32 md:bottom-[18vw] left-1/2 -translate-x-1/2 z-20 bg-background-primary text-text-primary px-8 py-3 rounded-full uppercase text-xs font-bold hover:scale-105 hover:bg-primitive-saffron-core hover:text-text-inverted transition-all shadow-xl">
-                    {t('heroFragment.exploreBtn')}
-                </button>
-
 
             </div>
         </section>

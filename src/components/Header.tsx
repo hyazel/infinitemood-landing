@@ -12,10 +12,12 @@ const Header: React.FC = () => {
                 <div className="font-display font-bold text-xl tracking-wider text-text-inverted">
                     {t('header.logo')}
                 </div>
-                <div className="hidden md:flex items-center gap-2 text-sm font-medium tracking-wide text-text-inverted opacity-50">
+                {/*
+                    <div className="hidden md:flex items-center gap-2 text-sm font-medium tracking-wide text-text-inverted opacity-50">
                     <span>•</span>
                     <span>{t('header.chapter')}</span>
                 </div>
+                */}
             </NavLink>
 
             {/* Navigation */}
