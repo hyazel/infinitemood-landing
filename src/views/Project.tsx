@@ -1,20 +1,18 @@
 import React, { useEffect } from 'react';
-import Header from '../components/Header';
 import { useTranslation } from '../i18n';
 
 const Project: React.FC = () => {
   const { t } = useTranslation();
-  
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   return (
     <div className="min-h-screen bg-background-inverted text-text-inverted">
-      <Header />
-      
+
       <article className="pt-32 pb-24 px-6 max-w-3xl mx-auto">
-        
+
         {/* Hero */}
         <header className="mb-16">
           <h1 className="font-display font-bold text-5xl md:text-6xl mb-4">
@@ -55,7 +53,7 @@ const Project: React.FC = () => {
         <section className="mb-16 pb-16 border-b border-primitive-neutral-warm_ivory_400/20">
           <h2 className="font-display text-2xl font-semibold mb-6">{t('project.existing.title')}</h2>
           <div className="space-y-8">
-            
+
             <div>
               <h3 className="font-semibold text-lg mb-3">
                 {t('project.existing.playlists.title')}
@@ -99,7 +97,7 @@ const Project: React.FC = () => {
             <p className="italic font-medium">
               {t('project.solution.p2')}
             </p>
-            
+
             <div className="space-y-6 mt-8">
               <div>
                 <h3 className="font-semibold mb-2">{t('project.solution.immersion.title')}</h3>
@@ -107,7 +105,7 @@ const Project: React.FC = () => {
                   {t('project.solution.immersion.text')}
                 </p>
               </div>
-              
+
               <div>
                 <h3 className="font-semibold mb-2">{t('project.solution.interactivity.title')}</h3>
                 <p>

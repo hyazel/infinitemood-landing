@@ -1,4 +1,4 @@
-import Header from '../components/Header';
+// import Header from '../components/Header';
 // import HeroAlternativeJ from '../components/HeroAlternativeJ';
 // import HeroAlternativeK from '../components/HeroAlternativeK';
 // import HeroAlternativeF from '../components/HeroAlternativeF';
@@ -91,7 +91,6 @@ const Home = () => {
 
     return (
         <main className="w-full bg-background-primary">
-            <Header />
             <HeroFragment onExplore={handleIntroComplete} />
 
             {hasExplored && (

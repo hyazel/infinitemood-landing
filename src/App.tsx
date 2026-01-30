@@ -6,8 +6,10 @@ import Exploration from './views/Exploration';
 import Project from './views/Project';
 import Blog from './views/Blog';
 import BlogPost from './views/BlogPost';
+import FollowPage from './views/FollowPage';
 import LoadingView from './components/LoadingView';
 import PageTransition from './components/PageTransition';
+import Header from './components/Header';
 import { useLocation } from 'react-router-dom';
 import { LanguageProvider } from './i18n';
 
@@ -33,35 +35,43 @@ function App() {
       </AnimatePresence>
 
       {!isLoading && (
-        <AnimatePresence mode="wait">
-          <Routes location={location} key={location.pathname}>
-            <Route path="/" element={
-              <PageTransition>
-                <Home />
-              </PageTransition>
-            } />
-            <Route path="/exploration" element={
-              <PageTransition>
-                <Exploration />
-              </PageTransition>
-            } />
-            <Route path="/project" element={
-              <PageTransition>
-                <Project />
-              </PageTransition>
-            } />
-            <Route path="/blog" element={
-              <PageTransition>
-                <Blog />
-              </PageTransition>
-            } />
-            <Route path="/blog/:slug" element={
-              <PageTransition>
-                <BlogPost />
-              </PageTransition>
-            } />
-          </Routes>
-        </AnimatePresence>
+        <>
+          <Header />
+          <AnimatePresence mode="wait">
+            <Routes location={location} key={location.pathname}>
+              <Route path="/" element={
+                <PageTransition>
+                  <Home />
+                </PageTransition>
+              } />
+              <Route path="/exploration" element={
+                <PageTransition>
+                  <Exploration />
+                </PageTransition>
+              } />
+              <Route path="/project" element={
+                <PageTransition>
+                  <Project />
+                </PageTransition>
+              } />
+              <Route path="/blog" element={
+                <PageTransition>
+                  <Blog />
+                </PageTransition>
+              } />
+              <Route path="/blog/:slug" element={
+                <PageTransition>
+                  <BlogPost />
+                </PageTransition>
+              } />
+              <Route path="/follow" element={
+                <PageTransition>
+                  <FollowPage />
+                </PageTransition>
+              } />
+            </Routes>
+          </AnimatePresence>
+        </>
       )}
     </LanguageProvider>
   );

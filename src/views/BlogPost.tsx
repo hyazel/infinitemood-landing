@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import Header from '../components/Header';
 import { getPostBySlug } from '../utils/blogUtils';
 
 const BlogPost: React.FC = () => {
@@ -16,7 +15,6 @@ const BlogPost: React.FC = () => {
   if (!post) {
     return (
       <div className="min-h-screen bg-background-inverted text-text-inverted">
-        <Header />
         <main className="pt-32 pb-24 px-6 max-w-3xl mx-auto">
           <h1 className="font-display text-4xl font-bold mb-4">Article introuvable</h1>
           <Link to="/blog" className="text-primitive-neutral-warm_ivory_600 hover:underline">
@@ -29,11 +27,10 @@ const BlogPost: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background-inverted text-text-inverted">
-      <Header />
-      
+
       <article className="pt-32 pb-24 px-6 max-w-3xl mx-auto">
-        <Link 
-          to="/blog" 
+        <Link
+          to="/blog"
           className="text-sm text-primitive-neutral-warm_ivory_600 hover:underline mb-8 inline-block"
         >
           ← Retour au blog
@@ -41,10 +38,10 @@ const BlogPost: React.FC = () => {
 
         <header className="mb-12">
           <time className="text-sm text-primitive-neutral-warm_ivory_600 mb-4 block">
-            {new Date(post.date).toLocaleDateString('fr-FR', { 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric' 
+            {new Date(post.date).toLocaleDateString('fr-FR', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
             })}
           </time>
           <h1 className="font-display font-bold text-4xl md:text-5xl mb-4">

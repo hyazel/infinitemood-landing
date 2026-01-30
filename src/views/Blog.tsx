@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import Header from '../components/Header';
 import { getAllPosts } from '../utils/blogUtils';
 
 const Blog: React.FC = () => {
@@ -12,8 +11,7 @@ const Blog: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background-inverted text-text-inverted">
-      <Header />
-      
+
       <main className="pt-32 pb-24 px-6 max-w-4xl mx-auto">
         <header className="mb-16">
           <h1 className="font-display font-bold text-5xl md:text-6xl mb-4">
@@ -26,16 +24,16 @@ const Blog: React.FC = () => {
 
         <div className="space-y-12">
           {posts.map((post) => (
-            <article 
-              key={post.slug} 
+            <article
+              key={post.slug}
               className="pb-12 border-b border-primitive-neutral-warm_ivory_400/20 last:border-0"
             >
               <Link to={`/blog/${post.slug}`} className="group">
                 <time className="text-sm text-primitive-neutral-warm_ivory_600 mb-2 block">
-                  {new Date(post.date).toLocaleDateString('fr-FR', { 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
+                  {new Date(post.date).toLocaleDateString('fr-FR', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
                   })}
                 </time>
                 <h2 className="font-display text-3xl font-bold mb-4 group-hover:text-primitive-neutral-warm_ivory_600 transition-colors">

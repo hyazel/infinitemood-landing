@@ -95,6 +95,8 @@ const WeightScaleCTA: React.FC<SimpleNewsletterProps> = ({ t }) => {
             >
                 {/* Aurora gradient background - inside card so it tilts together */}
                 {/* Lava Lamp Background Effect */}
+                {/* Aurora gradient background - inside card so it tilts together */}
+                {/* Lava Lamp Background Effect */}
                 <div className="absolute inset-0 -z-10 overflow-hidden bg-background-primary">
                     {/* Blob 1: Orchid */}
                     <motion.div

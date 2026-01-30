@@ -2,9 +2,9 @@
   "header": {
     "logo": "FRAGMNT",
     "chapter": "Chapitre 1",
-    "newsletter_cta": "SUIVRE",
+    "newsletter_cta": "Suivre",
     "nav": {
-      "project": "Project"
+      "project": "Projet"
     }
   },
   "heroFragment": {
