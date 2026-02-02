@@ -83,7 +83,7 @@ const Home = () => {
                 <Manifesto />
             </div>
             <Influences />
-
+            <Outro />
             {/* WhatIsItC controls the flow. It notifies when an ambiance is selected. */}
             <WhatIsItC onSelectionChange={setSelectedFragment} />
 

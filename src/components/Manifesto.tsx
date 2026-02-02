@@ -46,9 +46,15 @@ const Manifesto: React.FC = () => {
                     style={{ opacity: text1Opacity }}
                     className="absolute text-center w-[90vw] max-w-4xl"
                 >
-                    <p className="text-3xl md:text-5xl font-display font-light text-text-primary leading-tight">
+                    <motion.p
+                        initial={{ opacity: 0, filter: "blur(10px)" }}
+                        whileInView={{ opacity: 1, filter: "blur(0px)" }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.8, ease: "easeOut" }}
+                        className="text-3xl md:text-5xl font-display font-light text-text-primary leading-tight"
+                    >
                         {t('manifesto.intro')}
-                    </p>
+                    </motion.p>
                 </motion.div>
 
                 {/* Text 2 */}
