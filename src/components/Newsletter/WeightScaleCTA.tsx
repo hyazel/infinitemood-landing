@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { subscribeToNewsletter, getFormIdByLanguage } from '../../network/kit';
+import { useTranslation } from '../../i18n';
 
 // ===========================================
 // WEIGHT SCALE NEWSLETTER CTA
@@ -10,6 +12,7 @@ interface SimpleNewsletterProps {
 }
 
 const WeightScaleCTA: React.FC<SimpleNewsletterProps> = ({ t }) => {
+    const { language } = useTranslation();
     const [email, setEmail] = useState('');
     const [status, setStatus] = useState<'idle' | 'typing' | 'valid' | 'invalid' | 'submitting' | 'success'>('idle');
     const [isFocused, setIsFocused] = useState(false);
@@ -51,7 +54,7 @@ const WeightScaleCTA: React.FC<SimpleNewsletterProps> = ({ t }) => {
     };
 
     // Handle submit
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (!isValidEmail(email)) {
             setStatus('invalid');
             setTimeout(() => setStatus(email.length > 0 ? 'typing' : 'idle'), 800);
@@ -59,9 +62,16 @@ const WeightScaleCTA: React.FC<SimpleNewsletterProps> = ({ t }) => {
         }
 
         setStatus('submitting');
-        setTimeout(() => {
+
+        const formId = getFormIdByLanguage(language);
+        const result = await subscribeToNewsletter(email, formId);
+
+        if (result.success) {
             setStatus('success');
-        }, 1200);
+        } else {
+            setStatus('invalid');
+            // We stay in 'invalid' state until the user changes the email
+        }
     };
 
     // Get weight indicator fill percentage

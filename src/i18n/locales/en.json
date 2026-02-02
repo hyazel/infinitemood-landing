@@ -155,5 +155,12 @@
     "title": "STAY IN THE MOOD",
     "subtitle": "Sign up to receive the latest news and updates.",
     "discord": "Join Discord"
+  },
+  "confirmation": {
+    "title": "You're all set!",
+    "message": "Your email has been confirmed. You'll now receive the latest news and exclusive updates from Fragmnt.",
+    "backHome": "Back to Home",
+    "explore": "Explore Fragmnt",
+    "footer": "Thank you for joining us on this journey."
   }
 }

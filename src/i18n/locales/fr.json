@@ -155,5 +155,12 @@
     "title": "RESTEZ DANS L'AMBIANCE",
     "subtitle": "Inscrivez-vous pour recevoir les dernières nouvelles et mises à jour.",
     "discord": "Rejoindre le Discord"
+  },
+  "confirmation": {
+    "title": "C'est fait !",
+    "message": "Votre email a été confirmé. Vous recevrez désormais les dernières nouvelles et mises à jour exclusives de Fragmnt.",
+    "backHome": "Retour à l'accueil",
+    "explore": "Explorer Fragmnt",
+    "footer": "Merci de nous rejoindre dans cette aventure."
   }
 }

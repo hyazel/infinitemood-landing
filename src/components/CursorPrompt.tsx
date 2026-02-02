@@ -14,7 +14,16 @@ const CursorPrompt: React.FC<CursorPromptProps> = ({ label, active }) => {
 
         const move = (e: MouseEvent) => {
             setPos({ x: e.clientX, y: e.clientY });
-            if (!isVisible) setIsVisible(true);
+
+            // Check if hovering over an excluded element
+            const target = e.target as HTMLElement;
+            const isExcluded = target.closest('[data-no-cursor="true"]');
+
+            if (isExcluded) {
+                if (isVisible) setIsVisible(false);
+            } else {
+                if (!isVisible) setIsVisible(true);
+            }
         };
 
         window.addEventListener('mousemove', move);

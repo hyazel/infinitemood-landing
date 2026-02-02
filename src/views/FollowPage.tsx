@@ -62,7 +62,7 @@ const FollowPage: React.FC = () => {
 
                     {/* Email Link */}
                     <a
-                        href="mailto:droguetlaurent@gmail.com"
+                        href="mailto:hello@fragmnt.app"
                         className="group flex items-center gap-3 text-text-secondary hover:text-white transition-colors"
                     >
                         <span className="w-10 h-10 rounded-full bg-white/5 group-hover:bg-white/10 flex items-center justify-center transition-colors border border-white/10">
@@ -71,7 +71,7 @@ const FollowPage: React.FC = () => {
                                 <polyline points="22,6 12,13 2,6"></polyline>
                             </svg>
                         </span>
-                        <span>droguetlaurent@gmail.com</span>
+                        <span>hello@fragmnt.app</span>
                     </a>
 
                 </motion.div>
