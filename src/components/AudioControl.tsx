@@ -76,7 +76,7 @@ const AudioControl: React.FC<AudioControlProps> = ({ trackTitle, weatherLevel, n
 
     return (
         <motion.div
-            className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-50 pointer-events-auto"
+            className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-50 pointer-events-auto mix-blend-difference"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1, duration: 1 }}
@@ -84,9 +84,10 @@ const AudioControl: React.FC<AudioControlProps> = ({ trackTitle, weatherLevel, n
             <button
                 onClick={toggleMute}
                 className="group flex items-center gap-2 md:gap-3 px-2 py-1.5 md:px-4 md:py-2.5 rounded-full
-                           backdrop-blur-md bg-white/10 hover:bg-white/20
-                           border border-white/10 hover:border-white/20
-                           shadow-lg hover:shadow-xl transition-colors relative overflow-hidden"
+                           backdrop-blur-md bg-white/90 text-black
+                           hover:bg-white
+                           border border-white/20
+                           shadow-lg hover:shadow-xl transition-all relative overflow-hidden"
             >
                 <motion.div
                     layout="position"
@@ -101,7 +102,7 @@ const AudioControl: React.FC<AudioControlProps> = ({ trackTitle, weatherLevel, n
                                 animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
                                 exit={{ y: -20, opacity: 0, filter: 'blur(4px)' }}
                                 transition={{ type: "spring", stiffness: 400, damping: 25, mass: 0.8 }}
-                                className={`text-[8px] md:text-[10px] font-mono uppercase tracking-[0.2em] whitespace-nowrap ${notification ? 'text-primitive-saffron-core font-bold' : 'text-white/70 group-hover:text-white'}`}
+                                className={`text-[8px] md:text-[10px] font-mono uppercase tracking-[0.2em] whitespace-nowrap ${notification ? 'font-bold' : ''}`}
                             >
                                 {displayedText}
                             </motion.span>
@@ -111,7 +112,7 @@ const AudioControl: React.FC<AudioControlProps> = ({ trackTitle, weatherLevel, n
                     </div>
 
                     {/* Icon */}
-                    <div className="text-white/80 group-hover:text-white transition-colors relative z-10">
+                    <div className="transition-opacity relative z-10">
                         {isMuted ? (
                             <VolumeX size={14} className="md:w-4 md:h-4" strokeWidth={1.5} />
                         ) : (

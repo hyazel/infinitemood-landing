@@ -16,18 +16,23 @@ import AudioControl from './components/AudioControl';
 import { useLocation } from 'react-router-dom';
 import { LanguageProvider } from './i18n';
 import { AudioProvider, useAudio } from './contexts/AudioContext';
-import { useTranslation } from './i18n';
+import { FRAGMENTS } from './data/fragments';
+
+// Helper function to map event names to display titles
+const getTrackTitle = (eventName: string | null): string => {
+  if (!eventName) return '';
+  const fragment = FRAGMENTS.find(f => f.event === eventName);
+  return fragment?.title || '';
+};
 
 function AppContent() {
   const location = useLocation();
-  const { t } = useTranslation();
-  const { isAudioStarted } = useAudio();
+  const { isAudioStarted, currentAudioEvent, weatherLevel, natureLevel } = useAudio();
   const [isLoading, setIsLoading] = useState(location.pathname === '/');
   const [hasShownLoading, setHasShownLoading] = useState(false);
 
-  // Audio control state
-  const [weatherLevel] = useState(0);
-  const [natureLevel] = useState(0);
+  // Get track title from current audio event
+  const trackTitle = getTrackTitle(currentAudioEvent);
 
   // Only show loading on first visit to home page
   useEffect(() => {
@@ -98,7 +103,7 @@ function AppContent() {
           {/* Global Audio Control - appears on all pages when audio is started */}
           {isAudioStarted && (
             <AudioControl
-              trackTitle={t('influencesB.track')}
+              trackTitle={trackTitle}
               weatherLevel={weatherLevel}
               natureLevel={natureLevel}
             />

@@ -3,14 +3,14 @@ import WhatIsItC from '../components/WhatIsItC';
 import HowItWorkInteraction from '../components/HowItWorkInteraction';
 import AudioControl from '../components/AudioControl';
 import AudioManager from '../utils/AudioManager';
+import { useAudio } from '../contexts/AudioContext';
 
 const Demo: React.FC = () => {
     // Track if an ambiance is selected to unlock scrolling
     const [selectedFragment, setSelectedFragment] = useState<any | null>(null);
 
-    // Weather & Nature State (Lifted for AudioControl)
-    const [weatherLevel, setWeatherLevel] = useState(0); // 0=Calm
-    const [natureLevel, setNatureLevel] = useState(0);   // 0=Pure Nature
+    // Use global weather & nature state from AudioContext
+    const { weatherLevel, setWeatherLevel, natureLevel, setNatureLevel } = useAudio();
 
     // Ensure audio banks are loaded if landing here directly
     useEffect(() => {

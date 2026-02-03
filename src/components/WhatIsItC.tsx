@@ -4,6 +4,7 @@ import { FRAGMENTS } from '../data/fragments';
 import AudioManager from '../utils/AudioManager';
 import MouseScrollIndicator from './MouseScrollIndicator';
 import { useTranslation } from '../i18n';
+import { useAudio } from '../contexts/AudioContext';
 
 // Import images
 
@@ -59,7 +60,8 @@ const CapsuleStack: React.FC<{
     scrollYProgress: MotionValue<number>;
     ambiances: AmbianceCard[];
     onPlayClick: (card: AmbianceCard) => void;
-}> = ({ scrollYProgress, ambiances, onPlayClick }) => {
+    currentPlayingEvent: string | null;
+}> = ({ scrollYProgress, ambiances, onPlayClick, currentPlayingEvent }) => {
     const { t } = useTranslation();
 
     // Total items
@@ -116,8 +118,8 @@ const CapsuleStack: React.FC<{
                             <img src={item.image} alt={item.title} className="w-full h-full object-cover opacity-80 transition-all duration-700 ease-out group-hover:opacity-100 group-hover:scale-105" />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
 
-                            {/* Now Playing Badge for Neo Classic (index 1) */}
-                            {index === 1 && (
+                            {/* Now Playing Badge when this card's audio is playing */}
+                            {item.event && item.event === currentPlayingEvent && (
                                 <div className="absolute top-8 left-8 md:top-12 md:left-12">
                                     <div className="bg-primitive-saffron-core/90 backdrop-blur-md px-4 py-2 rounded-full flex items-center gap-3 border border-primitive-saffron-core shadow-lg shadow-primitive-saffron-core/30">
                                         <div className="flex gap-1 h-4 items-end">
@@ -458,7 +460,7 @@ const WhatIsItC: React.FC<{
     const clickScrollPositionRef = useRef<number>(0);
 
     const [fragments] = useState(FRAGMENTS);
-    const currentAudioEvent = useRef<string | null>(null);
+    const { currentAudioEvent, setCurrentAudioEvent } = useAudio();
 
     const { scrollYProgress } = useScroll({
         target: targetRef,
@@ -539,12 +541,12 @@ const WhatIsItC: React.FC<{
     const handlePlayClick = (card: any) => {
         const audioMgr = AudioManager.getInstance();
         audioMgr.stopHero();
-        if (currentAudioEvent.current) {
-            audioMgr.stop(currentAudioEvent.current);
+        if (currentAudioEvent) {
+            audioMgr.stop(currentAudioEvent);
         }
         if (card.event) {
             audioMgr.play(card.event);
-            currentAudioEvent.current = card.event;
+            setCurrentAudioEvent(card.event);
         }
 
         // Capture current absolute scroll position
@@ -615,6 +617,7 @@ const WhatIsItC: React.FC<{
                                 scrollYProgress={visualProgress}
                                 ambiances={fragments}
                                 onPlayClick={handlePlayClick}
+                                currentPlayingEvent={currentAudioEvent}
                             />
                         </motion.div>
                     ) : (

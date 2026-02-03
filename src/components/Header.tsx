@@ -24,7 +24,7 @@ const Header: React.FC = () => {
 
                 {/* Desktop Navigation - Hidden on mobile */}
                 <div className="hidden md:flex items-start gap-6">
-                    <nav data-no-cursor="true" className={`flex flex-col items-start gap-2 font-display font-medium text-lg transition-colors ${isInverted ? 'text-text-primary' : 'text-text-inverted'}`}>
+                    <nav data-no-cursor="true" className={`flex flex-col items-start gap-1 font-display font-medium text-lg transition-colors ${isInverted ? 'text-text-primary' : 'text-text-inverted'}`}>
                         <NavLink
                             to="/"
                             className={({ isActive }) => `hover:text-text-tertiary transition-colors ${isActive ? 'text-text-tertiary' : ''}`}
