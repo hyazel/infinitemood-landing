@@ -1,15 +1,19 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { useTranslation } from '../i18n';
 
 const Header: React.FC = () => {
     const { t } = useTranslation();
+    const location = useLocation();
+
+    // Invert header colors on demo page
+    const isInverted = location.pathname === '/demo';
 
     return (
         <header className="absolute top-0 left-0 w-full flex items-start justify-between px-12 py-8 z-50">
             {/* Logo */}
             <NavLink to="/" data-no-cursor="true" className="flex items-center gap-2 hover:opacity-80 transition-opacity z-50">
-                <div className="font-display font-bold text-xl tracking-wider text-text-inverted">
+                <div className={`font-display font-bold text-xl tracking-wider transition-colors ${isInverted ? 'text-text-primary' : 'text-text-inverted'}`}>
                     {t('header.logo')}
                 </div>
                 {/*
@@ -22,7 +26,22 @@ const Header: React.FC = () => {
 
             {/* Navigation */}
             <div className="flex items-start gap-6">
-                <nav data-no-cursor="true" className="flex flex-col items-start gap-2 font-display font-medium text-lg text-text-inverted">
+                <nav data-no-cursor="true" className={`flex flex-col items-start gap-2 font-display font-medium text-lg transition-colors ${isInverted ? 'text-text-primary' : 'text-text-inverted'}`}>
+                    {/* Preview Link - Featured with underline */}
+                    <NavLink
+                        to="/demo"
+                        className={({ isActive }) => `
+                            relative
+                            pb-0.5
+                            border-b border-primitive-mint-deep/40
+                            transition-all duration-300
+                            ${isActive ? 'text-text-tertiary border-text-tertiary' : ''}
+                            hover:border-primitive-mint-deep hover:text-text-tertiary
+                        `}
+                    >
+                        {t('header.nav.preview')}
+                    </NavLink>
+
                     {/* Follow Page Link */}
                     <NavLink
                         to="/follow"

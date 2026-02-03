@@ -54,6 +54,39 @@ const HeroFragment: React.FC<HeroProps> = ({ onStartAudio }) => {
                 {/* 2. The Tint Overlay: Turns the WHITE background into IVORY */}
                 <div className="absolute inset-0 z-20 bg-background-inverted mix-blend-multiply pointer-events-none" />
 
+                {/* Scroll Indicators - Corners */}
+                <motion.div
+                    className="absolute bottom-6 left-6 z-30 pointer-events-none"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 0.5 }}
+                    transition={{ duration: 1, delay: 1.5 }}
+                >
+                    <motion.div
+                        animate={{ y: [0, 6, 0] }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                    >
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-text-inverted">
+                            <path d="M12 5L12 19M12 19L7 14M12 19L17 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                    </motion.div>
+                </motion.div>
+
+                <motion.div
+                    className="absolute bottom-6 right-6 z-30 pointer-events-none"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 0.5 }}
+                    transition={{ duration: 1, delay: 1.5 }}
+                >
+                    <motion.div
+                        animate={{ y: [0, 6, 0] }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
+                    >
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-text-inverted">
+                            <path d="M12 5L12 19M12 19L7 14M12 19L17 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                    </motion.div>
+                </motion.div>
+
                 {/* 3. The Image layer (Bottom) */}
                 <div className="absolute inset-0 flex items-end justify-center overflow-hidden z-0 pointer-events-none">
                     <motion.div

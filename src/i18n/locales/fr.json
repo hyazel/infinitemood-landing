@@ -4,7 +4,8 @@
     "chapter": "Chapitre 1",
     "newsletter_cta": "Suivre",
     "nav": {
-      "project": "Projet"
+      "project": "Projet",
+      "preview": "Aperçu"
     }
   },
   "heroFragment": {
@@ -162,5 +163,8 @@
     "backHome": "Retour à l'accueil",
     "explore": "Explorer Fragmnt",
     "footer": "Merci de nous rejoindre dans cette aventure."
+  },
+  "demo": {
+    "createMood": "Choisir une ambiance"
   }
 }

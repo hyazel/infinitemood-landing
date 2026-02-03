@@ -8,6 +8,7 @@ import Blog from './views/Blog';
 import BlogPost from './views/BlogPost';
 import FollowPage from './views/FollowPage';
 import EmailConfirmation from './views/EmailConfirmation';
+import Demo from './views/Demo';
 import LoadingView from './components/LoadingView';
 import PageTransition from './components/PageTransition';
 import Header from './components/Header';
@@ -86,6 +87,11 @@ function App() {
               <Route path="/email-confirmed" element={
                 <PageTransition>
                   <EmailConfirmation />
+                </PageTransition>
+              } />
+              <Route path="/demo" element={
+                <PageTransition>
+                  <Demo />
                 </PageTransition>
               } />
             </Routes>

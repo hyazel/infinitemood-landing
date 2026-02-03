@@ -15,12 +15,12 @@ const Outro = () => {
         offset: ["start start", "end end"]
     });
 
-    const blurVariants: Variants = {
-        hidden: { opacity: 0, filter: "blur(10px)" },
+    const zoomInVariants: Variants = {
+        hidden: { opacity: 0, scale: 1.1 },
         visible: {
             opacity: 1,
-            filter: "blur(0px)",
-            transition: { duration: 1, ease: "easeOut" }
+            scale: 1,
+            transition: { duration: 1.5, ease: "easeOut" }
         }
     };
 
@@ -29,8 +29,8 @@ const Outro = () => {
         visible: {
             opacity: 1,
             transition: {
-                staggerChildren: 0.3,
-                delayChildren: 0.2
+                staggerChildren: 0.5,
+                delayChildren: 0.3
             }
         }
     };
@@ -50,9 +50,9 @@ const Outro = () => {
             <div className="flex-1 flex flex-col items-center justify-center text-center max-w-6xl w-full z-20">
 
                 {/* Sticky Text Wrapper */}
-                <div ref={textWrapperRef} className="w-full relative" style={{ height: 'calc(var(--vh, 1vh) * 150)' }}>
+                <div ref={textWrapperRef} className="w-full relative" style={{ height: 'calc(var(--vh, 1vh) *500)' }}>
                     <div className="sticky -translate-y-1/2 flex justify-center" style={{ top: 'calc(var(--vh, 1vh) * 45)' }}>
-                        <div className="max-w-4xl px-4">
+                        <ScrollFadeText scrollYProgress={revealProgress}>
                             <p className="text-2xl md:text-4xl font-light leading-relaxed text-center flex flex-wrap justify-center gap-y-2 font-display tracking-wide">
                                 {(() => {
                                     const text = t('outro.text');
@@ -91,28 +91,35 @@ const Outro = () => {
                                     });
                                 })()}
                             </p>
-                        </div>
+                        </ScrollFadeText>
                     </div>
                 </div>
 
                 {/* Following Content */}
                 <motion.div
-                    className="flex flex-col items-center gap-64 pb-20 pt-20"
+                    className="flex flex-col items-center gap-96 pb-20 pt-32"
                     variants={containerVariants}
                     initial="hidden"
                     whileInView="visible"
-                    viewport={{ once: true }}
+                    viewport={{ once: true, amount: 0.05 }}
                 >
                     {/* Hook */}
                     <motion.h2
-                        variants={blurVariants}
+                        variants={zoomInVariants}
                         className="text-5xl md:text-7xl font-display font-medium text-accent-primary leading-relaxed py-4"
                     >
                         {t('outro.hook')}
                     </motion.h2>
 
                     {/* Weight Scale Newsletter CTA */}
-                    <WeightScaleCTA t={t} />
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, amount: 0.2 }}
+                        transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
+                    >
+                        <WeightScaleCTA t={t} />
+                    </motion.div>
                 </motion.div>
 
             </div>
@@ -147,5 +154,25 @@ const ScrollRevealChar: React.FC<ScrollRevealCharProps> = ({ char, index, total,
         <motion.span style={{ opacity }} className="text-white">
             {char === " " ? "\u00A0" : char}
         </motion.span>
+    );
+};
+
+// ===========================================
+// SCROLL FADE TEXT (Zoom Out)
+// ===========================================
+interface ScrollFadeTextProps {
+    children: React.ReactNode;
+    scrollYProgress: any;
+}
+
+const ScrollFadeText: React.FC<ScrollFadeTextProps> = ({ children, scrollYProgress }) => {
+    // Fade out and zoom at the end of scroll
+    const opacity = useTransform(scrollYProgress, [0.7, 0.95], [1, 0]);
+    const scale = useTransform(scrollYProgress, [0.7, 0.95], [1, 1.05]);
+
+    return (
+        <motion.div style={{ opacity, scale }} className="max-w-4xl px-4">
+            {children}
+        </motion.div>
     );
 };

@@ -8,7 +8,7 @@ interface CursorPromptProps {
 const CursorPrompt: React.FC<CursorPromptProps> = ({ label, active }) => {
     const [pos, setPos] = useState({ x: 0, y: 0 });
     const [isVisible, setIsVisible] = useState(false);
-
+    const [isPastHero, setIsPastHero] = useState(false);
     const [rects, setRects] = useState<DOMRect[]>([]);
 
     // Cache the exclusion zones on mount and resizing/scroll
@@ -24,16 +24,25 @@ const CursorPrompt: React.FC<CursorPromptProps> = ({ label, active }) => {
             setRects(newRects);
         };
 
+        const handleScroll = () => {
+            updateRects();
+            setIsPastHero(window.scrollY > window.innerHeight - 100);
+        };
+
         // Initial update
         updateRects();
+        handleScroll();
 
         // Update on resize or scroll as these change layouts
         window.addEventListener('resize', updateRects);
-        window.addEventListener('scroll', updateRects);
+        window.addEventListener('scroll', handleScroll);
+
+        // Also check if we are past hero initially
+        setIsPastHero(window.scrollY > window.innerHeight - 100);
 
         return () => {
             window.removeEventListener('resize', updateRects);
-            window.removeEventListener('scroll', updateRects);
+            window.removeEventListener('scroll', handleScroll);
         };
     }, [active]);
 
@@ -96,11 +105,11 @@ const CursorPrompt: React.FC<CursorPromptProps> = ({ label, active }) => {
                 left: pos.x,
                 top: pos.y,
                 transform: 'translate(-50%, -50%)',
-                opacity: isVisible ? 1 : 0,
+                opacity: (isVisible && !isPastHero) ? 1 : 0,
                 willChange: 'left, top, opacity'
             }}
         >
-            <div className="bg-white text-black px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest whitespace-nowrap shadow-lg">
+            <div className="bg-white text-black px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest whitespace-nowrap shadow-lg">
                 {label}
             </div>
         </div>

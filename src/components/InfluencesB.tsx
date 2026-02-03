@@ -1,7 +1,7 @@
 
 
-import React, { useRef } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import React, { useRef, useState } from 'react';
+import { motion, useScroll, useTransform, useMotionValueEvent } from 'framer-motion';
 import fragmntAnimated from '../assets/fragmnt-animated.mp4';
 import { useTranslation } from '../i18n';
 
@@ -9,7 +9,7 @@ import { useTranslation } from '../i18n';
 
 const MiniPlayer: React.FC = () => {
     const { t } = useTranslation();
-    
+
     return (
         <div className="flex items-center gap-4 bg-white/50 backdrop-blur-md border border-white/20 px-6 py-3 rounded-full shadow-lg">
             {/* Play Button Icon */}
@@ -47,7 +47,11 @@ const MiniPlayer: React.FC = () => {
     );
 };
 
-const InfluencesB: React.FC = () => {
+interface InfluencesBProps {
+    onWidgetTrigger?: (show: boolean) => void;
+}
+
+const InfluencesB: React.FC<InfluencesBProps> = ({ onWidgetTrigger }) => {
     const { t } = useTranslation();
     const targetRef = useRef<HTMLDivElement>(null);
     const { scrollYProgress } = useScroll({
@@ -55,8 +59,16 @@ const InfluencesB: React.FC = () => {
         offset: ["start start", "end end"]
     });
 
+    // Detect when to trigger widget (when text disappears around 0.95)
+    useMotionValueEvent(scrollYProgress, "change", (latest) => {
+        if (onWidgetTrigger) {
+            // Trigger when passed 0.92 (text starts fading out)
+            onWidgetTrigger(latest > 0.92);
+        }
+    });
+
     // --- TIMELINE (0.00 - 1.00) ---
-    // Total height: 550vh
+    // Total height increased to 850vh to let video stay longer
 
     // STEP 1: "Des ambiances qui s'écoutent" (0.00 - 0.20)
     const text1Opacity = useTransform(scrollYProgress, [0.00, 0.08, 0.18, 0.22], [1, 1, 1, 0]);
@@ -82,8 +94,8 @@ const InfluencesB: React.FC = () => {
     // Title: "à une scène 3D"
     // Visual: Full Screen Capsule
 
-    // Title Animation
-    const visualBeatOpacity = useTransform(scrollYProgress, [0.75, 0.80, 0.95, 1.00], [0, 1, 1, 0]);
+    // Title Animation - Fades out earlier (0.92) to leave video alone
+    const visualBeatOpacity = useTransform(scrollYProgress, [0.75, 0.80, 0.90, 0.92], [0, 1, 1, 0]);
     // Move slightly up as the capsule fills
     const visualBeatY = useTransform(scrollYProgress, [0.75, 1.00], ["20px", "-25vh"]);
 
@@ -107,7 +119,7 @@ const InfluencesB: React.FC = () => {
     const imageY = useTransform(scrollYProgress, [0.75, 1.00], ["-10%", "0%"]);
 
     return (
-        <section ref={targetRef} className="relative bg-background-inverted overflow-clip z-30" style={{ height: 'calc(var(--vh, 1vh) * 650)' }}>
+        <section ref={targetRef} className="relative bg-background-inverted overflow-clip z-30" style={{ height: 'calc(var(--vh, 1vh) * 850)' }}>
             {/* STICKY CONTAINER */}
             <div className="sticky top-0 h-screen w-full flex flex-col items-center justify-center overflow-hidden">
 
