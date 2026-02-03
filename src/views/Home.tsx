@@ -6,16 +6,12 @@
 import AudioManager from '../utils/AudioManager';
 import { useState, useEffect } from 'react';
 import { useTranslation } from '../i18n';
+import { useAudio } from '../contexts/AudioContext';
 import CursorPrompt from '../components/CursorPrompt';
 import Manifesto from '../components/Manifesto';
 import Influences from '../components/InfluencesB';
 import Outro from '../components/Outro';
 import DemoWidget from '../components/DemoWidget';
-import AudioControl from '../components/AudioControl';
-// // import HeroAlternativeL from '../components/HeroAlternativeL';
-// // import HeroAlternativeL from '../components/HeroAlternativeL';
-// import HeroAlternativeM from '../components/HeroAlternativeM';
-// import HeroAlternativeA from '../components/HeroAlternativeA';
 import HeroFragment from '../components/HeroFragment';
 // import HeroAlternativeE from '../components/HeroAlternativeE';
 // import HeroAlternativeF from '../components/HeroAlternativeF';
@@ -23,21 +19,15 @@ import HeroFragment from '../components/HeroFragment';
 
 const Home = () => {
     const { t } = useTranslation();
-    const [isAudioStarted, setIsAudioStarted] = useState(false);
+    const { isAudioStarted, startAudio } = useAudio();
     const [showDemoWidget, setShowDemoWidget] = useState(false);
     const [isPastHero, setIsPastHero] = useState(false);
 
-    // Audio control state (unused for hero track, but AudioControl expects them)
-    const [weatherLevel] = useState(0);
-    const [natureLevel] = useState(0);
-
     // Force start at top on mount to prevent browser scroll restoration logic
     useEffect(() => {
-        window.scrollTo(0, 0);
         AudioManager.getInstance().loadMasterBank();
 
-        // Also ensure Lenis knows we are at top
-        // Use a small timeout to let Lenis initialize if needed
+        // Ensure Lenis knows we are at top after loading animation
         setTimeout(() => {
             import('../components/SmoothScroll').then(mod => {
                 const lenis = mod.getLenis();
@@ -46,10 +36,6 @@ const Home = () => {
                 }
             });
         }, 100);
-
-        if ('scrollRestoration' in history) {
-            history.scrollRestoration = 'manual';
-        }
     }, []);
 
     // Track scroll position to restore cursor after hero
@@ -66,9 +52,9 @@ const Home = () => {
 
 
     const handleStartAudio = () => {
-        if (!isAudioStarted) {
-            setIsAudioStarted(true);
-            AudioManager.getInstance().playHero();
+        // Only allow audio start when in hero section
+        if (!isPastHero) {
+            startAudio();
         }
     };
 
@@ -77,7 +63,19 @@ const Home = () => {
             onClick={handleStartAudio}
             className={`w-full bg-background-primary transition-cursor duration-300 ${!isAudioStarted && !isPastHero ? 'cursor-none' : ''}`}
         >
-            <CursorPrompt active={!isAudioStarted} label={t('heroFragment.clickForSound')} />
+            {/* Desktop: Cursor prompt that follows mouse */}
+            <div className="hidden md:block">
+                <CursorPrompt active={!isAudioStarted} label={t('heroFragment.clickForSound')} />
+            </div>
+
+            {/* Mobile: Fixed overlay with tap prompt */}
+            {!isAudioStarted && (
+                <div className="md:hidden fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-[2px] pointer-events-none">
+                    <div className="bg-white text-black px-8 py-4 rounded-full text-sm font-bold uppercase tracking-widest animate-pulse shadow-2xl">
+                        {t('heroFragment.tapForSound')}
+                    </div>
+                </div>
+            )}
 
             <HeroFragment onStartAudio={handleStartAudio} isAudioStarted={isAudioStarted} />
 
@@ -90,15 +88,6 @@ const Home = () => {
             <Outro />
 
             <DemoWidget isVisible={showDemoWidget} />
-
-            {/* Audio Control - appears when audio is started */}
-            {isAudioStarted && (
-                <AudioControl
-                    trackTitle={t('influencesB.track')}
-                    weatherLevel={weatherLevel}
-                    natureLevel={natureLevel}
-                />
-            )}
 
         </main>
     );

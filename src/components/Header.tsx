@@ -29,15 +29,14 @@ const Header: React.FC = () => {
                 <nav data-no-cursor="true" className={`flex flex-col items-start gap-2 font-display font-medium text-lg transition-colors ${isInverted ? 'text-text-primary' : 'text-text-inverted'}`}>
                     {/* Preview Link - Featured with underline */}
                     <NavLink
+                        to="/"
+                        className={({ isActive }) => `hover:text-text-tertiary transition-colors ${isActive ? 'text-text-tertiary' : ''}`}
+                    >
+                        {t('header.nav.home')}
+                    </NavLink>
+                    <NavLink
                         to="/demo"
-                        className={({ isActive }) => `
-                            relative
-                            pb-0.5
-                            border-b border-primitive-mint-deep/40
-                            transition-all duration-300
-                            ${isActive ? 'text-text-tertiary border-text-tertiary' : ''}
-                            hover:border-primitive-mint-deep hover:text-text-tertiary
-                        `}
+                        className={({ isActive }) => `hover:text-text-tertiary transition-colors ${isActive ? 'text-text-tertiary' : ''}`}
                     >
                         {t('header.nav.preview')}
                     </NavLink>

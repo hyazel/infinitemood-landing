@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import WhatIsItC from '../components/WhatIsItC';
 import HowItWorkInteraction from '../components/HowItWorkInteraction';
-import Outro from '../components/Outro';
 import AudioControl from '../components/AudioControl';
 import AudioManager from '../utils/AudioManager';
 
@@ -16,6 +15,15 @@ const Demo: React.FC = () => {
     // Ensure audio banks are loaded if landing here directly
     useEffect(() => {
         AudioManager.getInstance().loadMasterBank();
+
+        // Scroll to top when arriving on Demo page
+        window.scrollTo(0, 0);
+        import('../components/SmoothScroll').then(mod => {
+            const lenis = mod.getLenis();
+            if (lenis) {
+                lenis.scrollTo(0, { immediate: true });
+            }
+        });
     }, []);
 
     // Recalculate layout when selection changes (content appears/disappears)

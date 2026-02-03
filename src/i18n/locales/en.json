@@ -4,6 +4,7 @@
     "chapter": "Chapter 1",
     "newsletter_cta": "Follow",
     "nav": {
+      "home": "Home",
       "project": "Project",
       "preview": "Preview"
     }
@@ -12,7 +13,8 @@
     "title": "Soundscapes.",
     "subtitle": "Composed to last.",
     "description": "To focus. To escape. Freely.",
-    "clickForSound": "Click for sound"
+    "clickForSound": "Click for sound",
+    "tapForSound": "Tap for sound"
   },
   "manifesto": {
     "intro": "Fragmnt is an app of ambient music composed by musicians.",

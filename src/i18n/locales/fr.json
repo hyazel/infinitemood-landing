@@ -4,6 +4,7 @@
     "chapter": "Chapitre 1",
     "newsletter_cta": "Suivre",
     "nav": {
+      "home": "Accueil",
       "project": "Projet",
       "preview": "Aperçu"
     }
@@ -12,7 +13,8 @@
     "title": "Des paysages sonores.",
     "subtitle": "Composés pour durer.",
     "description": "Pour se concentrer. S'évader. Librement.",
-    "clickForSound": "Cliquer pour le son"
+    "clickForSound": "Cliquer pour le son",
+    "tapForSound": "Toucher pour le son"
   },
   "manifesto": {
     "intro": "Fragmnt est une app de musiques d'ambiances composées par des musiciens.",

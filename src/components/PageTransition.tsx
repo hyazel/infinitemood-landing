@@ -79,7 +79,7 @@ const PageTransition = ({ children, className, variant = 'column_fracture' }: Pa
                     transition: { delay: 0.4, duration: 0.4 }
                 } : emberFade.animate}
                 exit={variant === 'column_fracture' ? {
-                    opacity: 1, // Stay visible until covered
+                    opacity: 1,
                     transition: { duration: 0.1 }
                 } : emberFade.exit}
             >

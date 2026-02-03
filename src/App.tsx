@@ -12,13 +12,22 @@ import Demo from './views/Demo';
 import LoadingView from './components/LoadingView';
 import PageTransition from './components/PageTransition';
 import Header from './components/Header';
+import AudioControl from './components/AudioControl';
 import { useLocation } from 'react-router-dom';
 import { LanguageProvider } from './i18n';
+import { AudioProvider, useAudio } from './contexts/AudioContext';
+import { useTranslation } from './i18n';
 
-function App() {
+function AppContent() {
   const location = useLocation();
+  const { t } = useTranslation();
+  const { isAudioStarted } = useAudio();
   const [isLoading, setIsLoading] = useState(location.pathname === '/');
   const [hasShownLoading, setHasShownLoading] = useState(false);
+
+  // Audio control state
+  const [weatherLevel] = useState(0);
+  const [natureLevel] = useState(0);
 
   // Only show loading on first visit to home page
   useEffect(() => {
@@ -28,17 +37,6 @@ function App() {
       setIsLoading(false);
     }
   }, [location.pathname, hasShownLoading]);
-
-  // Initialize viewport height management globally
-  // This sets CSS variables (--vh, --svh) for use throughout the app
-
-  // Modified to wait for LoadingView to signal completion
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     setIsLoading(false);
-  //   }, 2500); 
-  //   return () => clearTimeout(timer);
-  // }, []);
 
   return (
     <LanguageProvider>
@@ -96,8 +94,27 @@ function App() {
               } />
             </Routes>
           </AnimatePresence>
+
+          {/* Global Audio Control - appears on all pages when audio is started */}
+          {isAudioStarted && (
+            <AudioControl
+              trackTitle={t('influencesB.track')}
+              weatherLevel={weatherLevel}
+              natureLevel={natureLevel}
+            />
+          )}
         </>
       )}
+    </LanguageProvider>
+  );
+}
+
+function App() {
+  return (
+    <LanguageProvider>
+      <AudioProvider>
+        <AppContent />
+      </AudioProvider>
     </LanguageProvider>
   );
 }
