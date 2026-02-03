@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from '../i18n';
 
 const Project: React.FC = () => {
@@ -11,7 +12,7 @@ const Project: React.FC = () => {
   return (
     <div className="min-h-screen bg-background-inverted text-text-inverted">
 
-      <article className="pt-32 pb-24 px-6 max-w-3xl mx-auto">
+      <article className="pt-40 md:pt-32 pb-24 px-6 max-w-3xl mx-auto">
 
         {/* Hero */}
         <header className="mb-16">
@@ -117,10 +118,23 @@ const Project: React.FC = () => {
           <h2 className="font-display text-2xl font-semibold mb-6">{t('project.access.title')}</h2>
           <div className="space-y-4 leading-relaxed">
             <p>
-              {t('project.access.waitingList')}
+              Sign up for the{' '}
+              <Link
+                to="/follow"
+                className="text-text-tertiary hover:underline"
+              >
+                waiting list
+              </Link>{' '}
+              to be informed of the next steps and the beta.
             </p>
             <p className="font-medium">
-              {t('project.access.preview')}
+              A preview is available{' '}
+              <Link
+                to="/demo"
+                className="text-text-tertiary hover:underline"
+              >
+                here
+              </Link>.
             </p>
           </div>
         </section>
