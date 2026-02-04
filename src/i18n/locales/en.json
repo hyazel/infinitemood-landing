@@ -167,6 +167,10 @@
     "footer": "Thank you for joining us on this journey."
   },
   "demo": {
-    "createMood": "Choose a Mood"
+    "createMood": "Choose a Mood",
+    "outro": {
+      "text": "Join a community that listens differently.",
+      "cta": "Follow the project"
+    }
   }
 }

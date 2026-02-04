@@ -4,6 +4,7 @@ import HowItWorkInteraction from '../components/HowItWorkInteraction';
 import AudioControl from '../components/AudioControl';
 import AudioManager from '../utils/AudioManager';
 import { useAudio } from '../contexts/AudioContext';
+import DemoOutroCTA from '../components/DemoOutroCTA';
 
 const Demo: React.FC = () => {
     // Track if an ambiance is selected to unlock scrolling
@@ -52,6 +53,9 @@ const Demo: React.FC = () => {
                             setNatureLevel={setNatureLevel}
                         />
                     </div>
+
+                    {/* CTA to Follow page */}
+                    <DemoOutroCTA />
                 </>
             )}
 
