@@ -2,6 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import AudioManager from '../utils/AudioManager';
 import { VariantSmoke } from './loading-variants/CategoryC';
+import { preloadImages } from '../utils/imagePreloader';
+
+// Image Imports - same as HeroFragment
+import islandImage from '../assets/fragmnt-island.jpg';
+import islandeImage from '../assets/fragmnt-islande.jpg';
+import desertImage from '../assets/fragmnt-desert.jpg';
+import townImage from '../assets/fragmnt-town.jpg';
+import europeImage from '../assets/fragmnt-europe.jpg';
+import brutalismImage from '../assets/fragmnt-brutalism.jpg';
+import jungleImage from '../assets/fragmnt-jungle.jpg';
+
+const HERO_IMAGES = [islandImage, islandeImage, desertImage, townImage, europeImage, brutalismImage, jungleImage];
 
 interface LoadingViewProps {
     onComplete?: () => void;
@@ -9,9 +21,10 @@ interface LoadingViewProps {
 
 const LoadingView: React.FC<LoadingViewProps> = ({ onComplete }) => {
     const [isAudioReady, setIsAudioReady] = useState(false);
+    const [isImagesReady, setIsImagesReady] = useState(false);
     const [isAnimationComplete, setIsAnimationComplete] = useState(false);
 
-    // Initial check and listener for audio status
+    // Preload audio assets
     useEffect(() => {
         if (AudioManager.getInstance().checkReady()) {
             setIsAudioReady(true);
@@ -22,16 +35,23 @@ const LoadingView: React.FC<LoadingViewProps> = ({ onComplete }) => {
         }
     }, []);
 
-    // Check if both conditions are met
+    // Preload hero images
     useEffect(() => {
-        if (isAudioReady && isAnimationComplete) {
-            // Add a small delay after both are ready to let the user see the "locked" state
+        preloadImages(HERO_IMAGES).then(() => {
+            setIsImagesReady(true);
+        });
+    }, []);
+
+    // Check if all conditions are met
+    useEffect(() => {
+        if (isAudioReady && isImagesReady && isAnimationComplete) {
+            // Add a small delay after everything is ready
             const timer = setTimeout(() => {
                 if (onComplete) onComplete();
             }, 800);
             return () => clearTimeout(timer);
         }
-    }, [isAudioReady, isAnimationComplete, onComplete]);
+    }, [isAudioReady, isImagesReady, isAnimationComplete, onComplete]);
 
     return (
         <motion.div
