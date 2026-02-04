@@ -6,6 +6,7 @@ interface AudioContextType {
     isAudioStarted: boolean;
     startAudio: () => void;
     stopAudio: () => void;
+    markAudioAsStarted: () => void;
     currentAudioEvent: string | null;
     setCurrentAudioEvent: (event: string | null) => void;
     weatherLevel: number;
@@ -36,8 +37,12 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         AudioManager.getInstance().stopHero();
     };
 
+    const markAudioAsStarted = () => {
+        setIsAudioStarted(true);
+    };
+
     return (
-        <AudioContext.Provider value={{ isAudioStarted, startAudio, stopAudio, currentAudioEvent, setCurrentAudioEvent, weatherLevel, setWeatherLevel, natureLevel, setNatureLevel }}>
+        <AudioContext.Provider value={{ isAudioStarted, startAudio, stopAudio, markAudioAsStarted, currentAudioEvent, setCurrentAudioEvent, weatherLevel, setWeatherLevel, natureLevel, setNatureLevel }}>
             {children}
         </AudioContext.Provider>
     );

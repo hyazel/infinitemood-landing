@@ -72,7 +72,7 @@ const AudioControl: React.FC<AudioControlProps> = ({ trackTitle, weatherLevel, n
         }
     };
 
-    const displayedText = isMuted ? 'Muted' : (notification || trackTitle || 'Sound On');
+    const displayedText = isMuted ? 'Muted' : (notification || trackTitle || '');
 
     return (
         <motion.div

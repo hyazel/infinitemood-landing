@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import WhatIsItC from '../components/WhatIsItC';
 import HowItWorkInteraction from '../components/HowItWorkInteraction';
-import AudioControl from '../components/AudioControl';
 import AudioManager from '../utils/AudioManager';
 import { useAudio } from '../contexts/AudioContext';
 import DemoOutroCTA from '../components/DemoOutroCTA';
@@ -58,12 +57,6 @@ const Demo: React.FC = () => {
                     <DemoOutroCTA />
                 </>
             )}
-
-            <AudioControl
-                trackTitle={selectedFragment?.title}
-                weatherLevel={weatherLevel}
-                natureLevel={natureLevel}
-            />
         </main>
     );
 };

@@ -460,7 +460,7 @@ const WhatIsItC: React.FC<{
     const clickScrollPositionRef = useRef<number>(0);
 
     const [fragments] = useState(FRAGMENTS);
-    const { currentAudioEvent, setCurrentAudioEvent } = useAudio();
+    const { currentAudioEvent, setCurrentAudioEvent, markAudioAsStarted } = useAudio();
 
     const { scrollYProgress } = useScroll({
         target: targetRef,
@@ -547,6 +547,7 @@ const WhatIsItC: React.FC<{
         if (card.event) {
             audioMgr.play(card.event);
             setCurrentAudioEvent(card.event);
+            markAudioAsStarted(); // Mark audio as started to show global AudioControl
         }
 
         // Capture current absolute scroll position
