@@ -1,6 +1,5 @@
 import React, { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import type { Variants } from 'framer-motion';
 import { useTranslation } from '../i18n';
 import WeightScaleCTA from './Newsletter/WeightScaleCTA';
 
@@ -14,26 +13,6 @@ const Outro = () => {
         target: textWrapperRef,
         offset: ["start start", "end end"]
     });
-
-    const zoomInVariants: Variants = {
-        hidden: { opacity: 0, scale: 1.1 },
-        visible: {
-            opacity: 1,
-            scale: 1,
-            transition: { duration: 1.5, ease: "easeOut" }
-        }
-    };
-
-    const containerVariants: Variants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.5,
-                delayChildren: 0.3
-            }
-        }
-    };
 
     return (
         <section
@@ -49,11 +28,13 @@ const Outro = () => {
             {/* Content Container */}
             <div className="flex-1 flex flex-col items-center justify-center text-center max-w-6xl w-full z-20">
 
-                {/* Sticky Text Wrapper */}
-                <div ref={textWrapperRef} className="w-full relative" style={{ height: 'calc(var(--vh, 1vh) *500)' }}>
+                {/* Combined Sticky Wrapper - Initial Text + Hook */}
+                <div ref={textWrapperRef} className="w-full relative" style={{ height: 'calc(var(--vh, 1vh) * 700)' }}>
                     <div className="sticky -translate-y-1/2 flex justify-center" style={{ top: 'calc(var(--vh, 1vh) * 45)' }}>
+
+                        {/* Initial Text - Fades out */}
                         <ScrollFadeText scrollYProgress={revealProgress}>
-                            <p className="text-2xl md:text-4xl font-light leading-relaxed text-center flex flex-wrap justify-center gap-y-2 font-display tracking-wide">
+                            <p className="text-2xl md:text-4xl font-light leading-relaxed font-display tracking-wide inline-block">
                                 {(() => {
                                     const text = t('outro.text');
                                     const words = text.split(" ");
@@ -92,35 +73,20 @@ const Outro = () => {
                                 })()}
                             </p>
                         </ScrollFadeText>
+
+                        {/* Hook - Fades in after initial text fades out */}
+                        <StickyHook scrollYProgress={revealProgress}>
+                            <h2 className="text-5xl md:text-7xl font-display font-medium text-accent-primary leading-relaxed">
+                                {t('outro.hook')}
+                            </h2>
+                        </StickyHook>
                     </div>
                 </div>
 
-                {/* Following Content */}
-                <motion.div
-                    className="flex flex-col items-center gap-96 pb-20 pt-32"
-                    variants={containerVariants}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true, amount: 0.05 }}
-                >
-                    {/* Hook */}
-                    <motion.h2
-                        variants={zoomInVariants}
-                        className="text-5xl md:text-7xl font-display font-medium text-accent-primary leading-relaxed py-4"
-                    >
-                        {t('outro.hook')}
-                    </motion.h2>
-
-                    {/* Weight Scale Newsletter CTA */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, amount: 0.2 }}
-                        transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
-                    >
-                        <WeightScaleCTA t={t} />
-                    </motion.div>
-                </motion.div>
+                {/* Parallax CTA */}
+                <ParallaxCTA scrollYProgress={revealProgress}>
+                    <WeightScaleCTA t={t} />
+                </ParallaxCTA>
 
             </div>
 
@@ -142,7 +108,7 @@ interface ScrollRevealCharProps {
 
 const ScrollRevealChar: React.FC<ScrollRevealCharProps> = ({ char, index, total, scrollYProgress }) => {
     const startRange = 0.0;
-    const endRange = 0.8;
+    const endRange = 0.6;  // Finish reveal earlier so fade-out can happen after
     const step = (endRange - startRange) / total;
 
     const charStart = startRange + (index * step);
@@ -158,7 +124,7 @@ const ScrollRevealChar: React.FC<ScrollRevealCharProps> = ({ char, index, total,
 };
 
 // ===========================================
-// SCROLL FADE TEXT (Zoom Out)
+// SCROLL FADE TEXT (Initial text that fades out)
 // ===========================================
 interface ScrollFadeTextProps {
     children: React.ReactNode;
@@ -166,13 +132,57 @@ interface ScrollFadeTextProps {
 }
 
 const ScrollFadeText: React.FC<ScrollFadeTextProps> = ({ children, scrollYProgress }) => {
-    // Fade out and zoom at the end of scroll
-    const opacity = useTransform(scrollYProgress, [0.7, 0.95], [1, 0]);
-    const scale = useTransform(scrollYProgress, [0.7, 0.95], [1, 1.05]);
+    // Fade out after text is fully revealed (60-75%)
+    const opacity = useTransform(scrollYProgress, [0.6, 0.75], [1, 0]);
+    const scale = useTransform(scrollYProgress, [0.6, 0.75], [1, 0.95]);
 
     return (
-        <motion.div style={{ opacity, scale }} className="max-w-4xl px-4">
+        <motion.div style={{ opacity, scale }} className="absolute inset-0 flex items-center justify-center w-full">
+            <div className="max-w-4xl px-4 w-full">
+                {children}
+            </div>
+        </motion.div>
+    );
+};
+
+// ===========================================
+// STICKY HOOK (Fades in after initial text)
+// ===========================================
+interface StickyHookProps {
+    children: React.ReactNode;
+    scrollYProgress: any;
+}
+
+const StickyHook: React.FC<StickyHookProps> = ({ children, scrollYProgress }) => {
+    // Fade in AFTER initial text is completely gone (78-85%), then fade out before CTA arrives
+    const opacity = useTransform(scrollYProgress, [0.78, 0.85, 0.94, 1], [0, 1, 1, 0]);
+    const scale = useTransform(scrollYProgress, [0.78, 0.85], [0.95, 1]);
+    const y = useTransform(scrollYProgress, [0.9, 0.95], [0, -50]);
+
+    return (
+        <motion.div style={{ opacity, scale, y }} className="absolute inset-0 flex items-center justify-center">
             {children}
         </motion.div>
     );
 };
+
+// ===========================================
+// PARALLAX CTA (Enters from below)
+// ===========================================
+interface ParallaxCTAProps {
+    children: React.ReactNode;
+    scrollYProgress: any;
+}
+
+const ParallaxCTA: React.FC<ParallaxCTAProps> = ({ children, scrollYProgress }) => {
+    // Parallax effect - comes up from below
+    const y = useTransform(scrollYProgress, [0.75, 1], [400, 0]);
+    const opacity = useTransform(scrollYProgress, [0.75, 0.9], [0, 1]);
+
+    return (
+        <motion.div style={{ y, opacity }} className="pb-20">
+            {children}
+        </motion.div>
+    );
+};
+

@@ -1,9 +1,11 @@
 
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform, useMotionValueEvent } from 'framer-motion';
-import fragmntAnimated from '../assets/fragmnt-animated.mp4';
 import { useTranslation } from '../i18n';
+
+const frameCount = 187;
+const currentFrame = (index: number) => `/frames/frame_${index.toString().padStart(4, '0')}.jpg`;
 
 // --- SUB-COMPONENTS ---
 
@@ -54,10 +56,50 @@ interface InfluencesBProps {
 const InfluencesB: React.FC<InfluencesBProps> = ({ onWidgetTrigger }) => {
     const { t } = useTranslation();
     const targetRef = useRef<HTMLDivElement>(null);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [images, setImages] = useState<HTMLImageElement[]>([]);
+    const [imagesLoaded, setImagesLoaded] = useState(false);
+
     const { scrollYProgress } = useScroll({
         target: targetRef,
         offset: ["start start", "end end"]
     });
+
+    // Preload all frames
+    useEffect(() => {
+        const loadedImages: HTMLImageElement[] = [];
+        let loadedCount = 0;
+
+        for (let i = 1; i <= frameCount; i++) {
+            const img = new Image();
+            img.src = currentFrame(i);
+            img.onload = () => {
+                loadedCount++;
+                if (loadedCount === frameCount) {
+                    setImagesLoaded(true);
+                }
+            };
+            loadedImages.push(img);
+        }
+
+        setImages(loadedImages);
+    }, []);
+
+    // Draw first frame when images are loaded
+    useEffect(() => {
+        if (!imagesLoaded || !canvasRef.current || images.length === 0) return;
+
+        const canvas = canvasRef.current;
+        const context = canvas.getContext('2d');
+        if (!context) return;
+
+        const firstImg = images[0];
+        if (firstImg && firstImg.complete) {
+            canvas.width = firstImg.width;
+            canvas.height = firstImg.height;
+            context.drawImage(firstImg, 0, 0);
+        }
+    }, [imagesLoaded, images]);
 
     // Detect when to trigger widget (when text disappears around 0.95)
     useMotionValueEvent(scrollYProgress, "change", (latest) => {
@@ -68,58 +110,76 @@ const InfluencesB: React.FC<InfluencesBProps> = ({ onWidgetTrigger }) => {
     });
 
     // --- TIMELINE (0.00 - 1.00) ---
-    // Total height increased to 850vh to let video stay longer
+    // Rebalanced: Early content 0-70%, Video scrubbing 70-100% (30%)
 
-    // STEP 1: "Des ambiances qui s'écoutent" (0.00 - 0.20)
-    const text1Opacity = useTransform(scrollYProgress, [0.00, 0.08, 0.18, 0.22], [1, 1, 1, 0]);
-    const text1Y = useTransform(scrollYProgress, [0.00, 0.22], ["20px", "-20px"]);
+    // STEP 1: "Des ambiances qui s'écoutent" (0.00 - 0.15)
+    const text1Opacity = useTransform(scrollYProgress, [0.00, 0.05, 0.12, 0.15], [1, 1, 1, 0]);
+    const text1Y = useTransform(scrollYProgress, [0.00, 0.15], ["20px", "-20px"]);
 
-    // STEP 2: "Et se regardent" (0.25 - 0.45)
-    // Background transition trigger around 0.25
-    const text2Opacity = useTransform(scrollYProgress, [0.25, 0.30, 0.40, 0.45], [0, 1, 1, 0]);
-    const text2Y = useTransform(scrollYProgress, [0.25, 0.45], ["20px", "-20px"]);
+    // STEP 2: "Et se regardent" (0.18 - 0.32)
+    const text2Opacity = useTransform(scrollYProgress, [0.18, 0.22, 0.29, 0.32], [0, 1, 1, 0]);
+    const text2Y = useTransform(scrollYProgress, [0.18, 0.32], ["20px", "-20px"]);
 
-    // BACKGROUND COLOR CHANGE (0.20 - 0.90)
-    const bgOpacity = useTransform(scrollYProgress, [0.20, 0.25, 0.90, 1.00], [0, 1, 1, 0]);
+    // BACKGROUND COLOR CHANGE (0.15 - 0.90)
+    const bgOpacity = useTransform(scrollYProgress, [0.15, 0.18, 0.90, 1.00], [0, 1, 1, 0]);
 
     // --- STEP 3 SPLIT NARRATIVE ---
 
-    // BEAT 1: MUSIC (0.50 - 0.65)
-    // Title: "Chaque Fragmnt associe une composition musicale"
-    // Visual: MiniPlayer
-    const musicBeatOpacity = useTransform(scrollYProgress, [0.50, 0.55, 0.65, 0.70], [0, 1, 1, 0]);
-    const musicBeatY = useTransform(scrollYProgress, [0.50, 0.70], ["30px", "-30px"]);
+    // BEAT 1: MUSIC (0.35 - 0.50)
+    const musicBeatOpacity = useTransform(scrollYProgress, [0.35, 0.40, 0.47, 0.50], [0, 1, 1, 0]);
+    const musicBeatY = useTransform(scrollYProgress, [0.35, 0.50], ["30px", "-30px"]);
 
-    // BEAT 2: VISUAL (0.75 - 1.00)
-    // Title: "à une scène 3D"
-    // Visual: Full Screen Capsule
+    // BEAT 2: VISUAL - CAPSULE AND VIDEO (0.53 - 1.00)
 
-    // Title Animation - Fades out earlier (0.92) to leave video alone
-    const visualBeatOpacity = useTransform(scrollYProgress, [0.75, 0.80, 0.90, 0.92], [0, 1, 1, 0]);
-    // Move slightly up as the capsule fills
-    const visualBeatY = useTransform(scrollYProgress, [0.75, 1.00], ["20px", "-25vh"]);
+    // Title Animation - Visible during capsule growth (0.53 - 0.85)
+    const visualBeatOpacity = useTransform(scrollYProgress, [0.53, 0.58, 0.82, 0.85], [0, 1, 1, 0]);
+    const visualBeatY = useTransform(scrollYProgress, [0.53, 1.00], ["20px", "-25vh"]);
 
-    // Text Shadow: Standardize on 3 values (x, y, blur) + color
-    const textColor = useTransform(scrollYProgress, [0.80, 0.87], ["#16131B", "#FFFFFF"]);
-    const textShadow = useTransform(scrollYProgress, [0.80, 0.87], ["0px 0px 0px rgba(0,0,0,0)", "0px 4px 6px rgba(0,0,0,0.5)"]);
+    // Text Shadow
+    const textColor = useTransform(scrollYProgress, [0.58, 0.65], ["#16131B", "#FFFFFF"]);
+    const textShadow = useTransform(scrollYProgress, [0.58, 0.65], ["0px 0px 0px rgba(0,0,0,0)", "0px 4px 6px rgba(0,0,0,0.5)"]);
 
-    // CAPSULE ANIMATION
-    // Rise from bottom (0.75 - 0.85) -> Locked 0.85-0.98
-    const capsuleOpacity = useTransform(scrollYProgress, [0.75, 0.80, 0.98, 1.00], [0, 1, 1, 1]);
-    const capsuleY = useTransform(scrollYProgress, [0.75, 0.85], ["100vh", "0vh"]);
-    const capsuleWidth = useTransform(scrollYProgress, [0.75, 0.85], ["90vw", "100vw"]);
-    const capsuleHeight = useTransform(scrollYProgress, [0.75, 0.85], ["60vh", "100vh"]);
-    const capsuleRadius = useTransform(scrollYProgress, [0.75, 0.85], ["3rem", "0rem"]);
-
-    // Capsule Shadow: Standardize on 4 values (x, y, blur, spread) + color to match end state
-    const capsuleShadow = useTransform(scrollYProgress, [0.80, 0.85], ["0px 0px 0px 0px rgba(0,0,0,0)", "0px 25px 50px -12px rgba(0,0,0,0.5)"]);
+    // CAPSULE ANIMATION (0.53 - 0.70)
+    const capsuleOpacity = useTransform(scrollYProgress, [0.53, 0.58, 0.98, 1.00], [0, 1, 1, 1]);
+    const capsuleY = useTransform(scrollYProgress, [0.53, 0.70], ["100vh", "0vh"]);
+    const capsuleWidth = useTransform(scrollYProgress, [0.53, 0.70], ["90vw", "100vw"]);
+    const capsuleHeight = useTransform(scrollYProgress, [0.53, 0.70], ["60vh", "100vh"]);
+    const capsuleRadius = useTransform(scrollYProgress, [0.53, 0.70], ["3rem", "0rem"]);
+    const capsuleShadow = useTransform(scrollYProgress, [0.58, 0.70], ["0px 0px 0px 0px rgba(0,0,0,0)", "0px 25px 50px -12px rgba(0,0,0,0.5)"]);
 
     // IMAGE PARALLAX
-    const imageScale = useTransform(scrollYProgress, [0.75, 1.00], [1.3, 1.2]);
-    const imageY = useTransform(scrollYProgress, [0.75, 1.00], ["-10%", "0%"]);
+    const imageScale = useTransform(scrollYProgress, [0.53, 1.00], [1.3, 1.2]);
+    const imageY = useTransform(scrollYProgress, [0.53, 1.00], ["-10%", "0%"]);
+
+    // VIDEO SCRUBBING - 30% of scroll (0.70 - 1.00)
+    useMotionValueEvent(scrollYProgress, "change", (latest) => {
+        if (!imagesLoaded || !canvasRef.current) return;
+
+        const canvas = canvasRef.current;
+        const context = canvas.getContext('2d');
+        if (!context) return;
+
+        // Video scrubbing active when capsule is fullscreen (0.70 - 1.00)
+        if (latest >= 0.70 && latest <= 1.00) {
+            // Map scroll progress to frame index
+            const progress = (latest - 0.70) / (1.00 - 0.70);
+            const frameIndex = Math.min(
+                frameCount - 1,
+                Math.floor(progress * frameCount)
+            );
+
+            const img = images[frameIndex];
+            if (img && img.complete) {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                context.drawImage(img, 0, 0);
+            }
+        }
+    });
 
     return (
-        <section ref={targetRef} className="relative bg-background-inverted overflow-clip z-30" style={{ height: 'calc(var(--vh, 1vh) * 850)' }}>
+        <section ref={targetRef} className="relative bg-background-inverted overflow-clip z-30" style={{ height: 'calc(var(--vh, 1vh) * 2000)' }}>
             {/* STICKY CONTAINER */}
             <div className="sticky top-0 h-screen w-full flex flex-col items-center justify-center overflow-hidden">
 
@@ -198,12 +258,8 @@ const InfluencesB: React.FC<InfluencesBProps> = ({ onWidgetTrigger }) => {
                         }}
                         className="w-full h-full relative"
                     >
-                        <video
-                            src={fragmntAnimated}
-                            autoPlay
-                            loop
-                            muted
-                            playsInline
+                        <canvas
+                            ref={canvasRef}
                             className="w-full h-full object-cover"
                         />
                     </motion.div>
