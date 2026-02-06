@@ -286,7 +286,7 @@ const NatureSlider = ({ level, onChange }: { level: number, onChange: (val: numb
 // ============================================
 const StepIndicator: React.FC<{ activeStep: number }> = ({ activeStep }) => {
     const { t } = useTranslation();
-    
+
     const config = {
         1: t('howItWork.stepLabels.weather'),
         2: t('howItWork.stepLabels.space'),
@@ -351,7 +351,7 @@ const HowItWorkInteraction = ({
     const { t } = useTranslation();
     const containerRef = useRef<HTMLDivElement>(null);
     const [activeStep, setActiveStep] = useState(0);
-    
+
     // Dynamic steps based on translations
     const steps = [
         {

@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, MotionValue } from 'framer-motion';
 import { useTranslation } from '../i18n';
 
 const Manifesto: React.FC = () => {
@@ -46,15 +46,44 @@ const Manifesto: React.FC = () => {
                     style={{ opacity: text1Opacity }}
                     className="absolute text-center w-[90vw] max-w-4xl"
                 >
-                    <motion.p
-                        initial={{ opacity: 0, filter: "blur(10px)" }}
-                        whileInView={{ opacity: 1, filter: "blur(0px)" }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.8, ease: "easeOut" }}
-                        className="text-3xl md:text-5xl font-display font-light text-text-primary leading-tight"
-                    >
-                        {t('manifesto.intro')}
-                    </motion.p>
+                    <p className="text-3xl md:text-5xl font-display font-light text-text-primary leading-tight inline-block">
+                        {(() => {
+                            const text = t('manifesto.intro');
+                            const words = text.split(" ");
+                            let globalCharIndex = 0;
+                            const totalChars = text.length;
+
+                            return words.map((word, wordIndex) => {
+                                const wordEl = (
+                                    <React.Fragment key={wordIndex}>
+                                        <span className="whitespace-nowrap inline-flex">
+                                            {word.split("").map((char, charIndex) => {
+                                                const currentIndex = globalCharIndex;
+                                                globalCharIndex++;
+                                                return (
+                                                    <ScrollRevealChar
+                                                        key={`${wordIndex}-${charIndex}`}
+                                                        char={char}
+                                                        index={currentIndex}
+                                                        total={totalChars}
+                                                        scrollYProgress={scrollYProgress}
+                                                    />
+                                                );
+                                            })}
+                                        </span>
+                                        {wordIndex < words.length - 1 && (
+                                            <>
+                                                <span className="inline-block w-[0.35em]">{/* Space */}</span>
+                                                <span className="hidden"> </span>
+                                            </>
+                                        )}
+                                    </React.Fragment>
+                                );
+                                if (wordIndex < words.length - 1) globalCharIndex++;
+                                return wordEl;
+                            });
+                        })()}
+                    </p>
                 </motion.div>
 
                 {/* Text 2 */}
@@ -93,3 +122,31 @@ const Manifesto: React.FC = () => {
 };
 
 export default Manifesto;
+
+// ===========================================
+// SCROLL REVEAL CHAR
+// ===========================================
+interface ScrollRevealCharProps {
+    char: string;
+    index: number;
+    total: number;
+    scrollYProgress: MotionValue<number>;
+}
+
+const ScrollRevealChar: React.FC<ScrollRevealCharProps> = ({ char, index, total, scrollYProgress }) => {
+    const startRange = 0.0;
+    const endRange = 0.2;  // Match the intro text fade-out range
+    const step = (endRange - startRange) / total;
+
+    const charStart = startRange + (index * step);
+    const charEnd = charStart + step * 5;
+
+    const opacity = useTransform(scrollYProgress, [charStart, charEnd], [0.1, 1]);
+
+    return (
+        <motion.span style={{ opacity }} className="text-text-primary">
+            {char === " " ? "\u00A0" : char}
+        </motion.span>
+    );
+};
+
