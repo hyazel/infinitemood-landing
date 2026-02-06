@@ -357,9 +357,9 @@ const MockupView: React.FC<{
     const text3Y = useTransform(localProgress, [0.40, 0.45], ["20px", "0px"]);
 
     // Title: "Vous restez dans votre experience"
-    const finalTitleOpacity = useTransform(localProgress, [0.82, 0.86, 0.92, 0.96], [0, 1, 1, 0]);
-    const finalTitleScale = useTransform(localProgress, [0.82, 0.96], [0.95, 1]);
-    const finalOverlayOpacity = useTransform(localProgress, [0.82, 0.86, 0.92, 0.96], [0, 1, 1, 0]);
+    const finalTitleOpacity = useTransform(localProgress, [0.82, 0.86, 0.98, 1], [0, 1, 1, 0]);
+    const finalTitleScale = useTransform(localProgress, [0.82, 0.98], [0.95, 1]);
+    const finalOverlayOpacity = useTransform(localProgress, [0.82, 0.86, 0.98, 1], [0, 1, 1, 0]);
 
     return (
         <motion.div
