@@ -76,6 +76,7 @@
       "title": "L'ambiance sonore est personnalisable",
       "highlight": "personnalisable"
     },
+    "audioActive": "Audio Actif",
     "weather": {
       "title": "Changez la météo.",
       "subtitle": "Calme, pluie, orage… la météo s'adapte en temps réel.",
@@ -171,6 +172,23 @@
     "outro": {
       "text": "Rejoignez une communauté qui écoute autrement.",
       "cta": "Suivre le projet"
+    }
+  },
+  "audioControl": {
+    "muted": "Muted",
+    "weather": {
+      "prefix": "Météo :",
+      "level0": "Calme",
+      "level1": "Fine pluie",
+      "level2": "Pluie",
+      "level3": "Orage"
+    },
+    "nature": {
+      "prefix": "Nature :",
+      "level0": "Calme",
+      "level1": "Léger",
+      "level2": "Intense",
+      "level3": "Sauvage"
     }
   }
 }

@@ -562,7 +562,7 @@ const HowItWorkInteraction = ({
                                     <motion.div animate={{ height: [8, 4, 12, 6] }} transition={{ duration: 0.9, repeat: Infinity, delay: 0.1 }} className="w-1 bg-primitive-orchid-core rounded-full" />
                                     <motion.div animate={{ height: [6, 12, 4, 10] }} transition={{ duration: 0.7, repeat: Infinity, delay: 0.2 }} className="w-1 bg-primitive-orchid-deep rounded-full" />
                                 </div>
-                                <span className="text-[10px] uppercase tracking-widest text-white font-bold">Audio Actif</span>
+                                <span className="text-[10px] uppercase tracking-widest text-white font-bold">{t('howItWork.audioActive')}</span>
                             </div>
                         </div>
                     </div>
@@ -663,7 +663,7 @@ const HowItWorkInteraction = ({
                                     transition={{ delay: 1, duration: 0.8 }}
                                     className="absolute bottom-4" // Centered
                                 >
-                                    <MouseScrollIndicator text="SCROLLEZ" />
+                                    <MouseScrollIndicator text={t('whatIsItC.scroll')} />
                                 </motion.div>
                             )}
                         </AnimatePresence>

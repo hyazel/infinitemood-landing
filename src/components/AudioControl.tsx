@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Volume2, VolumeX } from 'lucide-react';
+import { useTranslation } from '../i18n';
 
 interface AudioControlProps {
     trackTitle?: string;
@@ -9,6 +10,7 @@ interface AudioControlProps {
 }
 
 const AudioControl: React.FC<AudioControlProps> = ({ trackTitle, weatherLevel, natureLevel }) => {
+    const { t } = useTranslation();
     const [isMuted, setIsMuted] = useState(false);
 
     // State for temporary notification override
@@ -21,18 +23,20 @@ const AudioControl: React.FC<AudioControlProps> = ({ trackTitle, weatherLevel, n
 
     // Mapping helper
     const getWeatherLabel = (level: number) => {
-        if (level === 0) return 'Météo : Calme';
-        if (level === 1) return 'Météo : Fine pluie';
-        if (level === 2) return 'Météo : Pluie';
-        if (level === 3) return 'Météo : Orage';
+        const prefix = t('audioControl.weather.prefix');
+        if (level === 0) return `${prefix} ${t('audioControl.weather.level0')}`;
+        if (level === 1) return `${prefix} ${t('audioControl.weather.level1')}`;
+        if (level === 2) return `${prefix} ${t('audioControl.weather.level2')}`;
+        if (level === 3) return `${prefix} ${t('audioControl.weather.level3')}`;
         return '';
     };
 
     const getNatureLabel = (level: number) => {
-        if (level === 0) return 'Nature : Calme';
-        if (level === 1) return 'Nature : Léger';
-        if (level === 2) return 'Nature : Intense';
-        if (level === 3) return 'Nature : Sauvage';
+        const prefix = t('audioControl.nature.prefix');
+        if (level === 0) return `${prefix} ${t('audioControl.nature.level0')}`;
+        if (level === 1) return `${prefix} ${t('audioControl.nature.level1')}`;
+        if (level === 2) return `${prefix} ${t('audioControl.nature.level2')}`;
+        if (level === 3) return `${prefix} ${t('audioControl.nature.level3')}`;
         return '';
     };
 
@@ -72,7 +76,8 @@ const AudioControl: React.FC<AudioControlProps> = ({ trackTitle, weatherLevel, n
         }
     };
 
-    const displayedText = isMuted ? 'Muted' : (notification || trackTitle || '');
+    const displayedText = isMuted ? t('audioControl.muted') : (notification || trackTitle || '');
+
 
     return (
         <motion.div

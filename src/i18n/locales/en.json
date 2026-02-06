@@ -76,6 +76,7 @@
       "title": "The sonic ambience is customizable",
       "highlight": "customizable"
     },
+    "audioActive": "Audio Active",
     "weather": {
       "title": "Change the weather.",
       "subtitle": "Calm, rain, storm… the weather adapts in real time.",
@@ -171,6 +172,23 @@
     "outro": {
       "text": "Join a community that listens differently.",
       "cta": "Follow the project"
+    }
+  },
+  "audioControl": {
+    "muted": "Muted",
+    "weather": {
+      "prefix": "Weather:",
+      "level0": "Calm",
+      "level1": "Light Rain",
+      "level2": "Rain",
+      "level3": "Storm"
+    },
+    "nature": {
+      "prefix": "Nature:",
+      "level0": "Calm",
+      "level1": "Light",
+      "level2": "Intense",
+      "level3": "Wild"
     }
   }
 }
