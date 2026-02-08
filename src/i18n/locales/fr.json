@@ -115,7 +115,10 @@
     ],
     "emailPlaceholder": "votre@email.com",
     "successTitle": "Bienvenue à bord.",
-    "successSubtitle": "Tu recevras les nouveautés, une à une."
+    "successSubtitle": "Tu recevras les nouveautés, une à une.",
+    "joinCommunity": "membres",
+    "youAreIn": "membres",
+    "joinFoundingMembers": "Rejoignez les membres fondateurs"
   },
   "project": {
     "title": "FRAGMNT",

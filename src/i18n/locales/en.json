@@ -115,7 +115,10 @@
     ],
     "emailPlaceholder": "your@email.com",
     "successTitle": "Welcome aboard.",
-    "successSubtitle": "You will receive updates, one by one."
+    "successSubtitle": "You will receive updates, one by one.",
+    "joinCommunity": "members",
+    "youAreIn": "members",
+    "joinFoundingMembers": "Join the founding members"
   },
   "project": {
     "title": "FRAGMNT",

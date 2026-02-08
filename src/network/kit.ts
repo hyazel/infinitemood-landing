@@ -136,3 +136,25 @@ export const subscribeToNewsletter = async (email: string, formId: string): Prom
         };
     }
 };
+
+/**
+ * Fetches the total subscriber count safely via our Cloudflare Function.
+ * Returns 0 if request fails.
+ */
+export const getSubscriberCount = async (): Promise<number> => {
+    try {
+        const response = await fetch('/api/kit/count');
+        if (!response.ok) return 0;
+
+        const data = (await response.json()) as { count: number };
+        return data.count || 0;
+    } catch (error) {
+        console.warn('[Kit] Failed to fetch subscriber count:', error);
+        // Fallback for local development (since Cloudflare Functions don't run in pure Vite)
+        if (import.meta.env.DEV) {
+            console.info('[Kit] Dev mode: returning mock count (12)');
+            return 12;
+        }
+        return 0;
+    }
+};
