@@ -357,9 +357,9 @@ const MockupView: React.FC<{
     const text3Y = useTransform(localProgress, [0.40, 0.45], ["20px", "0px"]);
 
     // Title: "Vous restez dans votre experience"
-    const finalTitleOpacity = useTransform(localProgress, [0.82, 0.86, 0.98, 1], [0, 1, 1, 0]);
-    const finalTitleScale = useTransform(localProgress, [0.82, 0.98], [0.95, 1]);
-    const finalOverlayOpacity = useTransform(localProgress, [0.82, 0.86, 0.98, 1], [0, 1, 1, 0]);
+    const finalTitleOpacity = useTransform(localProgress, [0.82, 0.86, 0.95, 1], [0, 1, 1, 0]);
+    const finalTitleScale = useTransform(localProgress, [0.82, 0.95], [0.95, 1]);
+    const finalOverlayOpacity = useTransform(localProgress, [0.82, 0.86, 0.95, 1], [0, 1, 1, 0]);
 
     return (
         <motion.div
@@ -554,30 +554,23 @@ const WhatIsItC: React.FC<{
         const currentScrollY = scrollY.get();
         clickScrollPositionRef.current = currentScrollY;
 
+
         // Calculate if we need more height
+        // Option 1: Dynamic Height Adjustment (Truncate unused space)
+        // Calculate the exact height needed from the top of the section to reach the end of the animation
         if (targetRef.current) {
             const sectionTop = targetRef.current.offsetTop || 0;
-            const currentSectionHeight = targetRef.current.offsetHeight;
             const viewportHeight = window.innerHeight;
 
-            // Where we are relative to the section top
-            // const relativeScroll = currentScrollY - sectionTop; // Unused
+            // Add a small buffer so the user can enjoy the final state for a moment before hitting the next section
+            const BUFFER_VH = 50;
 
-            // How much space is physically left in the section?
-            // "Sticky" logic: The section stays pinned. The physical end of scrolling is when the bottom of the section hits the bottom of viewport.
-            // Max scrollable Y = sectionTop + sectionHeight - viewportHeight.
-            const maxScrollY = sectionTop + currentSectionHeight - viewportHeight;
-            const remainingScroll = maxScrollY - currentScrollY;
+            const animationEndAbsoluteY = currentScrollY + (viewportHeight * (ANIMATION_SCROLL_DISTANCE_VH / 100));
+            // Total height = distance to end of animation + buffer
+            const newSectionHeight = (animationEndAbsoluteY - sectionTop) + (viewportHeight * (BUFFER_VH / 100));
 
-            const neededScroll = viewportHeight * (ANIMATION_SCROLL_DISTANCE_VH / 100);
-
-            if (remainingScroll < neededScroll) {
-                // We need to extend the section
-                const addedHeight = neededScroll - remainingScroll;
-                setExtraHeight(addedHeight);
-            } else {
-                setExtraHeight(0);
-            }
+            // We set this new precise height. The 800vh default is actively replaced.
+            setExtraHeight(newSectionHeight);
         }
 
         setSelectedCard(card);
@@ -602,7 +595,7 @@ const WhatIsItC: React.FC<{
     }, [selectedCard]);
 
     return (
-        <section ref={targetRef} className="relative bg-background-primary overflow-clip" style={{ height: `calc((var(--vh, 1vh) * 800) + ${extraHeight}px)` }}>
+        <section ref={targetRef} className="relative bg-background-primary overflow-clip" style={{ height: extraHeight > 0 ? `${extraHeight}px` : 'calc(var(--vh, 1vh) * 800)' }}>
             <div className="sticky top-0 h-screen overflow-hidden flex flex-col items-center justify-center">
 
                 <AnimatePresence mode="wait">
