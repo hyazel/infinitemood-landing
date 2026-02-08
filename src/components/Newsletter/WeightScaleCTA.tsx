@@ -86,7 +86,7 @@ const WeightScaleCTA: React.FC<SimpleNewsletterProps> = ({ t }) => {
         >
             {/* Single card with tilt effect and aurora background */}
             <motion.div
-                className="relative p-8 backdrop-blur-xl border border-white/20 rounded-3xl overflow-hidden min-h-[280px] flex flex-col justify-center bg-black/40" // added default bg
+                className="relative p-8 pb-10 md:pb-8 backdrop-blur-xl border border-white/20 rounded-3xl overflow-hidden min-h-[280px] flex flex-col justify-center bg-black/40" // added extra bottom padding for mobile
                 animate={{
                     rotateZ: getTiltAngle(),
                     y: getYOffset(),
@@ -241,10 +241,61 @@ const WeightScaleCTA: React.FC<SimpleNewsletterProps> = ({ t }) => {
                         </span>
                     </motion.div>
 
-                    {/* Sublabel */}
-                    <p className="text-sm text-white/80 text-center font-light">
-                        {t('outro.ctaSublabel')}
+                    {/* Subtitle */}
+                    <p className="text-base text-white/90 text-center font-light -mt-2">
+                        {t('outro.ctaSubtitle')}
                     </p>
+
+                    {/* Benefit Pills */}
+                    <div className="grid grid-cols-2 gap-2.5 w-full max-w-[280px] mt-1">
+                        {[
+                            { key: 'outro.benefits.0', icon: 'play' },      // Démo
+                            { key: 'outro.benefits.1', icon: 'vote' },      // Votes
+                            { key: 'outro.benefits.2', icon: 'key' },       // Accès privé
+                            { key: 'outro.benefits.3', icon: 'document' }   // Articles
+                        ].map((item, index) => {
+                            // Icon SVG paths
+                            const icons = {
+                                play: <path d="M5 3L19 12L5 21V3Z" fill="currentColor" />,
+                                vote: <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />,
+                                key: <><circle cx="12" cy="12" r="3" fill="currentColor" /><path d="M12 1v6m0 6v10M4.22 4.22l4.24 4.24m5.08 5.08l4.24 4.24M1 12h6m6 0h10M4.22 19.78l4.24-4.24m5.08-5.08l4.24-4.24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></>,
+                                document: <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM14 2v6h6M16 13H8m8 4H8m2-8H8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                            };
+
+                            return (
+                                <motion.div
+                                    key={item.key}
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: index * 0.08, duration: 0.4 }}
+                                    className="relative group"
+                                >
+                                    {/* Pill with improved glassmorphism */}
+                                    <div className="px-3.5 py-2 rounded-full bg-white/5 backdrop-blur-lg border border-white/30 text-white text-xs font-medium tracking-wide relative overflow-hidden flex items-center gap-2 hover:bg-white/10 hover:border-white/40 transition-all duration-300">
+                                        {/* Icon */}
+                                        <svg
+                                            width="14"
+                                            height="14"
+                                            viewBox="0 0 24 24"
+                                            className="opacity-80"
+                                        >
+                                            {icons[item.icon as keyof typeof icons]}
+                                        </svg>
+
+                                        {/* Text content */}
+                                        <span className="relative z-10">{t(item.key)}</span>
+
+                                        {/* Subtle glow on hover */}
+                                        <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                                            style={{
+                                                background: 'radial-gradient(circle at center, rgba(255, 255, 255, 0.1) 0%, transparent 70%)'
+                                            }}
+                                        />
+                                    </div>
+                                </motion.div>
+                            );
+                        })}
+                    </div>
 
                     {/* Weight indicator bar */}
                     <div className="w-full max-w-[280px] h-1 bg-white/10 rounded-full overflow-hidden">

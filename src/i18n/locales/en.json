@@ -14,7 +14,8 @@
     "subtitle": "Composed to last.",
     "description": "To focus. To escape. Freely.",
     "clickForSound": "Click for sound",
-    "tapForSound": "Tap for sound"
+    "tapForSound": "Tap for sound",
+    "cta": "To focus. To escape. Freely."
   },
   "manifesto": {
     "intro": "Fragmnt is an app of ambient music composed by musicians.",
@@ -104,7 +105,14 @@
     "hook": "And you can hear it.",
     "ctaLabel": "FOLLOW FRAGMNT",
     "ctaLabelHover": "EARLY ACCESS",
+    "ctaSubtitle": "Join the circle. Shape Fragmnt.",
     "ctaSublabel": "Prototypes, playable demos, and early access — join the journey.",
+    "benefits": [
+      "Demo",
+      "Votes",
+      "Private access",
+      "Articles"
+    ],
     "emailPlaceholder": "your@email.com",
     "successTitle": "Welcome aboard.",
     "successSubtitle": "You will receive updates, one by one."
@@ -157,7 +165,7 @@
   },
   "follow": {
     "title": "STAY IN THE MOOD",
-    "subtitle": "Sign up to receive the latest news and updates.",
+    "subtitle": "Sign up to receive the latest news.",
     "discord": "Join Discord"
   },
   "confirmation": {

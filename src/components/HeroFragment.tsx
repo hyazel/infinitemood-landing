@@ -24,7 +24,6 @@ const HeroFragment: React.FC<HeroProps> = ({ onStartAudio }) => {
 
     return (
         <section
-            onClick={onStartAudio}
             className="relative w-full bg-background-inverted text-text-inverted flex flex-col justify-between pt-12 overflow-hidden"
             style={{ height: 'calc(var(--vh, 1vh) * 100)' }}
         >
@@ -36,6 +35,25 @@ const HeroFragment: React.FC<HeroProps> = ({ onStartAudio }) => {
                 <p className="text-base md:text-lg text-text-inverted font-display tracking-[0.2em] uppercase opacity-80">
                     {t('heroFragment.description')}
                 </p>
+
+                {/* Mobile CTA Button */}
+                <motion.button
+                    onClick={onStartAudio}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.8, ease: "easeOut" }}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="md:hidden mt-16 
+                             px-6 py-3 border border-text-inverted/30 rounded-full
+                             text-text-inverted font-display 
+                             tracking-[0.15em] uppercase text-xs 
+                             pointer-events-auto
+                             hover:border-text-inverted hover:bg-text-inverted/5 
+                             transition-all duration-300"
+                >
+                    {t('heroFragment.tapForSound')}
+                </motion.button>
             </div>
 
             <div className="relative w-full mt-auto hero-image-container" style={{ height: 'calc(var(--vh, 1vh) * 15)' }}>

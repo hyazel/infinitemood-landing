@@ -12,7 +12,7 @@ const FollowPage: React.FC = () => {
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/60 pointer-events-none" />
 
             {/* Content Container */}
-            <div className="relative z-10 flex flex-col items-center gap-12 w-full max-w-4xl px-4 pt-40 md:pt-24">
+            <div className="relative z-10 flex flex-col items-center gap-12 w-full max-w-4xl px-4 pt-40 md:pt-24 pb-16 md:pb-8">
 
                 {/* Title */}
                 <motion.div

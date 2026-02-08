@@ -60,22 +60,12 @@ const Home = () => {
 
     return (
         <main
-            onClick={handleStartAudio}
-            className={`w-full bg-background-primary transition-cursor duration-300 ${!isAudioStarted && !isPastHero ? 'cursor-none' : ''}`}
+            className={`w-full bg-background-primary transition-cursor duration-300 ${!isAudioStarted && !isPastHero ? 'md:cursor-none' : ''}`}
         >
             {/* Desktop: Cursor prompt that follows mouse */}
             <div className="hidden md:block">
                 <CursorPrompt active={!isAudioStarted} label={t('heroFragment.clickForSound')} />
             </div>
-
-            {/* Mobile: Fixed overlay with tap prompt */}
-            {!isAudioStarted && (
-                <div className="md:hidden fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-[2px] pointer-events-none">
-                    <div className="bg-white text-black px-8 py-4 rounded-full text-sm font-bold uppercase tracking-widest animate-pulse shadow-2xl">
-                        {t('heroFragment.tapForSound')}
-                    </div>
-                </div>
-            )}
 
             <HeroFragment onStartAudio={handleStartAudio} isAudioStarted={isAudioStarted} />
 

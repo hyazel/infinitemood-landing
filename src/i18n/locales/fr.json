@@ -14,7 +14,8 @@
     "subtitle": "Composés pour durer.",
     "description": "Pour se concentrer. S'évader. Librement.",
     "clickForSound": "Cliquer pour le son",
-    "tapForSound": "Toucher pour le son"
+    "tapForSound": "Toucher pour le son",
+    "cta": "Pour se concentrer. S'évader. Librement."
   },
   "manifesto": {
     "intro": "Fragmnt est une app de musiques d'ambiances composées par des musiciens.",
@@ -104,7 +105,14 @@
     "hook": "Et ça s'entend.",
     "ctaLabel": "SUIVRE FRAGMNT",
     "ctaLabelHover": "ACCÈS ANTICIPÉ",
+    "ctaSubtitle": "Rejoignez le cercle. Façonnez Fragmnt.",
     "ctaSublabel": "Prototypes, démos jouables, et accès anticipé — rejoignez l'aventure.",
+    "benefits": [
+      "Démo",
+      "Votes",
+      "Accès privé",
+      "Articles"
+    ],
     "emailPlaceholder": "votre@email.com",
     "successTitle": "Bienvenue à bord.",
     "successSubtitle": "Tu recevras les nouveautés, une à une."
@@ -157,7 +165,7 @@
   },
   "follow": {
     "title": "RESTEZ DANS L'AMBIANCE",
-    "subtitle": "Inscrivez-vous pour recevoir les dernières nouvelles et mises à jour.",
+    "subtitle": "Inscrivez-vous pour recevoir les dernières nouvelles.",
     "discord": "Rejoindre le Discord"
   },
   "confirmation": {
