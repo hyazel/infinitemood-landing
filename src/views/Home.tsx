@@ -61,8 +61,8 @@ const Home = () => {
             className={`w-full bg-background-primary transition-cursor duration-300 ${!isAudioStarted && !isPastHero ? 'md:cursor-none' : ''}`}
         >
             <SEO
-                title="Générateur d'ambiances sonores évolutives"
-                description="Découvrez Fragmnt, une application de musiques d'ambiances composées par des musiciens et modifiées par le temps qu'il fait chez vous."
+                title={t('seo.home.title')}
+                description={t('seo.home.description')}
                 canonical="/"
                 jsonLd={{
                     "@context": "https://schema.org",

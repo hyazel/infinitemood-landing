@@ -201,5 +201,11 @@
       "level2": "Intense",
       "level3": "Wild"
     }
+  },
+  "seo": {
+    "home": {
+      "title": "Ambient music app for focus and escape",
+      "description": "Fragmnt is a customizable ambient music application. Soundscapes designed to last, composed by real musicians."
+    }
   }
 }

@@ -201,5 +201,11 @@
       "level2": "Intense",
       "level3": "Sauvage"
     }
+  },
+  "seo": {
+    "home": {
+      "title": "App de musique d'ambiance pour le focus et l'évasion",
+      "description": "Fragmnt est une application d’ambiances musicales personnalisable. Des paysages sonores conçus pour durer, composés par de vrais musiciens."
+    }
   }
 }
