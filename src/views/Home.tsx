@@ -64,6 +64,17 @@ const Home = () => {
                 title="Générateur d'ambiances sonores évolutives"
                 description="Découvrez Fragmnt, une application de musiques d'ambiances composées par des musiciens et modifiées par le temps qu'il fait chez vous."
                 canonical="/"
+                jsonLd={{
+                    "@context": "https://schema.org",
+                    "@type": "WebSite",
+                    "name": "Fragmnt",
+                    "url": "https://www.fragmnt.app",
+                    "potentialAction": {
+                        "@type": "SearchAction",
+                        "target": "https://www.fragmnt.app/search?q={search_term_string}",
+                        "query-input": "required name=search_term_string"
+                    }
+                }}
             />
             {/* Desktop: Cursor prompt that follows mouse */}
             <div className="hidden md:block">

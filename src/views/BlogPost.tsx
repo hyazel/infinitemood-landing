@@ -33,6 +33,21 @@ const BlogPost: React.FC = () => {
         description={post.excerpt}
         canonical={`/blog/${post.slug}`}
         type="article"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          "headline": post.title,
+          "description": post.excerpt,
+          "author": {
+            "@type": "Person",
+            "name": post.author || "Fragmnt"
+          },
+          "datePublished": post.date,
+          "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": `https://www.fragmnt.app/blog/${post.slug}`
+          }
+        }}
       />
 
       <article className="pt-32 pb-24 px-6 max-w-3xl mx-auto">

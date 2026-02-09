@@ -8,6 +8,7 @@ interface SEOProps {
     type?: 'website' | 'article';
     image?: string;
     name?: string;
+    jsonLd?: Record<string, any>;
 }
 
 const SEO: React.FC<SEOProps> = ({
@@ -16,7 +17,8 @@ const SEO: React.FC<SEOProps> = ({
     canonical,
     type = 'website',
     image = 'https://www.fragmnt.app/assets/og-image.jpg', // Default OG image
-    name = 'Fragmnt'
+    name = 'Fragmnt',
+    jsonLd
 }) => {
     const siteUrl = 'https://www.fragmnt.app';
     const fullCanonical = canonical ? (canonical.startsWith('http') ? canonical : `${siteUrl}${canonical}`) : siteUrl;
@@ -43,6 +45,12 @@ const SEO: React.FC<SEOProps> = ({
             <meta name="twitter:title" content={title} />
             <meta name="twitter:description" content={description} />
             <meta name="twitter:image" content={fullImage} />
+
+            {jsonLd && (
+                <script type="application/ld+json">
+                    {JSON.stringify(jsonLd)}
+                </script>
+            )}
         </Helmet>
     );
 };

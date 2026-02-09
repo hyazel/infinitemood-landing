@@ -16,6 +16,19 @@ const Project: React.FC = () => {
         title={t('project.title')}
         description={t('project.about')}
         canonical="/project"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "WebApplication",
+          "name": "Fragmnt",
+          "applicationCategory": "MultimediaApplication",
+          "operatingSystem": "Web",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "EUR"
+          },
+          "description": t('project.about')
+        }}
       />
 
       <article className="pt-40 md:pt-32 pb-24 px-6 max-w-3xl mx-auto">
