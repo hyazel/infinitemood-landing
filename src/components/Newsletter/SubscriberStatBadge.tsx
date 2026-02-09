@@ -1,4 +1,5 @@
 import { useTranslation } from '../../i18n';
+import { motion } from 'framer-motion';
 
 interface SubscriberStatBadgeProps {
     count?: number;

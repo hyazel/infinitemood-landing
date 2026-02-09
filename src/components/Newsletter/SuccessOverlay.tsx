@@ -64,7 +64,7 @@ const SuccessOverlay: React.FC<SuccessOverlayProps> = ({ count, t }) => {
                 className="mt-8"
             >
                 <SubscriberStatBadge
-                    count="1,235"
+                    count={count}
                     label={t('outro.youAreIn')}
                     withPlusOne={true}
                     className="bg-white/10 border-white/20"
