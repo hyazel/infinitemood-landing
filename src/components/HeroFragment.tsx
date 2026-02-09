@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from '../i18n';
 
 
@@ -19,7 +19,7 @@ interface HeroProps {
     isAudioStarted: boolean;
 }
 
-const HeroFragment: React.FC<HeroProps> = ({ onStartAudio }) => {
+const HeroFragment: React.FC<HeroProps> = ({ onStartAudio, isAudioStarted }) => {
     const { t } = useTranslation();
 
     return (
@@ -37,23 +37,32 @@ const HeroFragment: React.FC<HeroProps> = ({ onStartAudio }) => {
                 </p>
 
                 {/* Mobile CTA Button */}
-                <motion.button
-                    onClick={onStartAudio}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.8, ease: "easeOut" }}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="md:hidden mt-16 
-                             px-6 py-3 border border-text-inverted/30 rounded-full
-                             text-text-inverted font-display 
-                             tracking-[0.15em] uppercase text-xs 
-                             pointer-events-auto
-                             hover:border-text-inverted hover:bg-text-inverted/5 
-                             transition-all duration-300"
-                >
-                    {t('heroFragment.tapForSound')}
-                </motion.button>
+                <AnimatePresence>
+                    {!isAudioStarted && (
+                        <motion.button
+                            key="mobile-cta"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onStartAudio();
+                            }}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0, y: 10, transition: { duration: 0.5 } }}
+                            transition={{ duration: 0.6, delay: 0.8, ease: "easeOut" }}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            className="md:hidden mt-16 
+                                     px-6 py-3 border border-text-inverted/30 rounded-full
+                                     text-text-inverted font-display 
+                                     tracking-[0.15em] uppercase text-xs 
+                                     pointer-events-auto
+                                     hover:border-text-inverted hover:bg-text-inverted/5 
+                                     transition-colors duration-300"
+                        >
+                            {t('heroFragment.tapForSound')}
+                        </motion.button>
+                    )}
+                </AnimatePresence>
             </div>
 
             <div className="relative w-full mt-auto hero-image-container" style={{ height: 'calc(var(--vh, 1vh) * 15)' }}>

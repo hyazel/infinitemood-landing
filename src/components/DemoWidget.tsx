@@ -16,7 +16,7 @@ const DemoWidget: React.FC<DemoWidgetProps> = ({ isVisible }) => {
         <AnimatePresence>
             {isVisible && (
                 <motion.div
-                    className="fixed bottom-8 left-1/2 z-50 cursor-pointer"
+                    className="fixed bottom-16 md:bottom-8 left-1/2 z-50 cursor-pointer"
                     initial={{ opacity: 0, y: 50, x: "-50%", scale: 0.9 }}
                     animate={{ opacity: 1, y: 0, x: "-50%", scale: 1 }}
                     exit={{ opacity: 0, y: 50, x: "-50%", scale: 0.9 }}

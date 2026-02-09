@@ -58,6 +58,7 @@ const Home = () => {
 
     return (
         <main
+            onClick={handleStartAudio}
             className={`w-full bg-background-primary transition-cursor duration-300 ${!isAudioStarted && !isPastHero ? 'md:cursor-none' : ''}`}
         >
             <SEO
