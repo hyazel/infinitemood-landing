@@ -2,12 +2,18 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '../i18n';
 import WeightScaleCTA from '../components/Newsletter/WeightScaleCTA';
+import SEO from '../components/SEO';
 
 const FollowPage: React.FC = () => {
     const { t } = useTranslation();
 
     return (
         <div className="min-h-screen w-full bg-background-inverted flex flex-col items-center justify-start md:justify-center relative overflow-hidden">
+            <SEO
+                title={t('follow.title')}
+                description={t('follow.subtitle')}
+                canonical="/follow"
+            />
             {/* Very subtle background gradient (Calm) */}
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/60 pointer-events-none" />
 

@@ -11,7 +11,8 @@
     "preview": "vite preview",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist",
-    "deploy:cloudflare": "npm run build && npx wrangler pages deploy dist"
+    "deploy:cloudflare": "npm run build && npx wrangler pages deploy dist",
+    "postbuild": "node scripts/generate-sitemap.js"
   },
   "dependencies": {
     "@types/p5": "^1.7.7",
@@ -25,6 +26,7 @@
     "p5": "^1.9.4",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-helmet-async": "^2.0.5",
     "react-markdown": "^10.1.0",
     "react-p5": "^1.4.1",
     "react-router-dom": "^7.11.0",

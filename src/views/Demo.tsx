@@ -4,6 +4,7 @@ import HowItWorkInteraction from '../components/HowItWorkInteraction';
 import AudioManager from '../utils/AudioManager';
 import { useAudio } from '../contexts/AudioContext';
 import DemoOutroCTA from '../components/DemoOutroCTA';
+import SEO from '../components/SEO';
 
 const Demo: React.FC = () => {
     // Track if an ambiance is selected to unlock scrolling
@@ -36,6 +37,11 @@ const Demo: React.FC = () => {
 
     return (
         <main className="w-full bg-background-primary min-h-screen pt-24 md:pt-32">
+            <SEO
+                title="Démo"
+                description="Essayez Fragmnt en direct et découvrez comment l'ambiance sonore s'adapte à votre environnement."
+                canonical="/demo"
+            />
 
             {/* WhatIsItC controls the flow. It notifies when an ambiance is selected. */}
             <WhatIsItC onSelectionChange={setSelectedFragment} />

@@ -3,7 +3,7 @@
   <url>
     <loc>https://www.fragmnt.app/</loc>
     <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
+    <priority>1</priority>
   </url>
   <url>
     <loc>https://www.fragmnt.app/demo</loc>
@@ -29,5 +29,11 @@
     <loc>https://www.fragmnt.app/blog</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.fragmnt.app/blog/lancement-site</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <lastmod>2026-01-21T00:00:00.000Z</lastmod>
   </url>
 </urlset>

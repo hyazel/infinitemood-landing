@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
+import { HelmetProvider } from 'react-helmet-async'
 import { Buffer } from 'buffer'
 import App from './App.tsx'
 import SmoothScroll from './components/SmoothScroll.tsx'
@@ -37,9 +38,11 @@ window.addEventListener('resize', () => {
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <BrowserRouter basename={import.meta.env.BASE_URL}>
-      <SmoothScroll>
-        <App />
-      </SmoothScroll>
+      <HelmetProvider>
+        <SmoothScroll>
+          <App />
+        </SmoothScroll>
+      </HelmetProvider>
     </BrowserRouter>
   </React.StrictMode>,
 )

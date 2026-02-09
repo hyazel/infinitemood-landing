@@ -13,9 +13,7 @@ import Influences from '../components/InfluencesB';
 import Outro from '../components/Outro';
 import DemoWidget from '../components/DemoWidget';
 import HeroFragment from '../components/HeroFragment';
-// import HeroAlternativeE from '../components/HeroAlternativeE';
-// import HeroAlternativeF from '../components/HeroAlternativeF';
-// import HeroAlternativeH from '../components/HeroAlternativeH';
+import SEO from '../components/SEO';
 
 const Home = () => {
     const { t } = useTranslation();
@@ -62,6 +60,11 @@ const Home = () => {
         <main
             className={`w-full bg-background-primary transition-cursor duration-300 ${!isAudioStarted && !isPastHero ? 'md:cursor-none' : ''}`}
         >
+            <SEO
+                title="Générateur d'ambiances sonores évolutives"
+                description="Découvrez Fragmnt, une application de musiques d'ambiances composées par des musiciens et modifiées par le temps qu'il fait chez vous."
+                canonical="/"
+            />
             {/* Desktop: Cursor prompt that follows mouse */}
             <div className="hidden md:block">
                 <CursorPrompt active={!isAudioStarted} label={t('heroFragment.clickForSound')} />

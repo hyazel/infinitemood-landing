@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from '../i18n';
+import SEO from '../components/SEO';
 
 const Project: React.FC = () => {
   const { t } = useTranslation();
@@ -11,6 +12,11 @@ const Project: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background-inverted text-text-inverted">
+      <SEO
+        title={t('project.title')}
+        description={t('project.about')}
+        canonical="/project"
+      />
 
       <article className="pt-40 md:pt-32 pb-24 px-6 max-w-3xl mx-auto">
 

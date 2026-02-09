@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getAllPosts } from '../utils/blogUtils';
+import SEO from '../components/SEO';
 
 const Blog: React.FC = () => {
   const posts = getAllPosts();
@@ -11,6 +12,11 @@ const Blog: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background-inverted text-text-inverted">
+      <SEO
+        title="Blog"
+        description="Réflexions sur le design sonore, l'interactivité et le focus créatif."
+        canonical="/blog"
+      />
 
       <main className="pt-32 pb-24 px-6 max-w-4xl mx-auto">
         <header className="mb-16">

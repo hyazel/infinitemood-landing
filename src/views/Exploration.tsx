@@ -5,6 +5,7 @@ import InteractionZone from '../components/InteractionZone';
 import ParameterSlider from '../components/ParameterSlider';
 import islandScene from '../assets/island_scene.png';
 import { useAudioLogic } from '../hooks/useAudioLogic';
+import SEO from '../components/SEO';
 
 const Exploration: React.FC = () => {
     const { isPlaying, togglePlay, setMeteo, startSnapshot, stopSnapshot } = useAudioLogic();
@@ -22,6 +23,11 @@ const Exploration: React.FC = () => {
 
     return (
         <div className="relative w-full h-screen overflow-hidden text-text-primary flex items-center justify-center bg-background-primary">
+            <SEO
+                title="Exploration"
+                description="Explorez les paysages sonores de Fragmnt."
+                canonical="/exploration"
+            />
 
             {/* Background Gradient */}
             <div className="absolute inset-0 bg-gradient-to-br from-primitive-neutral-orchid_ash_900 via-primitive-orchid-deep/20 to-primitive-saffron-core/10 -z-10" />

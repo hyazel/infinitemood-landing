@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { getPostBySlug } from '../utils/blogUtils';
+import SEO from '../components/SEO';
 
 const BlogPost: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -27,6 +28,12 @@ const BlogPost: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background-inverted text-text-inverted">
+      <SEO
+        title={post.title}
+        description={post.excerpt}
+        canonical={`/blog/${post.slug}`}
+        type="article"
+      />
 
       <article className="pt-32 pb-24 px-6 max-w-3xl mx-auto">
         <Link
