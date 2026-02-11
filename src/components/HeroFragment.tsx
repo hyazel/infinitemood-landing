@@ -134,6 +134,8 @@ const HeroFragment: React.FC<HeroProps> = ({ onStartAudio, isAudioStarted }) => 
                                 key={i}
                                 src={img.src}
                                 alt={img.alt}
+                                fetchPriority="high"
+                                loading="eager"
                                 className="w-1/4 h-full object-cover grayscale contrast-125"
                             />
                         ))}
