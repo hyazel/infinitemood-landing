@@ -12,7 +12,15 @@ import europeImage from '../assets/fragmnt-europe.jpg';
 import brutalismImage from '../assets/fragmnt-brutalism.jpg';
 import jungleImage from '../assets/fragmnt-jungle.jpg';
 
-const IMAGES = [islandImage, islandeImage, desertImage, townImage, europeImage, brutalismImage, jungleImage];
+const IMAGES = [
+    { src: islandImage, alt: "Mysterious island landscape with fog" },
+    { src: islandeImage, alt: "Cold icelandic coast landscape" },
+    { src: desertImage, alt: "Warm desert dunes landscape" },
+    { src: townImage, alt: "Quiet town street at dawn" },
+    { src: europeImage, alt: "European city architecture details" },
+    { src: brutalismImage, alt: "Abstract brutalist concrete structure" },
+    { src: jungleImage, alt: "Deep green jungle vegetation" }
+];
 
 interface HeroProps {
     onStartAudio: () => void;
@@ -124,7 +132,8 @@ const HeroFragment: React.FC<HeroProps> = ({ onStartAudio, isAudioStarted }) => 
                         {IMAGES.map((img, i) => (
                             <img
                                 key={i}
-                                src={img}
+                                src={img.src}
+                                alt={img.alt}
                                 className="w-1/4 h-full object-cover grayscale contrast-125"
                             />
                         ))}
