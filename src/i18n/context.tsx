@@ -54,10 +54,19 @@ const detectLanguage = (): Language => {
 export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [language, setLanguageState] = useState<Language>(detectLanguage);
 
-  // Persist language change
+  // Persist language change and update URL
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
     localStorage.setItem('language', lang);
+
+    // Update URL query param without reloading
+    const url = new URL(window.location.href);
+    if (lang === 'en') {
+      url.searchParams.set('lang', 'en');
+    } else {
+      url.searchParams.delete('lang');
+    }
+    window.history.pushState({}, '', url.toString());
   };
 
   // Check URL param on mount and update if present
