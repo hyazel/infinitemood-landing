@@ -4,6 +4,22 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from '../i18n';
 import SEO from '../components/SEO';
 
+import fragmntBrutalism from '../assets/fragmnt-brutalism.jpg';
+import fragmntDesert from '../assets/fragmnt-desert.jpg';
+import fragmntEurope from '../assets/fragmnt-europe.jpg';
+import fragmntIsland from '../assets/fragmnt-island.jpg';
+import fragmntJungle from '../assets/fragmnt-jungle.jpg';
+import fragmntTown from '../assets/fragmnt-town.jpg';
+
+const SCENES = [
+  fragmntBrutalism,
+  fragmntDesert,
+  fragmntEurope,
+  fragmntIsland,
+  fragmntJungle,
+  fragmntTown
+];
+
 const Section: React.FC<{ children: ReactNode; className?: string }> = ({ children, className = "" }) => (
   <section className={`py-16 md:py-24 border-b border-primitive-neutral-warm_ivory_400/10 ${className}`}>
     {children}
@@ -63,7 +79,7 @@ const Project: React.FC = () => {
         <Section>
           <div className="grid md:grid-cols-12 gap-8 items-start">
             <div className="md:col-span-4">
-              <span className="font-mono text-xs text-primitive-neutral-warm_ivory_400 uppercase tracking-widest">01. Concept</span>
+              <span className="font-mono text-xs text-primitive-neutral-warm_ivory_400 uppercase tracking-widest">{t('project.section.concept')}</span>
             </div>
             <div className="md:col-span-8 space-y-6 text-xl md:text-2xl leading-relaxed font-light">
               <p className="text-text-inverted">
@@ -83,7 +99,7 @@ const Project: React.FC = () => {
         <Section>
           <div className="grid md:grid-cols-12 gap-12">
             <div className="md:col-span-4">
-              <span className="font-mono text-xs text-primitive-neutral-warm_ivory_400 uppercase tracking-widest mb-4 block">02. Workflow</span>
+              <span className="font-mono text-xs text-primitive-neutral-warm_ivory_400 uppercase tracking-widest mb-4 block">{t('project.section.workflow')}</span>
               <SectionTitle>{t('project.howItWorks.title')}</SectionTitle>
             </div>
             <div className="md:col-span-8 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
@@ -105,7 +121,7 @@ const Project: React.FC = () => {
         <Section>
           <div className="grid md:grid-cols-12 gap-12">
             <div className="md:col-span-4">
-              <span className="font-mono text-xs text-primitive-neutral-warm_ivory_400 uppercase tracking-widest mb-4 block">03. Impact</span>
+              <span className="font-mono text-xs text-primitive-neutral-warm_ivory_400 uppercase tracking-widest mb-4 block">{t('project.section.impact')}</span>
               <SectionTitle>{t('project.whatChanges.title')}</SectionTitle>
             </div>
             <div className="md:col-span-8 grid gap-8 md:grid-cols-2">
@@ -143,16 +159,31 @@ const Project: React.FC = () => {
         <Section>
           <div className="grid md:grid-cols-12 gap-12">
             <div className="md:col-span-4">
-              <span className="font-mono text-xs text-primitive-neutral-warm_ivory_400 uppercase tracking-widest mb-4 block">04. Visuals</span>
+              <span className="font-mono text-xs text-primitive-neutral-warm_ivory_400 uppercase tracking-widest mb-4 block">{t('project.section.visuals')}</span>
               <SectionTitle>{t('project.visuals.title')}</SectionTitle>
             </div>
-            <div className="md:col-span-8 space-y-6 text-lg md:text-xl text-primitive-neutral-warm_ivory_600 leading-relaxed">
-              <p>
-                {t('project.visuals.p1')}
-              </p>
-              <p>
-                {t('project.visuals.p2')}
-              </p>
+            <div className="md:col-span-8 space-y-12">
+              <div className="space-y-6 text-lg md:text-xl text-primitive-neutral-warm_ivory_600 leading-relaxed">
+                <p>
+                  {t('project.visuals.p1')}
+                </p>
+                <p>
+                  {t('project.visuals.p2')}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {SCENES.map((scene, index) => (
+                  <div key={index} className="aspect-square overflow-hidden rounded-lg bg-primitive-neutral-warm_ivory_200/50">
+                    <img
+                      src={scene}
+                      alt={`Visual scene ${index + 1}`}
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-700 ease-out"
+                      loading="lazy"
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </Section>
@@ -161,18 +192,18 @@ const Project: React.FC = () => {
         <Section>
           <div className="grid md:grid-cols-12 gap-12">
             <div className="md:col-span-4">
-              <span className="font-mono text-xs text-primitive-neutral-warm_ivory_400 uppercase tracking-widest mb-4 block">05. Roots</span>
+              <span className="font-mono text-xs text-primitive-neutral-warm_ivory_400 uppercase tracking-widest mb-4 block">{t('project.section.roots')}</span>
               <SectionTitle>{t('project.influences.title')}</SectionTitle>
             </div>
             <div className="md:col-span-8 grid md:grid-cols-2 gap-8">
               <div>
-                <h4 className="font-mono text-sm uppercase tracking-widest text-primitive-neutral-warm_ivory_400 mb-4">M U S I C</h4>
+                <h4 className="font-mono text-sm uppercase tracking-widest text-primitive-neutral-warm_ivory_400 mb-4">{t('project.influences.label.music')}</h4>
                 <p className="text-lg text-text-inverted leading-relaxed">
                   {t('project.influences.music')}
                 </p>
               </div>
               <div>
-                <h4 className="font-mono text-sm uppercase tracking-widest text-primitive-neutral-warm_ivory_400 mb-4">U N I V E R S E</h4>
+                <h4 className="font-mono text-sm uppercase tracking-widest text-primitive-neutral-warm_ivory_400 mb-4">{t('project.influences.label.universe')}</h4>
                 <p className="text-lg text-text-inverted leading-relaxed">
                   {t('project.influences.universe')}
                 </p>
@@ -187,23 +218,24 @@ const Project: React.FC = () => {
             <h2 className="font-display text-3xl md:text-5xl font-bold mb-8">{t('project.access.title')}</h2>
             <div className="space-y-6 text-xl leading-relaxed text-primitive-neutral-warm_ivory_600">
               <p>
-                Sign up for the{' '}
+                {t('project.access.waitingList.text')}{' '}
                 <Link
                   to="/follow"
                   className="text-text-inverted underline decoration-1 underline-offset-4 hover:decoration-2 transition-all"
                 >
-                  waiting list
+                  {t('project.access.waitingList.link')}
                 </Link>{' '}
-                to be informed of the next steps and the beta.
+                {t('project.access.waitingList.suffix')}
               </p>
               <p className="">
-                A preview is available{' '}
+                {t('project.access.preview.text')}{' '}
                 <Link
                   to="/demo"
                   className="text-text-inverted underline decoration-1 underline-offset-4 hover:decoration-2 transition-all"
                 >
-                  here
-                </Link>.
+                  {t('project.access.preview.link')}
+                </Link>
+                {t('project.access.preview.suffix')}
               </p>
             </div>
           </div>

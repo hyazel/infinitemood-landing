@@ -157,13 +157,32 @@
     },
     "influences": {
       "title": "Influences",
-      "music": "Music: Brian Eno, Kiasmo, Ólafur Arnalds, Bonobo, Hermanos Gutiérrez, Hania Rani, Max Richter, Nils Frahm…",
-      "universe": "Universe: Monument Valley, Breath of the Wild."
+      "label": {
+        "music": "M U S I C",
+        "universe": "U N I V E R S E"
+      },
+      "music": "Brian Eno, Kiasmo, Ólafur Arnalds, Bonobo, Hermanos Gutiérrez, Hania Rani, Max Richter, Nils Frahm…",
+      "universe": "Monument Valley, Breath of the Wild."
+    },
+    "section": {
+      "concept": "01. Concept",
+      "workflow": "02. Workflow",
+      "impact": "03. Impact",
+      "visuals": "04. Visuals",
+      "roots": "05. Roots"
     },
     "access": {
       "title": "Access",
-      "waitingList": "Sign up for the waiting list to be informed of the next steps and the beta.",
-      "preview": "A preview is available here."
+      "waitingList": {
+        "text": "Sign up for the",
+        "link": "waiting list",
+        "suffix": "to be informed of the next steps and the beta."
+      },
+      "preview": {
+        "text": "A preview is available",
+        "link": "here",
+        "suffix": "."
+      }
     }
   },
   "follow": {
