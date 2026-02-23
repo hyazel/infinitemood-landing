@@ -28,7 +28,10 @@ const getTrackTitle = (eventName: string | null): string => {
 function AppContent() {
   const location = useLocation();
   const { isAudioStarted, currentAudioEvent, weatherLevel, natureLevel } = useAudio();
-  const [isLoading, setIsLoading] = useState(location.pathname === '/');
+
+  const isPrerender = typeof window === 'undefined' || (typeof window !== 'undefined' && (window as any).__PRERENDER_INJECTED);
+
+  const [isLoading, setIsLoading] = useState(!isPrerender && location.pathname === '/');
   const [hasShownLoading, setHasShownLoading] = useState(false);
 
   // Get track title from current audio event
@@ -36,7 +39,7 @@ function AppContent() {
 
   // Only show loading on first visit to home page
   useEffect(() => {
-    if (location.pathname === '/' && !hasShownLoading) {
+    if (location.pathname === '/' && !hasShownLoading && !isPrerender) {
       setIsLoading(true);
     } else {
       setIsLoading(false);
